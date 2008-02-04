@@ -1,0 +1,142 @@
+tritower program
+
+walkthrough:
+x- board data structure and class
+  x. white, black and unknown
+  x. adjacency
+  x. bounds
+x- text board display
+x- method to see if a board is valid
+  x. handle unknowns. validation method is optimistic, assumes _unknowns don't break validity
+x- clues (givens)
+  x. and validation of clues
+x- 1-step logical conclusions
+  x. assume a random thing, see that it is invalid, then conclude the opposite
+x- deep logical conclusions (show that for a particular assumption, all paths lead to contradiction)
+x- unit test for solve()
+x- refactor to make solve_one_space(1) and solve_one_space_at_depth_1() equivalent
+- graphical board display
+- screensaver mode
+- total number of towers on board
+  . and solving for that
+- interactive play
+  . saving and loading of puzzles in progress
+  . undo history
+  . conditional colors
+  . puzzle editor
+- puzzle-creation tools
+  . automatic puzzle generation
+- other sorts of givens
+- genericize to solve any sort of binary determination puzzle
+
+
+
+triboard.make_conclusion(depth)
+  possible returns:
+  0   nothing known at this depth
+  (n) conclusion made, after n steps
+  -1  contradiction
+
+
+possible optimizations:
+x- dictionary to track in_bounds (later superseded)
+x- caching of legal positions
+x- caching of adjacencies
+- special case make_conclusion for depth=1, to avoid deepcopies
+- incremental testing of validity, to avoid a re-evaluating the whole board when only one square has changed.
+  . if the board is valid, and you add one space, is it possible to only test contradictions that may be introduced by the new square? this could potentially give a large speedup, reducing order of complexity
+  . when a tower is found, automatically mark its adjacencies white, or other possible incremental rules
+  . certain is_valid tests only care about one color
+- combine iterations in is_valid method
+- in is_valid, determine which tests are most costly, and arrange in increasing order
+x- make __getitem__ and __setitem__ unchecked to avoid a call to in_bounds, add checked methods too
+- change from using strings as the data type for board data and marks, to using something more efficient, like an enum
+- when iterating through spaces to find next conclusion, start from the spaces closest to the previous conclusion.
+- try doing loops of towers with tower adjacency and tree cycles
+
+timings:
+dict for in_bounds, no precalc position iteration: 1.6s
+global dict for in_bounds cache: 1.47s, 231507 calls to in_bounds
+global cache for legal positions: 1.2s, 97214 calls to in_bounds
+global position cache, remove in_bounds cache:  1.2s no change, good
+refactor cull_bounds: 1.13s
+precalculate adjacencies: 0.89s
+---
+whole suite of boards: 7.4s
+use set instead of tuple for positions cache: 13.2s (disaster)
+change from strings to ints: 
+
+board data structure:
+- triangle grid
+  . mapped to square coordinates
+  . triangles on even (x+y) point down, odd (x+y) point up
+  . "brick wall cement" adjacency; all triangles adjacent to left and right, even adjacent up, odd adjacent down
+- hexagon bounds
+  . bounding box of hexagon of size n is (6*n-1, 2*n). 6*n-1 = 3*(2*n-1)+2
+  . a space is within the hexagon if it is more than 2*n-2 (counting by evens) orthogonal distance away from any corner of the bounding box
+
+- display
+  . text
+
+  *---*
+ /.\0/.\
+*---*---*
+ \0/.\./
+  *---*
+
+  . graphics, line drawing, polygon fill.
+
+basic strategy:
+- try every next move, and see if it creates a contradiction, and if it does, conclude the opposite
+- when a 1-step logical conclusion is reached, start over
+- if no 1-step conclusion is found, recursively (or breadth first?) search for logical requirements, backtracking when contradiction is reached
+  . backtracking requires keeping a history. this should be in the form of (position, color) instead of a stack of board states, so history size doesn't scale with board size
+- if in "screensaver mode", stay with recursive "guesses" until entire board is filled validly
+  . if in screensaver, it is important to try guesses in random order, so the resultant figure is randomly generated.
+
+to test whether current board is valid, must test:
+- no tower adjacency
+  . for each tower, see if there is a tower next to it
+- no tower loops
+  . easier to test than equivalent "white groups connecting to edge" because of fewer nodes
+    algorithm:
+        mark all white or unknown spaces 'unvisited'
+        find an unvisited space, mark it 'visited'
+        for all unvisited neighbors
+            if black, return 'black'
+            if off an edge, return 'edge'
+            if white, recurse
+        if every neighbor returned black, group is isolated, test failed, board is invalid
+        if any neighbor returned edge, go to next unvisited space
+        when every space is visited, and no groups returned black, test is passed
+- no isolated tower groups
+  . test equivalent white group dividing board? no too hard
+- no "triforces"
+  . for each space, figure out if it's the center of a triangle
+
+algorithm to solve recursively, and to a specified depth, and in breadth-first order
+
+def solve(maxdepth):
+    for depths from 1 to maxdepth:
+        try to recursive_solve()
+
+def recursive_solve(depth):
+    solve as far as possible with 1 deep logic
+    if no more 1-step conclusions are possible, and depth > 1:
+        for every space:
+            assume white or black
+            if recursive_solve(depth-1) returns contradiction:
+                assumtion was wrong, make concusion
+            
+
+# generate child boards
+for pos in current_board:
+    if current_board.is_unknown(pos):
+        black_child = copy(current_board)
+        black_child.set_black(pos)
+        board_queue.append(black_child)
+        white_child = copy(current_board)
+        white_child.set_white(pos)
+        board_queue.append(white_child)
+
+
