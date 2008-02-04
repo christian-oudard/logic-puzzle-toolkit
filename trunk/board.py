@@ -7,7 +7,7 @@ _unknown = 5
 _contradiction = -1
 _givens = (0,1,2)
 
-solve_debug_display = True
+solve_debug_display = False
 
 # dictionaries to convert from constants to strings
 chars = {
@@ -79,7 +79,6 @@ class Board(object):
                     if self._in_bounds(x,y):
                         pos = (x,y)
                         self.positions.append(pos)
-            self.positions = tuple(self.positions)
             position_precalc[self.size] = self.positions
             
         # precalculate adjacency graph
@@ -123,10 +122,17 @@ class Board(object):
                     return -step_count
                 elif result > 0: # solved a space, start over from depth 1
                     step_count += result
-                    if solve_debug_display and depth == 2:
-                        print self                    
+                    if solve_debug_display:
+                        if depth >= 2:
+                            print 'conclusion'
+                        else:
+                            print 'try'
+                        print self
                     break
                 elif result == 0:
+                    if solve_debug_display:
+                        print 'deadend'
+                    #TODO, test if whole board has been solved
                     continue # no more spaces to solve at this depth
             else: # max depth reached, done solving
                 return step_count
@@ -140,7 +146,8 @@ class Board(object):
         """
 
         step_count = 1
-        for pos in self.positions:
+
+        for pos in self.prioritized_positions():
             if self.is_unknown(pos):
                 # assume black
                 test_board_black = deepcopy(self)
@@ -161,8 +168,25 @@ class Board(object):
                     return abs(result_white)
                 else: # no contradictions either way
                     self.set_unknown(pos)
+                    if solve_debug_display:
+                        print '.',
         return 0 # no spaces determinable
 
+    def prioritized_positions(self):
+        if solve_debug_display:
+            print 'sort'
+        priority_dic = {}
+        for pos in self.positions:
+            score = 0
+            for adj in self.adjacencies[pos]:
+                if self.is_black(adj): # priority up for being next to a tower
+                    score += 1
+                if self[adj] in _givens: # priority up for being next to a given
+                    score += 1
+                if self.is_white(adj): # priority up for being next to a known white space
+                    score += 1            
+            priority_dic[pos] = score
+        return sorted(self.positions,key=priority_dic.__getitem__, reverse=True)
 
     def is_valid(self):
         """Determine whether a board has a legal or illegal position."""

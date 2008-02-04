@@ -198,11 +198,11 @@ if __name__ == '__main__':
     #stats.sort_stats('time')
     #stats.print_stats()    
 
-    print 'pass' if test_solve() else 'fail'
-    test_tower_adjacencies()
-    test_is_valid()
+    #print 'pass' if test_solve() else 'fail'
+    #test_tower_adjacencies()
+    #test_is_valid()
     
-    t = Board('''
+    b = Board('''
                 
                  
      0            
@@ -212,4 +212,6 @@ if __name__ == '__main__':
        2  2      
         1 1  2  
 ''')
-    #print t.solve()
+    print b
+    board.solve_debug_display = True
+    b.solve()

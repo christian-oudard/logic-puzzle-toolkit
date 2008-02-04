@@ -1,4 +1,12 @@
-tritower program
+incremental solving
+def branch:
+    yield status
+    for square in board:
+        advance that square's branch by one
+        if the branch found anything:
+            kill all branches and propagate discovery
+        else:
+            yield status
 
 walkthrough:
 x- board data structure and class
@@ -39,20 +47,11 @@ triboard.make_conclusion(depth)
 
 
 possible optimizations:
-x- dictionary to track in_bounds (later superseded)
+- when iterating through spaces to find next conclusion, start from the spaces closest to the previous conclusion.
+- explore branches in parallel (depth first), to avoid doing a deep useless branch
+- special case make_conclusion for depth=1, to avoid deepcopies
 x- caching of legal positions
 x- caching of adjacencies
-- special case make_conclusion for depth=1, to avoid deepcopies
-- incremental testing of validity, to avoid a re-evaluating the whole board when only one square has changed.
-  . if the board is valid, and you add one space, is it possible to only test contradictions that may be introduced by the new square? this could potentially give a large speedup, reducing order of complexity
-  . when a tower is found, automatically mark its adjacencies white, or other possible incremental rules
-  . certain is_valid tests only care about one color
-- combine iterations in is_valid method
-- in is_valid, determine which tests are most costly, and arrange in increasing order
-x- make __getitem__ and __setitem__ unchecked to avoid a call to in_bounds, add checked methods too
-- change from using strings as the data type for board data and marks, to using something more efficient, like an enum
-- when iterating through spaces to find next conclusion, start from the spaces closest to the previous conclusion.
-- try doing loops of towers with tower adjacency and tree cycles
 
 timings:
 dict for in_bounds, no precalc position iteration: 1.6s
