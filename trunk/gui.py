@@ -5,10 +5,17 @@ from pygame import draw
 from pygame import event
 from pygame.locals import *
 
+from board import Board, _black, _white, _unknown
+
+screen = None
+bg_color = (50,100,200)
+size = (640,480)
+
 def graphical_main():
     # init    
     pygame.init()
-    screen = pygame.display.set_mode((800, 600), HWSURFACE | DOUBLEBUF)    
+    global screen
+    screen = pygame.display.set_mode(size, HWSURFACE | DOUBLEBUF)    
 
     # program loop #
     done = False
@@ -20,7 +27,7 @@ def graphical_main():
                 if e.key == K_ESCAPE: event.post(event.Event(QUIT))
 
         # draw #
-        screen.fill((50,100,200))
+        screen.fill(bg_color)
         draw(screen)
         pygame.display.flip()
 
@@ -28,41 +35,53 @@ def graphical_main():
 
 
 # board drawing constants
-BOX_COLOR = (255,255,255)
-GRID_COLOR = (150, 150, 255)
-CELL_HALF_BASE = 8
-CELL_HEIGHT = 14
+grid_color = (150,150,255)
+cell_half_base = 8
+cell_height = 16
 
-def draw_board(board, screen, pos):
-    # TODO:
-    #   fix off-by-one graphical errors, possibly by drawing each cell individually
+colors = {
+    _black:(32,32,64),
+    _white:(240,240,255),
+    _unknown:bg_color,
+    }
 
-    size = board.size
-    rect = Rect(pos, (size*CELL_HALF_BASE*6, size*CELL_HEIGHT*2))
+def draw_board(board, init_pos):
+    x0, y0 = init_pos
+    for pos in board.positions:
+        x, y = pos
+        up = ((x + y) % 2 == 1)
+        color = colors[board[pos]]
+        draw_cell(x0 + x * cell_half_base, y0 + y * cell_height, color, up)
 
-    # bounding box
-    pygame.draw.rect(screen, BOX_COLOR, rect, 1)
-
-    # horizontal grid lines
-    for i in range(1, size*2):
-        y = rect.top + i*CELL_HEIGHT
-        pygame.draw.line(screen, GRID_COLOR, (rect.left, y), (rect.right, y))
-
-    # diagonal grid lines
-    x1 = rect.left + size*CELL_HALF_BASE*2
-    x2 = rect.left + size*CELL_HALF_BASE*4
-    pygame.draw.line(screen, GRID_COLOR, rect.bottomleft, (x1, rect.top))
-    pygame.draw.line(screen, GRID_COLOR, rect.topleft, (x1, rect.bottom))
-    pygame.draw.line(screen, GRID_COLOR, rect.bottomright, (x2, rect.top))
-    pygame.draw.line(screen, GRID_COLOR, rect.topright, (x2, rect.bottom))
-    pygame.draw.line(screen, GRID_COLOR, (x1, rect.top), (x2, rect.bottom))
-    pygame.draw.line(screen, GRID_COLOR, (x1, rect.bottom), (x2, rect.top))
-
+def draw_sym_line(surface, color, start, end):
+    mid = ((start[0] + end[0]) // 2, (start[1] + end[1]) // 2)
+    pygame.draw.line(surface, color, start, mid)
+    pygame.draw.line(surface, color, end, mid)
+    
+def draw_cell(x, y, color, up):
+    if up:
+        point = (x + cell_half_base, y)
+        left = (x, y + cell_height)
+        right = (x + 2 * cell_half_base, y + cell_height)
+    else:
+        point = (x + cell_half_base, y + cell_height)
+        left = (x, y)
+        right = (x + 2 * cell_half_base, y)
+    pygame.draw.polygon(screen, color, (point, left, right))
+    
+    draw_sym_line(screen, grid_color, left, point)
+    draw_sym_line(screen, grid_color, right, point)
+    draw_sym_line(screen, grid_color, left, right)
+    
+test_board = Board('''
+   .X. .
+  ..X.. .
+  . .X.X.
+   X. ..
+''')
 
 def draw(screen):
-    for i in range(1,4):
-        t = TriBoard(i)
-        draw_board(t, screen, (20, 20*i*i))
+    draw_board(test_board, (10,10))
 
 if __name__ == '__main__':
     graphical_main()
