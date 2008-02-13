@@ -1,20 +1,20 @@
 from copy import deepcopy
 
 # constants
-_black = 3
-_white = 4
-_unknown = 5
-_contradiction = -1
-_givens = (0,1,2)
+BLACK = -1
+WHITE = -2
+UNKNOWN = -3
+CONTRADICTION = -4
+GIVENS = (0,1,2)
 
 solve_debug_display = False
 
 # dictionaries to convert from constants to strings
 chars = {
-    _black: 'X',
-    _white: '.',
-    _unknown: ' ',
-    _contradiction: '!',
+    BLACK: 'X',
+    WHITE: '.',
+    UNKNOWN: ' ',
+    CONTRADICTION: '!',
     0: '0',
     1: '1',
     2: '2',
@@ -50,7 +50,7 @@ class Board(object):
         # allocate array large enough to fit hexagon of side length 'size'
         self.data = []
         for i in range(self.ysize):
-            self.data.append([_unknown]*(self.xsize))
+            self.data.append([UNKNOWN]*(self.xsize))
 
         # fill data from string
         if lines:
@@ -158,7 +158,7 @@ class Board(object):
                 test_board_white.set_white(pos)
                 result_white = test_board_white.solve(depth-1) 
                 if (result_white < 0) and (result_black < 0): # contradiction reached, board unsolvable
-                    self[pos] = _contradiction
+                    self[pos] = CONTRADICTION
                     return result_white + result_black
                 elif (result_black < 0):
                     self.set_white(pos)
@@ -172,271 +172,60 @@ class Board(object):
                         print '.',
         return 0 # no spaces determinable
 
-    def prioritized_positions(self):
-        if solve_debug_display:
-            print 'sort'
-        priority_dic = {}
-        for pos in self.positions:
-            score = 0
-            for adj in self.adjacencies[pos]:
-                if self.is_black(adj): # priority up for being next to a tower
-                    score += 1
-                if self[adj] in _givens: # priority up for being next to a given
-                    score += 1
-                if self.is_white(adj): # priority up for being next to a known white space
-                    score += 1            
-            priority_dic[pos] = score
-        return sorted(self.positions,key=priority_dic.__getitem__, reverse=True)
 
+    # puzzle overrides #
     def is_valid(self):
         """Determine whether a board has a legal or illegal position."""
-        return all((
-            self.test_tower_adjacency(),
-            self.test_given_numbers(),
-            self.test_white_triangles(),
-            self.test_tower_loops(),
-            self.test_towers_connected(),
-        ))
-
-
-    def test_tower_adjacency(self):
-        for pos in self.positions:
-            if self.is_black(pos): # found a tower
-                for adj in self.adjacencies[pos]:
-                    if self.is_black(adj): # with another tower next to it
-                        return False
         return True
 
+    def prioritized_positions(self):
+        return self.positions 
 
-    def test_given_numbers(self):
-        for pos in self.positions:
-            number = self[pos]
-            if number not in _givens:
-                continue
-            num_black = 0
-            num_white = 0
-            adjs = self.adjacencies[pos]
-            for adj in adjs:
-                if self.is_black(adj):
-                    num_black += 1
-                elif self.is_white(adj):
-                    num_white += 1
-            if num_black > number or num_white > (len(adjs) - number):
-                return False
-        return True
-
-
-    def test_white_triangles(self):
-        # white triangles of size 2 are illegal
-        for pos in self.positions: # consider every space and see if it is a center
-            if self.is_white(pos):
-                adjs = self.adjacencies[pos]
-                if len(adjs) == 3: # must not be on the edge of the board
-                    if all(self.is_white(a) for a in adjs):
-                        return False
-        return True
-
-
-    def test_tower_loops(self):
-        marks = {}
-        for pos in self.positions:
-            if self.is_white(pos) or self.is_unknown(pos):
-                marks[pos] = 'unvisited' # init marks
-
-        def search_white(pos):
-            marks[pos] = 'visited'
-            adjs = self.adjacencies[pos]
-            results = []
-            for adj in adjs:
-                if self.is_black(adj):
-                    results.append(_black)
-                elif marks[adj] == 'unvisited': # edge or unknown, and unvisited
-                    results.append(search_white(adj))
-            if len(adjs) < 3: # test this node for being an edge last, so whole group is still searched
-                return 'edge'
-            if any(r == 'edge' for r in results): # found a path to an edge
-                return 'edge'
-            return _black # no neighbor returned a path to an edge
-
-        for pos in self.positions: # for every unvisited space
-            if pos in marks and marks[pos] == 'unvisited':
-                if search_white(pos) == _black:
-                    return False
-
-        return True
-
-
-    def test_towers_connected(self):
-        # test that all towers are connected
-        marks = {}
-        for pos in self.positions:
-            if self.is_black(pos) or self.is_unknown(pos):
-                marks[pos] = 'unvisited' # init marks
-
-        def search_black(pos): # just mark everything in the group 'visited'
-            marks[pos] = 'visited'
-            adjs = self.tower_adjacencies[pos]
-            for adj in adjs:
-                if adj in marks and marks[adj] == 'unvisited':
-                    search_black(adj)
-
-        group_count = 0
-        for pos in self.positions: # for every unvisited tower
-            if self.is_black(pos) and marks[pos] == 'unvisited': # don't start a group with an unknown space
-                group_count += 1
-                if group_count >= 2:
-                    return False
-                search_black(pos)
-
-        return True
-
-
+    # grid overrides #
     def _in_bounds(self, x, y):
         """Determine whether a particular point is within the hexagonal boundary of the board."""
-        if y < 0 or y >= self.ysize or x < 0 or x >= self.xsize:
-            self.bounds_dict[(x,y)] = False
-            return False # outside allocation area
-
-        dist = 2*(self.size - 1)
-        fromright = self.xsize - x - 1
-        frombottom = self.ysize - y - 1
-
-        # lines creating sides of the hex
-        topleft = x + y > dist
-        topright = fromright + y > dist
-        bottomleft = x + frombottom > dist
-        bottomright = fromright + frombottom > dist
-
-        result = topleft and topright and bottomleft and bottomright
-        return result
-
-
-    def cull_bounds(self, position_list):
-        """Remove all positions that are out of bounds, and return the remainder."""
-        #return [(x,y) for (x,y) in position_list if self.in_bounds(x,y)]
-        return [(x,y) for (x,y) in position_list if (x,y) in self.positions]
-
-
+        return False
+    
     def _adjacencies(self, pos):
         """Return all in-bounds adjacencies of the given position."""
+        return []
 
-        x, y = pos
+    def __str__(self):
+        return repr(self)
 
-        adjacency_list = [(x-1,y), (x+1,y)] # add left and right spaces
-
-        if (x+y)%2 == 0: # even triangle, pointing down
-            adjacency_list.append((x,y-1))
-        else: # odd triangle, pointing up
-            adjacency_list.append((x,y+1))
-
-        return self.cull_bounds(adjacency_list)
-
-
-    def _tower_adjacencies(self, pos):
-        """Return all in-bounds corner-adjacencies of the given position."""
-
-        x, y = pos
-
-        # add 2-left, 2-right, and diagonal spaces
-        adjacency_list = [(x-2,y), (x+2,y), (x-1,y-1),(x+1,y-1),(x-1,y+1),(x+1,y+1)]
-
-        if (x+y)%2 == 0: # even triangle, pointing down
-            adjacency_list.extend([(x,y+1),(x-2,y-1),(x+2,y-1)])
-        else: # odd triangle, pointing up
-            adjacency_list.extend([(x,y-1),(x-2,y+1),(x+2,y+1)])
-
-        return self.cull_bounds(adjacency_list)
-
-
+    # general functions #
     def is_black(self, pos):
-        return self[pos] == _black
-    
+        return self[pos] == BLACK
     def is_white(self, pos):
-        return self[pos] == _white or self[pos] in _givens # givens are white
-    
+        return self[pos] == WHITE or self[pos] in GIVENS # givens are white
     def is_unknown(self, pos):
-        return self[pos] == _unknown
+        return self[pos] == UNKNOWN
 
-    
     def set_black(self, pos):
-        self[pos] = _black
-
+        self[pos] = BLACK
     def set_white(self, pos):
-        self[pos] = _white
-
+        self[pos] = WHITE
     def set_unknown(self, pos):
-        self[pos] = _unknown
-
+        self[pos] = UNKNOWN
 
     def __len__(self):
         return 6*self.size**2
-
     def __getitem__(self, key):
         (x,y) = key
         return self.data[y][x]
-
     def __setitem__(self, key, value):
         (x,y) = key
         self.data[y][x] = value
-
     def __eq__(self, other):
         return self.data == other.data
-
     def __ne__(self, other):
         return not (self == other)
-
     def __iter__(self):
         """Iterate through board values."""
         for (x,y) in self.positions:
             yield self.data[y][x]
-
     def __deepcopy__(self, memo={}):
         result = self.__class__(self.size)
         memo[id(self)] = result
         result.data = deepcopy(self.data, memo)
         return result
-
-    def __str__(self):
-        s = ''
-        height = self.size*4 + 1
-        n = 0
-        row = 0
-        slash = '/'
-        iter_self = iter(self)
-
-        while True:
-            # border line
-            margin = self.size*2 - min(n, height-n-1)
-            border_length = self.size + min(row, self.size*2 - row)
-            s += ' '*margin
-            s += '*---'*border_length + '*\n'
-            n += 1
-
-            if not n < height:
-                break
-
-            row += 1
-
-            # triangle line
-            margin = self.size*2 - min(n, height-n-1)
-            row_length = 2*(self.size + min(row, 2*self.size - row + 1))
-
-            s += ' '*margin
-
-            if row == self.size + 1: # adjust slashes after midpoint
-                slash = '\\'
-
-            i = 0
-            while True:
-                s += slash
-                if slash == '/': slash = '\\'
-                else: slash = '/'
-                i += 1
-                if not i < row_length:
-                    break
-                s += chars[iter_self.next()]
-                
-            s += '\n'
-            n += 1
-
-        return s[:-1]
