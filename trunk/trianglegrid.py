@@ -1,81 +1,56 @@
 from board import *
 
 class TriangleGrid(Board):
-    position_precalc = {} # for each size, contains a list of all positions
-    adjacency_precalc = {} # for each size, contains a dictionary of the adjacency graph
-    corner_adjacency_precalc = {} # dictionaries of tower-adjacency graph
-
-    def __init__(self, initial):
-        lines = False
-        if type(initial) == str: # if it was actually a string argument
-            lines = initial.split('\n')
-            try:
-                while True:
-                    lines.remove('')
-            except ValueError: pass
-            size = len(lines)
-            assert size % 2 == 0 # must be even number of lines
-            size /= 2
-        else:
-            size = int(initial) # just a size for a blank board
-
-        self.size = size
-        self.xsize = 6*size - 1
-        self.ysize = 2*size
-
-        # allocate array large enough to fit hexagon of side length 'size'
-        self.data = []
-        for i in range(self.ysize):
-            self.data.append([UNKNOWN]*(self.xsize))
+    def __init__(self, data_string):
+        lines = data_string.split('\n')
+        try:
+            while True: # remove blank lines
+                lines.remove('')
+        except ValueError: pass
 
         # fill data from string
-        if lines:
-            y = 0
-            for line in lines:
-                x = 0
-                for c in line:
-                    try:
-                        n = rchars[c]
-                    except IndexError:
-                        raise ValueError('Invalid board entry: %r' % c)
-                    try:
-                        self[(x,y)] = n
-                    except IndexError:
-                        pass
-                    x += 1
-                y += 1
-        
-        # precalculate in-bounds positions
-        try:
-            self.positions = TriangleGrid.position_precalc[self.size]
-        except KeyError:
-            self.positions = []
-            for y in range(self.ysize):
-                for x in range(self.xsize):
-                    if self._in_bounds(x,y):
-                        pos = (x,y)
-                        self.positions.append(pos)
-            TriangleGrid.position_precalc[self.size] = self.positions
-            
-        # precalculate adjacency graph
-        try:
-            self.adjacencies = TriangleGrid.adjacency_precalc[self.size]
-        except KeyError:
-            self.adjacencies = {}
-            for pos in self.positions:
-                self.adjacencies[pos] = tuple(self._adjacencies(pos))
-            TriangleGrid.adjacency_precalc[self.size] = self.adjacencies
-            
-        # precalculate tower-adjacency graph
-        try:
-            self.corner_adjacencies = TriangleGrid.corner_adjacency_precalc[self.size]
-        except KeyError:
-            self.corner_adjacencies = {}
-            for pos in self.positions:
-                self.corner_adjacencies[pos] = tuple(self._corner_adjacencies(pos))
-            TriangleGrid.corner_adjacency_precalc[self.size] = self.corner_adjacencies
-        
+        init_data = {}
+        y = 0
+        for line in lines:
+            x = 0
+            for c in line:
+                try:
+                    n = rchars[c]
+                    init_data[(x,y)] = n
+                except KeyError:
+                    pass # invalid characters are not included
+                x += 1
+            y += 1
+    
+        # bounds correction
+        x_vals = []
+        y_vals = []
+        for pos in init_data.keys():
+            x, y = pos
+            x_vals.append(x)
+            y_vals.append(y)
+        min_x, max_x = min(x_vals), max(x_vals)
+        min_y, max_y = min(y_vals), max(y_vals)
+        self.data = {}
+        for key, value in init_data.iteritems():
+            x, y = key
+            self.data[(x-min_x, y-min_y)] = value
+        self.max_x = max_x - min_x
+        self.max_y = max_y - min_y
 
+        # in-bounds position list
+        self.positions = []
+        for key, value in self.data.iteritems():
+            if value != OUT_OF_BOUNDS:
+                self.positions.append(key)
+        
+        # precalculate adjacency graphs
+        self.adjacencies = {}
+        self.corner_adjacencies = {}
+        for pos in self.positions:
+            self.adjacencies[pos] = self._adjacencies(pos)
+            self.corner_adjacencies[pos] = self._corner_adjacencies(pos)
+        
     def _in_bounds(self, x, y):
         """Determine whether a particular point is within the hexagonal boundary of the board."""
         if y < 0 or y >= self.ysize or x < 0 or x >= self.xsize:
@@ -131,74 +106,70 @@ class TriangleGrid(Board):
 
         return self._cull_bounds(adjacency_list)
 
-    def __repr__(self):
-        s = ''
-        for line in self.data:
-            for c in line:
-                s += chars[c]
-            s += '\n'
-        return s
-                
     def __str__(self):
-        s = ''
-        height = self.size*4 + 1
-        n = 0
-        row = 0
-        slash = '/'
-        iter_self = iter(self)
+        char_grid = [[' '] * (self.max_x + 1) for i in range(self.max_y + 1)]
+        for key, value in self.data.iteritems():
+            x, y = key
+            char_grid[y][x] = chars[value]
+        return '\n'.join(''.join(line) for line in char_grid)
+        
+        #while True:
+            ## border line
+            #margin = self.size*2 - min(n, height-n-1)
+            #border_length = self.size + min(row, self.size*2 - row)
+            #s += ' '*margin
+            #s += '*---'*border_length + '*\n'
+            #n += 1
 
-        while True:
-            # border line
-            margin = self.size*2 - min(n, height-n-1)
-            border_length = self.size + min(row, self.size*2 - row)
-            s += ' '*margin
-            s += '*---'*border_length + '*\n'
-            n += 1
+            #if not n < height:
+                #break
 
-            if not n < height:
-                break
+            #row += 1
 
-            row += 1
+            ## triangle line
+            #margin = self.size*2 - min(n, height-n-1)
+            #row_length = 2*(self.size + min(row, 2*self.size - row + 1))
 
-            # triangle line
-            margin = self.size*2 - min(n, height-n-1)
-            row_length = 2*(self.size + min(row, 2*self.size - row + 1))
+            #s += ' '*margin
 
-            s += ' '*margin
+            #if row == self.size + 1: # adjust slashes after midpoint
+                #slash = '\\'
 
-            if row == self.size + 1: # adjust slashes after midpoint
-                slash = '\\'
-
-            i = 0
-            while True:
-                s += slash
-                if slash == '/': slash = '\\'
-                else: slash = '/'
-                i += 1
-                if not i < row_length:
-                    break
-                s += chars[iter_self.next()]
+            #i = 0
+            #while True:
+                #s += slash
+                #if slash == '/': slash = '\\'
+                #else: slash = '/'
+                #i += 1
+                #if not i < row_length:
+                    #break
+                #s += chars[iter_self.next()]
                 
-            s += '\n'
-            n += 1
+            #s += '\n'
+            #n += 1
 
-        return s[:-1]
+        #return s[:-1]
 
 
 import unittest
 
 class TestTriangleGrid(unittest.TestCase):
     def test_adjacencies(self):
-        b = TriangleGrid(3)
+        b = TriangleGrid('''
+        ---
+        ---''')
         for pos in b.positions:
             for adj in b.adjacencies[pos]:
                 self.assert_(pos in b.adjacencies[adj])
                 
     def test_corner_adjacencies(self):
-        b = TriangleGrid(3)
+        b = TriangleGrid('''
+        ---
+        ---''')
         for pos in b.positions:
             for adj in b.corner_adjacencies[pos]:
                 self.assert_(pos in b.corner_adjacencies[adj])
 
 if __name__ == '__main__':
     unittest.main()
+    

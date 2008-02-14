@@ -4,7 +4,8 @@ from copy import deepcopy
 BLACK = -1
 WHITE = -2
 UNKNOWN = -3
-CONTRADICTION = -4
+OUT_OF_BOUNDS = -4
+CONTRADICTION = -5
 GIVENS = range(10)
 
 solve_debug_display = False
@@ -13,7 +14,8 @@ solve_debug_display = False
 chars = {
     BLACK: 'X',
     WHITE: '.',
-    UNKNOWN: ' ',
+    UNKNOWN: '-',
+    OUT_OF_BOUNDS: '*',
     CONTRADICTION: '!',
     }
 for g in GIVENS:
@@ -131,14 +133,10 @@ class Board(object):
     def set_unknown(self, pos):
         self[pos] = UNKNOWN
 
-    def __len__(self):
-        return 6*self.size**2
     def __getitem__(self, key):
-        (x,y) = key
-        return self.data[y][x]
+        return self.data[key]
     def __setitem__(self, key, value):
-        (x,y) = key
-        self.data[y][x] = value
+        self.data[key] = value
     def __eq__(self, other):
         return self.data == other.data
     def __ne__(self, other):
@@ -147,8 +145,3 @@ class Board(object):
         """Iterate through board values."""
         for (x,y) in self.positions:
             yield self.data[y][x]
-    def __deepcopy__(self, memo={}):
-        result = self.__class__(self.size)
-        memo[id(self)] = result
-        result.data = deepcopy(self.data, memo)
-        return result

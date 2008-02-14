@@ -24,13 +24,13 @@ import unittest
 
 class TestWidetower(unittest.TestCase):
     def test_solve(self):
-        boards = (
+        test_boards = (
 (
 Widetower('''
-     2  
-       4   
-   2   3   
-     3 2   
+   --2--
+  -----4-  
+  -2---3-  
+   --3-2  
 '''),
 Widetower('''
    ..2X.   
@@ -41,10 +41,10 @@ Widetower('''
 ),
 (
 Widetower('''
-   2       
-     4  1  
-    5 4    
-    2      
+   2----   
+  ---4--1  
+  --5-4--  
+   -2---   
 '''),
 Widetower('''
    2..X.   
@@ -55,10 +55,10 @@ Widetower('''
 ),
 (
 Widetower('''
-   2       
-       4   
-    4  3   
-      3    
+   2----   
+  -----4-  
+  --4--3-  
+   ---3-   
 '''),
 Widetower('''
    2.X.X   
@@ -69,10 +69,10 @@ Widetower('''
 ),
 (
 Widetower('''
-    1   
-         
-      4  
-     2  
+   -1---
+  -------
+  ----4--
+   --2--
 '''),
 Widetower('''
    .1...   
@@ -83,15 +83,15 @@ Widetower('''
 ),
 (
 Widetower('''
-            
-    2    45  
-             1 
-    2          
-      3  3    
-      2    3
+  *  -------
+    2----45--
+   ----------1 
+   -2--------- 
+    --3--3--- 
+     -2----3
 '''),
 Widetower('''
-     .X...X.     
+  *  .X...X.     
     2X..X45X.    
    ..X...X.X.1   
    X2..X......   
@@ -100,9 +100,9 @@ Widetower('''
 ''')
 ),
 )   
-        for board, solved_board in boards:
-            board.solve(3)
-            self.assertEqual(board, solved_board)
+        for unsolved_board, solved_board in test_boards:
+            unsolved_board.solve(3)
+            self.assertEqual(unsolved_board, solved_board)
 
 if __name__ == '__main__':
     unittest.main()
