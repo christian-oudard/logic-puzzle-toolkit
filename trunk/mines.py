@@ -20,6 +20,7 @@ class Mines(SquareGrid):
                 return False
         return True
 
+
 import unittest
 
 class TestMines(unittest.TestCase):
@@ -60,4 +61,4 @@ X3.3XX''')
             self.assertEqual(unsolved_board, solved_board)
 
 if __name__ == '__main__':
-    unittest.main()    
+    unittest.main()

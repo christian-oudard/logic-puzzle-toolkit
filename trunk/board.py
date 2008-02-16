@@ -1,4 +1,4 @@
-from copy import deepcopy
+from copy import copy
 
 # constants
 BLACK = -1
@@ -24,13 +24,15 @@ rchars = {}
 for item in chars:
     rchars[chars[item]] = item
 
-class Board(object):
+class Board(object):    
     def solve(self, depth=2):
         """Solve the board using recursive search.
         
         If nothing was solved, return 0. If something was solved in n
         steps, return n. If a contradiction was found, return -n.
         """
+        
+        self.data = copy(self.data)
         
         if depth == 0: # base case, just report if board is valid
             if not self.is_valid():
@@ -75,11 +77,11 @@ class Board(object):
         for pos in self.prioritized_positions():
             if self.is_unknown(pos):
                 # assume black
-                test_board_black = deepcopy(self)
+                test_board_black = copy(self)
                 test_board_black.set_black(pos)
                 result_black = test_board_black.solve(depth-1)
                 # assume white
-                test_board_white = deepcopy(self)
+                test_board_white = copy(self)
                 test_board_white.set_white(pos)
                 result_white = test_board_white.solve(depth-1) 
                 if (result_white < 0) and (result_black < 0): # contradiction reached, board unsolvable
