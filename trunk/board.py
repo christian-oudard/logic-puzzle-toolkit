@@ -6,9 +6,12 @@ WHITE = -2
 UNKNOWN = -3
 OUT_OF_BOUNDS = -4
 CONTRADICTION = -5
-GIVENS = range(10)
+GIVENS = range(36)
 
+max_steps = None
+abort = False
 solve_debug_display = False
+solve_report = False
 
 # dictionaries to convert from constants to strings
 chars = {
@@ -18,13 +21,18 @@ chars = {
     OUT_OF_BOUNDS: '*',
     CONTRADICTION: '!',
     }
-for g in GIVENS:
-    chars[g] = str(g)
+for g in range(10):
+    chars[g] = str(g) # digits 0 through 9
+for g in range(26):
+    chars[g + 10] = chr(ord('A') + g) # A = 10 through Z = 35
 rchars = {}
 for item in chars:
     rchars[chars[item]] = item
 
 class Board(object):    
+    def __init__(self):
+        self.last_conclusion = None
+        
     def solve(self, depth=2):
         """Solve the board using recursive search.
         
@@ -32,6 +40,9 @@ class Board(object):
         steps, return n. If a contradiction was found, return -n.
         """
         
+        global abort
+        if abort:
+            return
         self.data = copy(self.data)
         
         if depth == 0: # base case, just report if board is valid
@@ -44,11 +55,16 @@ class Board(object):
         while True:
             for d in range(1,depth+1): # starting with depth 1, increase depth until a conclusion is made
                 result = self.make_conclusion(d)
+                if result is None:
+                    return
                 if result < 0:
                     step_count += abs(result)
                     return -step_count
                 elif result > 0: # solved a space, start over from depth 1
                     step_count += result
+                    if solve_report and depth == 2:
+                        print self
+                        print                        
                     if solve_debug_display:
                         if depth >= 2:
                             print 'conclusion'
@@ -72,9 +88,19 @@ class Board(object):
         steps, return n. If a contradiction was found, return -n.
         """
 
+        global abort
+        if abort:
+            return
+        global max_steps
         step_count = 1
 
         for pos in self.prioritized_positions():
+            if max_steps is not None:
+                max_steps -= 1
+                if max_steps <= 0:
+                    global abort
+                    abort = True
+                    return
             if self.is_unknown(pos):
                 # assume black
                 test_board_black = copy(self)
@@ -89,9 +115,11 @@ class Board(object):
                     return result_white + result_black
                 elif (result_black < 0):
                     self.set_white(pos)
+                    self.last_conclusion = pos
                     return abs(result_black)
                 elif (result_white < 0):
                     self.set_black(pos)
+                    self.last_conclusion = pos
                     return abs(result_white)
                 else: # no contradictions either way
                     self.set_unknown(pos)
@@ -111,12 +139,13 @@ class Board(object):
         priority_dic = {}
         for pos in self.positions:
             score = 0
+            if self.last_conclusion is not None:
+                dist = mdist(pos, self.last_conclusion)
+                score += max(5 - dist, 0)
             for adj in self.adjacencies[pos]:
-                if self.is_black(adj): # priority up for being next to a tower
+                if self.is_black(adj) or self.is_white(adj): # priority up for being next to a known space
                     score += 1
                 if self[adj] in GIVENS: # priority up for being next to a given
-                    score += 1
-                if self.is_white(adj): # priority up for being next to a known white space
                     score += 1
             priority_dic[pos] = score
         return sorted(self.positions,key=priority_dic.__getitem__, reverse=True)
@@ -160,3 +189,9 @@ class Board(object):
         """Iterate through board values."""
         for (x,y) in self.positions:
             yield self.data[y][x]
+            
+# utility functions #
+def mdist(pos1, pos2):
+    x1, y1 = pos1
+    x2, y2 = pos2
+    return abs(x1 - x2) + abs(y1 - y2)

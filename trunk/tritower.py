@@ -108,7 +108,7 @@ class Tritower(TriangleGrid):
 import unittest
 
 class TestTritower(unittest.TestCase):
-    def test_is_valid(self):
+    def test_is_valid_pass(self):
         valid_boards = [
 Tritower('''
 -1-
@@ -150,11 +150,15 @@ X..-.X.
 '''),
 Tritower('''
  ..X..
-.X... .
+.X...-.
 .X..X..
  ..X..
 '''),
 ]   
+        for vb in valid_boards:
+            self.assertTrue(vb.is_valid())
+
+    def test_is_valid_fail(self):
         invalid_boards = [
 Tritower('''
 -1X 
@@ -189,8 +193,6 @@ X....X.
  ..X..
 '''),
 ]   
-        for vb in valid_boards:
-            self.assertTrue(vb.is_valid())
         for ib in invalid_boards:
             self.assertFalse(ib.is_valid())
 
