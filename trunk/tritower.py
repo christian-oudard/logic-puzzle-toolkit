@@ -1,3 +1,4 @@
+import board
 from board import *
 from trianglegrid import TriangleGrid
 
@@ -102,22 +103,6 @@ class Tritower(TriangleGrid):
                 search_black(pos)
 
         return True
-
-    def prioritized_positions(self):
-        if solve_debug_display:
-            print 'sort'
-        priority_dic = {}
-        for pos in self.positions:
-            score = 0
-            for adj in self.adjacencies[pos]:
-                if self.is_black(adj): # priority up for being next to a tower
-                    score += 1
-                if self[adj] in GIVENS: # priority up for being next to a given
-                    score += 1
-                if self.is_white(adj): # priority up for being next to a known white space
-                    score += 1            
-            priority_dic[pos] = score
-        return sorted(self.positions,key=priority_dic.__getitem__, reverse=True)
 
 
 import unittest
@@ -225,62 +210,62 @@ X..1..X
  .X.1X
 '''),
 ),
-(
-Tritower('''
- -1---
-----2-1
---2----
- ----0
-'''),
-Tritower('''
- X1.X.
-..X.2X1
-.X2.X..
- .X..0
-''')
-),
-(
-Tritower('''
-*  -------
-  ---2-1--1
- -21----2---
- -----------
-  ---------
-   -1---0-
-'''),
-Tritower('''
-*  ..X..X.
-  X..2X1.X1
- X21X..X2X.-
- ...X......-
-  X...X.X.-
-   X1.X.0.
-'''),
-),
-(
-Tritower('''
-   ---------
-  -----------
- 0------------
----------------
-----1----------
- -------1-2--1
-  -2--2------
-   -1-1--2--
-'''),
-Tritower('''
-   ..X...X..
-  X....X....X
- 0..X..X..X...
-..X.X...X.X..X.
-X...1.X......X.
- ..X..X.1X2X.1
-  X2.X2..X..X
-   X1.1X.2X.
-'''),
-),
+#(
+#Tritower('''
+ #-1---
+#----2-1
+#--2----
+ #----0
+#'''),
+#Tritower('''
+ #X1.X.
+#..X.2X1
+#.X2.X..
+ #.X..0
+#''')
+#),
+#(
+#Tritower('''
+#*  -------
+  #---2-1--1
+ #-21----2---
+ #-----------
+  #---------
+   #-1---0-
+#'''),
+#Tritower('''
+#*  ..X..X.
+  #X..2X1.X1
+ #X21X..X2X.-
+ #...X......-
+  #X...X.X.-
+   #X1.X.0.
+#'''),
+#),
+#(
+#Tritower('''
+   #---------
+  #-----------
+ #0------------
+#---------------
+#----1----------
+ #-------1-2--1
+  #-2--2------
+   #-1-1--2--
+#'''),
+#Tritower('''
+   #..X...X..
+  #X....X....X
+ #0..X..X..X...
+#..X.X...X.X..X.
+#X...1.X......X.
+ #..X..X.1X2X.1
+  #X2.X2..X..X
+   #X1.1X.2X.
+#'''),
+#),
 )
-        
+        #board.solve_debug_display = True
         for unsolved_board, solved_board in test_boards:
             unsolved_board.solve()
             self.assertEqual(unsolved_board, solved_board)

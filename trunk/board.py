@@ -104,7 +104,20 @@ class Board(object):
         return True
 
     def prioritized_positions(self):
-        return self.positions 
+        if solve_debug_display:
+            print 'sort'
+        priority_dic = {}
+        for pos in self.positions:
+            score = 0
+            for adj in self.adjacencies[pos]:
+                if self.is_black(adj): # priority up for being next to a tower
+                    score += 1
+                if self[adj] in GIVENS: # priority up for being next to a given
+                    score += 1
+                if self.is_white(adj): # priority up for being next to a known white space
+                    score += 1
+            priority_dic[pos] = score
+        return sorted(self.positions,key=priority_dic.__getitem__, reverse=True)
 
     # grid overrides #
     def _in_bounds(self, x, y):
