@@ -36,32 +36,27 @@ class Board(object):
     def solve(self, depth=2):
         """Solve the board using recursive search.
         
-        If nothing was solved, return 0. If something was solved in n
-        steps, return n. If a contradiction was found, return -n.
+        Solve until there is nothing left to solve, then return False.
+        If a contradiction is reached, return CONTRADICTION.
         """
         
         global abort
         if abort:
-            return
+            return False
         self.data = copy(self.data)
         
         if depth == 0: # base case, just report if board is valid
             if not self.is_valid():
-                return -1 # 1-step contradiction
+                return CONTRADICTION # 1-step contradiction
             else:
-                return 0
+                return False
         
-        step_count = 0
         while True:
             for d in range(1,depth+1): # starting with depth 1, increase depth until a conclusion is made
                 result = self.make_conclusion(d)
-                if result is None:
-                    return
-                if result < 0:
-                    step_count += abs(result)
-                    return -step_count
-                elif result > 0: # solved a space, start over from depth 1
-                    step_count += result
+                if result == CONTRADICTION:
+                    return CONTRADICTION
+                elif result == True: # solved a space, start over from depth 1
                     if solve_report and depth == 2:
                         print self
                         print                        
@@ -72,35 +67,33 @@ class Board(object):
                             print 'try'
                         print self
                     break
-                elif result == 0:
+                elif result == False: # no more spaces to solve at this depth
                     if solve_debug_display:
                         print 'deadend'
                     #TODO, test if whole board has been solved
-                    continue # no more spaces to solve at this depth
+                    continue
             else: # max depth reached, done solving
-                return step_count
+                return False
 
 
     def make_conclusion(self, depth):
         """Make one conclusion about board with specified depth.
         
-        If nothing was solved, return 0. If something was solved in n
-        steps, return n. If a contradiction was found, return -n.
+        If nothing was solved, return False. If something was solved,
+        return True. If a contradiction was found, return CONTRADICTION.
         """
 
         global abort
         if abort:
-            return
+            return False
         global max_steps
-        step_count = 1
 
         for pos in self.prioritized_positions():
             if max_steps is not None:
                 max_steps -= 1
                 if max_steps <= 0:
-                    global abort
                     abort = True
-                    return
+                    return False
             if self.is_unknown(pos):
                 # assume black
                 test_board_black = copy(self)
@@ -110,22 +103,22 @@ class Board(object):
                 test_board_white = copy(self)
                 test_board_white.set_white(pos)
                 result_white = test_board_white.solve(depth-1) 
-                if (result_white < 0) and (result_black < 0): # contradiction reached, board unsolvable
+                if result_white == CONTRADICTION and result_black == CONTRADICTION: # contradiction reached, board unsolvable
                     self[pos] = CONTRADICTION
-                    return result_white + result_black
-                elif (result_black < 0):
+                    return CONTRADICTION
+                elif result_black == CONTRADICTION:
                     self.set_white(pos)
                     self.last_conclusion = pos
-                    return abs(result_black)
-                elif (result_white < 0):
+                    return True
+                elif result_white == CONTRADICTION:
                     self.set_black(pos)
                     self.last_conclusion = pos
-                    return abs(result_white)
+                    return True
                 else: # no contradictions either way
                     self.set_unknown(pos)
                     if solve_debug_display:
                         print '.',
-        return 0 # no spaces determinable
+        return False # no spaces determinable
 
 
     # puzzle overrides #
