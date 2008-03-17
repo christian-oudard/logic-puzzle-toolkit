@@ -17,7 +17,7 @@ class Grid(Board):
             x = 0
             for c in line:
                 try:
-                    n = rchars[c]
+                    n = RCHARS[c]
                     init_data[(x,y)] = n
                 except KeyError:
                     pass # invalid characters are not included
@@ -61,5 +61,5 @@ class Grid(Board):
         char_grid = [[' '] * (self.max_x + 1) for i in range(self.max_y + 1)]
         for key, value in self.data.iteritems():
             x, y = key
-            char_grid[y][x] = chars[value]
+            char_grid[y][x] = CHARS[value]
         return '\n'.join(''.join(line) for line in char_grid)

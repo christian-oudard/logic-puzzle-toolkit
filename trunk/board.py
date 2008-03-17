@@ -14,7 +14,7 @@ solve_debug_display = False
 solve_report = False
 
 # dictionaries to convert from constants to strings
-chars = {
+CHARS = {
     BLACK: 'X',
     WHITE: '.',
     UNKNOWN: '-',
@@ -22,12 +22,12 @@ chars = {
     CONTRADICTION: '!',
     }
 for g in range(10):
-    chars[g] = str(g) # digits 0 through 9
+    CHARS[g] = str(g) # digits 0 through 9
 for g in range(26):
-    chars[g + 10] = chr(ord('A') + g) # A = 10 through Z = 35
-rchars = {}
-for item in chars:
-    rchars[chars[item]] = item
+    CHARS[g + 10] = chr(ord('A') + g) # A = 10 through Z = 35
+RCHARS = {}
+for key, value in CHARS.iteritems():
+    RCHARS[value] = key
 
 class Board(object):    
     def __init__(self):
@@ -164,11 +164,17 @@ class Board(object):
         return self[pos] == UNKNOWN
 
     def set_black(self, pos):
-        self[pos] = BLACK
+        if pos in self.positions:
+            self[pos] = BLACK
     def set_white(self, pos):
-        self[pos] = WHITE
+        if pos in self.positions:
+            self[pos] = WHITE
     def set_unknown(self, pos):
-        self[pos] = UNKNOWN
+        if pos in self.positions:
+            self[pos] = UNKNOWN
+    def set_number(self, pos, number):
+        if pos in self.positions:
+            self[pos] = number
 
     def __getitem__(self, key):
         return self.data[key]
