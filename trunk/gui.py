@@ -6,13 +6,15 @@ from pygame import event
 from pygame.locals import *
 
 from board import *
-from trianglegrid import TriangleGrid
+from tritower import Tritower
 
 # board drawing constants
 screen_size = (640,480)
 line_thickness = 3
 bg_color = (220,220,200)
-grid_color = (150,100,255)
+#grid_color = (150,100,255)
+grid_color_valid = (150,100,255)
+grid_color_invalid = (200, 50, 150)
 highlight_color = (255,50,50)
 colors = {
     BLACK:(32,32,64),
@@ -33,13 +35,13 @@ class GUI(object):
         if board is None:
             # debug board
             #self.board = Board(1)
-            self.board = TriangleGrid('''
-   1X.-Q
-  ..X2.-.
-  .3.X.56
-   X.4..
+            self.board = Tritower('''
+ ..X.. 
+.X....X
+.X..X..
+ ..X.. 
 ''')
-        self.selected_pos = None
+        self.selected_pos = (0,0)
 
         pygame.init()
         self.screen = pygame.display.set_mode(screen_size, HWSURFACE | DOUBLEBUF)
@@ -68,8 +70,22 @@ class GUI(object):
                 if e.type == QUIT: done = True
                 elif e.type == KEYDOWN:
                     if e.key == K_ESCAPE: event.post(event.Event(QUIT))
+                    else:
+                        try:
+                            character = str(e.unicode).lower()
+                            self.board.set_number(self.selected_pos, RCHARS[character])
+                        except KeyError:
+                            pass                        
                 elif e.type == MOUSEMOTION:
+                    old_pos = self.selected_pos
                     self.selected_pos = self.to_board(e.pos)
+                    if self.selected_pos != old_pos: # dragged to a new spot
+                        if e.buttons[0]: # left button held
+                            self.board.set_black(self.selected_pos)
+                        elif e.buttons[1]: # middle button held
+                            self.board.set_unknown(self.selected_pos)
+                        elif e.buttons[2]: # right button held
+                            self.board.set_white(self.selected_pos)
                 elif e.type == MOUSEBUTTONDOWN:
                     click_pos = self.to_board(e.pos)
                     if e.button == 1: # left click
@@ -91,6 +107,7 @@ class GUI(object):
 
     def draw_board(self, init_pos):
         x0, y0 = init_pos
+        grid_color = grid_color_valid if self.board.is_valid() else grid_color_invalid
         for pos in self.board.positions:
             x, y = pos
             cell_number = None
@@ -100,7 +117,7 @@ class GUI(object):
             else:
                 cell_color = colors[self.board[pos]]
             self.draw_cell(pos, cell_color, grid_color)
-            if cell_number:
+            if cell_number is not None:
                 self.draw_number(pos, cell_number)
         if self.selected_pos is not None:
             self.draw_cell(self.selected_pos, None, highlight_color)

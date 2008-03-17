@@ -24,7 +24,7 @@ CHARS = {
 for g in range(10):
     CHARS[g] = str(g) # digits 0 through 9
 for g in range(26):
-    CHARS[g + 10] = chr(ord('A') + g) # A = 10 through Z = 35
+    CHARS[g + 10] = chr(ord('a') + g) # a = 10 through z = 35
 RCHARS = {}
 for key, value in CHARS.iteritems():
     RCHARS[value] = key
@@ -32,6 +32,7 @@ for key, value in CHARS.iteritems():
 class Board(object):    
     def __init__(self):
         self.last_conclusion = None
+        self._valid = None
         
     def solve(self, depth=2):
         """Solve the board using recursive search.
@@ -124,7 +125,13 @@ class Board(object):
     # puzzle overrides #
     def is_valid(self):
         """Determine whether a board has a legal or illegal position."""
-        return True
+        if self._valid is not None:
+            #print 'cache valid' # DEBUG
+            return self._valid
+        else:
+            print 'recalc valid' # DEBUG
+            self._valid = self._is_valid()
+            return self._valid
 
     def prioritized_positions(self):
         if solve_debug_display:
@@ -164,17 +171,17 @@ class Board(object):
         return self[pos] == UNKNOWN
 
     def set_black(self, pos):
-        if pos in self.positions:
-            self[pos] = BLACK
+        self._set_value(pos, BLACK)  
     def set_white(self, pos):
-        if pos in self.positions:
-            self[pos] = WHITE
+        self._set_value(pos, WHITE)
     def set_unknown(self, pos):
+        self._set_value(pos, UNKNOWN)
+    def _set_value(self, pos, value):
         if pos in self.positions:
-            self[pos] = UNKNOWN
-    def set_number(self, pos, number):
-        if pos in self.positions:
-            self[pos] = number
+            if self[pos] != value:
+                self._valid = None # clear is_valid cache
+                self[pos] = value
+    set_number = _set_value    
 
     def __getitem__(self, key):
         return self.data[key]

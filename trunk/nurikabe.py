@@ -5,7 +5,7 @@ from squaregrid import SquareGrid
 group_count = 0 # workaround until nonlocal keyword is available
 
 class Nurikabe(SquareGrid):
-    def is_valid(self):
+    def _is_valid(self):
         return all((
             self.valid_white_groups(),
             self.valid_black_connected(),
@@ -258,10 +258,10 @@ XXX1XXX
 ),
 (
 Nurikabe('''
-A----------2-
+a----------2-
 '''),
 Nurikabe('''
-A.........X2.
+a.........X2.
 ''')
 ),
 )

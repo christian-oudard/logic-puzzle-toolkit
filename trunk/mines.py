@@ -3,7 +3,7 @@ from board import GIVENS
 from squaregrid import SquareGrid
 
 class Mines(SquareGrid):
-    def is_valid(self):
+    def _is_valid(self):
         for pos in self.positions:
             number = self[pos]
             if number not in GIVENS:
