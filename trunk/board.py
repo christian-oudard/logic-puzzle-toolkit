@@ -126,10 +126,8 @@ class Board(object):
     def is_valid(self):
         """Determine whether a board has a legal or illegal position."""
         if self._valid is not None:
-            #print 'cache valid' # DEBUG
             return self._valid
         else:
-            print 'recalc valid' # DEBUG
             self._valid = self._is_valid()
             return self._valid
 
