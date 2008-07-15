@@ -3,8 +3,23 @@ from pstats import Stats
 
 import board
 from nurikabe import Nurikabe
+from tritower import Tritower
 
-def test_solve():
+def solve_medium():
+    board.solve_report = True
+    puzzle = Tritower('''
+           ---------
+          -----------
+         0------------
+        ---------------
+        ----1----------
+         -------1-2--1
+          -2--2------
+           -1-1--2--
+    ''')
+    puzzle.solve()
+
+def solve_big():
     #board.max_steps = 10000
     board.solve_report = True
     puzzle = Nurikabe('''
@@ -43,11 +58,11 @@ def test_solve():
     
 def time_main():
     stats_file = 'lpt.stat'
-    cProfile.run('test_solve()', stats_file)
+    cProfile.run('solve_medium()', stats_file)
     stats = Stats(stats_file)
     stats.sort_stats('time')
     stats.print_stats()
 
 if __name__ == '__main__':
-    #time_main()
-    test_solve()
+    time_main()
+
