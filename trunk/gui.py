@@ -9,20 +9,21 @@ from board import *
 from tritower import Tritower
 
 # board drawing constants
-screen_size = (640,480)
-line_thickness = 3
-bg_color = (220,220,200)
-#grid_color = (150,100,255)
-grid_color_valid = (150,100,255)
+screen_size = (320, 240)
+bg_color = (220, 220, 200)
+#grid_color = (150, 100, 255)
+grid_color_valid = (150, 100, 255)
 grid_color_invalid = (200, 50, 150)
-highlight_color = (255,50,50)
+highlight_color = (255, 50, 50)
 colors = {
     BLACK:(32,32,64),
     WHITE:(240,240,255),
     UNKNOWN:(160,160,160)
     }
-cell_half_base = 24
-cell_height = 48
+cell_half_base = 8
+cell_height = 2 * cell_half_base
+font_size = 3 * cell_height // 4
+line_thickness = cell_half_base // 16 + 1
 
 # drawing functions #
 def draw_sym_line(surface, color, start, end):
@@ -36,18 +37,20 @@ class GUI(object):
             # debug board
             #self.board = Board(1)
             self.board = Tritower('''
- ..X.. 
+ 1.X.. 
 .X....X
-.X..X..
+.X.2X..
  ..X.. 
 ''')
         self.selected_pos = (0,0)
 
+        #import os; os.environ['SDL_VIDEO_WINDOW_POS'] = '900,600'
+        
         pygame.init()
         self.screen = pygame.display.set_mode(screen_size, HWSURFACE | DOUBLEBUF)
         
         # set up numbers
-        self.number_font = pygame.font.Font(None, 30)
+        self.number_font = pygame.font.Font(None, font_size)
         self.number_surfaces = {}
         for n in GIVENS:
             self.number_surfaces[n] = self.number_font.render(str(n), True, (0,0,0))
@@ -55,6 +58,7 @@ class GUI(object):
         self.graphical_main()
 
     def to_board(self, screen_pos):
+        """Convert a screen position to board coordinates."""
         x, y = screen_pos
         cell_row = y // cell_height
         cell_column_right = (cell_height * x + cell_half_base * y) // (2 * cell_height * cell_half_base)
