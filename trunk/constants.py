@@ -1,5 +1,5 @@
 # debug
-DEBUG = False
+DEBUG = True
 max_steps = None
 abort = False
 solve_debug_display = False

@@ -26,7 +26,7 @@ class TestNewSolve(unittest.TestCase):
             ),
         )
         for unsolved_board, solved_board in test_boards:
-            unsolved_board.new_solve()
+            unsolved_board.solve()
             self.assertEqual(unsolved_board, solved_board)
 
     def test_contradiction(self):
@@ -38,9 +38,13 @@ class TestNewSolve(unittest.TestCase):
                   2-'''),
         )
         for ib in invalid_boards:
-            self.assertEqual(CONTRADICTION, ib.new_solve())
+            self.assertEqual(CONTRADICTION, ib.solve())
 if __name__ == '__main__':
     import sys
     sys.argv.append('-v')
-    unittest.main()
-    #Mines('X1X2-').new_solve()
+    #unittest.main()
+    Mines('''
+          2---
+          --1-
+          -2--
+          ---1''').solve(2)

@@ -7,7 +7,11 @@ class Board(object):
         self.last_conclusion = None
         self._valid = None
         
-    def new_solve(self, depth=2):
+    def solve(self, max_depth=2):
+        self.max_depth = max_depth
+        return self._solve(1)
+
+    def _solve(self, depth):
         """ Solve the board using a breadth-first search."""
         if DEBUG: print self
         if not self.is_valid():
@@ -29,18 +33,17 @@ class Board(object):
             if self.is_unknown(pos):
                 unknown_count += 1
         if unknown_count > 0:
-            return True
+            return False # not fully solved yet
         else:
-            return False
+            return True # fully solved
 
     def conclusion_thread(self, depth):
         solve_threads = []
         for pos in self.positions:
             if self.is_unknown(pos):
                 solve_threads.append(SolveThread(self, pos, depth))
-        if DEBUG: print 'conclusion thread started,', len(solve_threads), 'threads',
         while len(solve_threads) > 0:
-            if DEBUG: print '.',
+            if DEBUG: print '.'
             finished_threads = []
             for st in solve_threads:
                 try:
@@ -50,7 +53,7 @@ class Board(object):
                     finished_threads.append(st)
                     break
                 if is_success(result):
-                    if DEBUG: print; print 'found:', result
+                    if DEBUG: print 'level', depth, 'found:', result
                     yield result
                     raise StopIteration
                 elif result == CONTRADICTION:
@@ -58,12 +61,12 @@ class Board(object):
                 else:
                     yield UNKNOWN
             for ft in finished_threads:
-                if DEBUG: print 'o',
+                if DEBUG: print 'o'
                 solve_threads.remove(ft)
         # all threads exited with no conclusion, quit
-        if DEBUG: print; print 'no threads left, quit'
+        if DEBUG: print 'no threads left, quit'
 
-    def solve(self, depth=2):
+    def old_solve(self, depth=2):
         """Solve the board using recursive search.
         
         Solve until there is nothing left to solve, then return False.
