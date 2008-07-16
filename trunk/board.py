@@ -2,6 +2,8 @@ from copy import copy
 from constants import *
 from solve_thread import SolveThread
 
+DEBUG = False
+
 class Board(object):    
     def __init__(self):
         self.last_conclusion = None
@@ -9,25 +11,51 @@ class Board(object):
         
     def new_solve(self, depth=2):
         """ Solve the board using a breadth-first search."""
+        while True:
+            result = self.new_make_conclusion(depth)
+            if is_success(result):
+                position, color = result
+                self._set_value(position, color)
+            elif result == CONTRADICTION:
+                return CONTRADICTION
+            elif result == UNKNOWN:
+                # no more to solve, see if board was fully solved
+                unknown_count = 0
+                for pos in self.positions:
+                    if self.is_unknown(pos):
+                        unknown_count += 1
+                if unknown_count > 0:
+                    return True
+                else:
+                    return False
 
-        def advance(solve_thread):
-            """
-            Advance a solving thread one step.
-
-            If the thread has reached a conclusion, update the master board, and restart search.
-            """
-            result = solve_thread.next()
-            if result == True: # conclusion found
-                self.data = solve_thread.board.data # propagate conclusion upward
-            #STUB, still need to restart all threads
-
+    def new_make_conclusion(self, depth):
         solve_threads = []
         for pos in self.positions:
             if self.is_unknown(pos):
-                solve_threads.append(SolveThread(self, pos, BLACK))
-                advance(solve_threads[-1])
-                solve_threads.append(SolveThread(self, pos, WHITE))
-                advance(solve_threads[-1])
+                solve_threads.append(SolveThread(self, pos, depth))
+        if DEBUG: print 'make_conclusion(),', len(solve_threads), 'threads',
+        while len(solve_threads) > 0:
+            if DEBUG: print '.',
+            finished_threads = []
+            for st in solve_threads:
+                try:
+                    result = st.next()
+                except StopIteration:
+                    # thread finished, delete it
+                    finished_threads.append(st)
+                    break
+                if is_success(result):
+                    if DEBUG: print; print 'conclusion found'
+                    return result
+                elif result == CONTRADICTION:
+                    return CONTRADICTION
+            for ft in finished_threads:
+                if DEBUG: print 'o',
+                solve_threads.remove(ft)
+        # all threads exited with no conclusion, fail
+        if DEBUG: print; print 'no threads left, fail'
+        return UNKNOWN
 
     def solve(self, depth=2):
         """Solve the board using recursive search.

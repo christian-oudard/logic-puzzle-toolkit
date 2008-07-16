@@ -1,5 +1,5 @@
 # debug
-DEBUG = True
+DEBUG = False
 max_steps = None
 abort = False
 solve_debug_display = False
@@ -29,4 +29,7 @@ RCHARS = {}
 for key, value in CHARS.iteritems():
     RCHARS[value] = key
 
+# convenience function to check success
+def is_success(result):
+    return result != UNKNOWN and result != CONTRADICTION and result is not None
 

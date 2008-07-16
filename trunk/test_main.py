@@ -9,6 +9,19 @@ class TestNewSolve(unittest.TestCase):
             (Mines('1-'), Mines('1X')),
             (Mines('-2-'), Mines('X2X')),
             (Mines('-1-2-1-'), Mines('.1X2X1.')),
+            (Mines('1--'), Mines('1X-')),
+            (
+                Mines('''
+                      2---
+                      --1-
+                      -2--
+                      ---1'''),
+                Mines('''
+                      2X..
+                      X.1.
+                      .2..
+                      ..X1''')
+            ),
         )
         for unsolved_board, solved_board in test_boards:
             unsolved_board.new_solve()
@@ -16,3 +29,4 @@ class TestNewSolve(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+    #Mines('-1-2-1--').new_solve()
