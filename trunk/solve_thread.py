@@ -30,15 +30,13 @@ class SolveThread(object):
 
         self.board.set_black(self.position)
         valid_black = self.board.is_valid()
-        if not valid_black:
-            yield (self.position, WHITE)
-        else:
-            yield UNKNOWN
-
         self.board.set_white(self.position)
         valid_white = self.board.is_valid()
+        
         if not valid_white and not valid_black:
             yield CONTRADICTION
+        elif not valid_black:
+            yield (self.position, WHITE)
         elif not valid_white:
             yield (self.position, BLACK)
         else:

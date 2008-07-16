@@ -3,6 +3,8 @@
 # test new solve function #
 import unittest
 from mines import Mines
+from constants import *
+
 class TestNewSolve(unittest.TestCase):
     def test_solve(self):
         test_boards = (
@@ -27,6 +29,18 @@ class TestNewSolve(unittest.TestCase):
             unsolved_board.new_solve()
             self.assertEqual(unsolved_board, solved_board)
 
+    def test_contradiction(self):
+        invalid_boards = (
+            Mines('X1X2-'),
+            Mines('X1X2'),
+            Mines('''
+                  -1
+                  2-'''),
+        )
+        for ib in invalid_boards:
+            self.assertEqual(CONTRADICTION, ib.new_solve())
 if __name__ == '__main__':
+    import sys
+    sys.argv.append('-v')
     unittest.main()
-    #Mines('-1-2-1--').new_solve()
+    #Mines('X1X2-').new_solve()

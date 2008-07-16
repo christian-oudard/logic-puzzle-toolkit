@@ -2,8 +2,6 @@ from copy import copy
 from constants import *
 from solve_thread import SolveThread
 
-DEBUG = True
-
 class Board(object):    
     def __init__(self):
         self.last_conclusion = None
@@ -12,6 +10,8 @@ class Board(object):
     def new_solve(self, depth=2):
         """ Solve the board using a breadth-first search."""
         if DEBUG: print self
+        if not self.is_valid():
+            return CONTRADICTION
         while True:
             for result in self.conclusion_thread(depth):
                 if is_success(result):
