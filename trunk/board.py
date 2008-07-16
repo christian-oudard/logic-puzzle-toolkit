@@ -1,39 +1,34 @@
 from copy import copy
-
-# constants
-BLACK = -1
-WHITE = -2
-UNKNOWN = -3
-OUT_OF_BOUNDS = -4
-CONTRADICTION = -5
-GIVENS = range(36)
-
-max_steps = None
-abort = False
-solve_debug_display = False
-solve_report = False
-
-# dictionaries to convert from constants to strings
-CHARS = {
-    BLACK: 'X',
-    WHITE: '.',
-    UNKNOWN: '-',
-    OUT_OF_BOUNDS: '*',
-    CONTRADICTION: '!',
-    }
-for g in range(10):
-    CHARS[g] = str(g) # digits 0 through 9
-for g in range(26):
-    CHARS[g + 10] = chr(ord('a') + g) # a = 10 through z = 35
-RCHARS = {}
-for key, value in CHARS.iteritems():
-    RCHARS[value] = key
+from constants import *
+from solve_thread import SolveThread
 
 class Board(object):    
     def __init__(self):
         self.last_conclusion = None
         self._valid = None
         
+    def new_solve(self, depth=2):
+        """ Solve the board using a breadth-first search."""
+
+        def advance(solve_thread):
+            """
+            Advance a solving thread one step.
+
+            If the thread has reached a conclusion, update the master board, and restart search.
+            """
+            result = solve_thread.next()
+            if result == True: # conclusion found
+                self.data = solve_thread.board.data # propagate conclusion upward
+            #STUB, still need to restart all threads
+
+        solve_threads = []
+        for pos in self.positions:
+            if self.is_unknown(pos):
+                solve_threads.append(SolveThread(self, pos, BLACK))
+                advance(solve_threads[-1])
+                solve_threads.append(SolveThread(self, pos, WHITE))
+                advance(solve_threads[-1])
+
     def solve(self, depth=2):
         """Solve the board using recursive search.
         
@@ -146,7 +141,7 @@ class Board(object):
                 if self[adj] in GIVENS: # priority up for being next to a given
                     score += 1
             priority_dic[pos] = score
-        return sorted(self.positions,key=priority_dic.__getitem__, reverse=True)
+        return sorted(self.positions, key=priority_dic.__getitem__, reverse=True)
 
     # grid overrides #
     def _in_bounds(self, x, y):
@@ -193,9 +188,11 @@ class Board(object):
         """Iterate through board values."""
         for (x,y) in self.positions:
             yield self.data[y][x]
-            
+
+
 # utility functions #
 def mdist(pos1, pos2):
     x1, y1 = pos1
     x2, y2 = pos2
     return abs(x1 - x2) + abs(y1 - y2)
+

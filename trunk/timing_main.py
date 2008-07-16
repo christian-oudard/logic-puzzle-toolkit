@@ -1,9 +1,22 @@
+#! /usr/bin/env python
+
 import cProfile
+
 from pstats import Stats
 
 import board
 from nurikabe import Nurikabe
 from tritower import Tritower
+from mines import Mines
+
+def solve_tiny():
+    board.solve_report = True
+    puzzle = Mines('''
+        -2-
+    ''')
+    print puzzle
+    puzzle.new_solve()
+    print puzzle
 
 def solve_medium():
     board.solve_report = True
@@ -64,5 +77,7 @@ def time_main():
     stats.print_stats()
 
 if __name__ == '__main__':
-    time_main()
+    #time_main()
+    solve_tiny()
+    #solve_medium()
 
