@@ -4,13 +4,13 @@ import cProfile
 
 from pstats import Stats
 
+from constants import *
 import board
 from nurikabe import Nurikabe
 from tritower import Tritower
 from mines import Mines
 
 def solve_tiny():
-    board.solve_report = True
     puzzle = Mines('''
         -2-
     ''')
@@ -19,7 +19,6 @@ def solve_tiny():
     print puzzle
 
 def solve_medium():
-    board.solve_report = True
     puzzle = Tritower('''
            ---------
           -----------
@@ -33,18 +32,16 @@ def solve_medium():
     puzzle.solve()
 
 def solve_big():
-    #board.max_steps = 10000
-    board.solve_report = True
     puzzle = Nurikabe('''
 ------------------------------------
---2-3-7----B-----2--1------1--------
+--2-3-7----b-----2--1------1--------
 ----------4--------1------7---9-----
 ---5--------------8----3--------4---
 -------1------1-----------1---2-----
 ---1--1------1-----3-3-4-----3---1--
 ----2-----1-6-----3-----------------
 --------------1---------------------
----------1---------------3-A---8----
+---------1---------------3-a---8----
 -3-4---8-----1--4--1----------1-1---
 --6---2--------1--1--5-------------7
 --------4-----1--1--1----1---1-1----
@@ -68,6 +65,8 @@ def solve_big():
 ------------------------------------
 ''')
     puzzle.solve()
+    print 'done'
+    print puzzle
     
 def time_main():
     stats_file = 'lpt.stat'
@@ -78,6 +77,6 @@ def time_main():
 
 if __name__ == '__main__':
     #time_main()
-    solve_tiny()
+    SET_DEBUG(1)
     #solve_medium()
-
+    solve_big()

@@ -55,7 +55,6 @@ X.2.3X
 X3.3XX''')
 ),
 )
-        #board.solve_debug_display = True
         for unsolved_board, solved_board in test_boards:
             unsolved_board.solve()
             self.assertEqual(unsolved_board, solved_board)

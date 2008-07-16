@@ -1,6 +1,5 @@
-from copy import copy
 from constants import *
-from solve_thread import SolveThread
+from solve_thread import SolveThread, AssumptionThread
 
 class Board(object):    
     def __init__(self):
@@ -9,51 +8,28 @@ class Board(object):
         
     def solve(self, max_depth=2):
         self.max_depth = max_depth
-        return self._solve(1)
-
-    def _solve(self, depth):
-        """ Solve the board using a breadth-first search."""
-        if DEBUG: print self
-        if not self.is_valid():
-            return CONTRADICTION
-        while True:
-            for result in self.conclusion_thread(depth):
-                if is_success(result):
-                    position, color = result
-                    self._set_value(position, color)
-                    if DEBUG: print self
-                    break # continue while loop
-                elif result == CONTRADICTION:
-                    return CONTRADICTION
-            else: # conclusion thread ran out, no more to solve
-                break
-        # see if board was fully solved
-        unknown_count = 0
-        for pos in self.positions:
-            if self.is_unknown(pos):
-                unknown_count += 1
-        if unknown_count > 0:
-            return False # not fully solved yet
-        else:
-            return True # fully solved
+        solve_thread = SolveThread(self, 1)
+        for result in solve_thread:
+            pass
+        self.data = solve_thread.board.data
+        return result
 
     def conclusion_thread(self, depth):
-        solve_threads = []
-        for pos in self.positions:
+        assumption_threads = []
+        for pos in self.prioritized_positions():
             if self.is_unknown(pos):
-                solve_threads.append(SolveThread(self, pos, depth))
-        while len(solve_threads) > 0:
-            if DEBUG: print '.'
+                assumption_threads.append(AssumptionThread(self, pos, depth))
+        while len(assumption_threads) > 0:
             finished_threads = []
-            for st in solve_threads:
+            for at in assumption_threads:
                 try:
-                    result = st.next()
+                    result = at.next()
                 except StopIteration:
                     # thread finished, delete it
-                    finished_threads.append(st)
+                    finished_threads.append(at)
                     break
                 if is_success(result):
-                    if DEBUG: print 'level', depth, 'found:', result
+                    if DEBUG2(): print 'level', depth, 'found:', result
                     yield result
                     raise StopIteration
                 elif result == CONTRADICTION:
@@ -61,98 +37,9 @@ class Board(object):
                 else:
                     yield UNKNOWN
             for ft in finished_threads:
-                if DEBUG: print 'o'
-                solve_threads.remove(ft)
+                assumption_threads.remove(ft)
         # all threads exited with no conclusion, quit
-        if DEBUG: print 'no threads left, quit'
-
-    def old_solve(self, depth=2):
-        """Solve the board using recursive search.
-        
-        Solve until there is nothing left to solve, then return False.
-        If a contradiction is reached, return CONTRADICTION.
-        """
-        
-        global abort
-        if abort:
-            return False
-        self.data = copy(self.data)
-        
-        if depth == 0: # base case, just report if board is valid
-            if not self.is_valid():
-                return CONTRADICTION # 1-step contradiction
-            else:
-                return False
-        
-        while True:
-            for d in range(1,depth+1): # starting with depth 1, increase depth until a conclusion is made
-                result = self.make_conclusion(d)
-                if result == CONTRADICTION:
-                    return CONTRADICTION
-                elif result == True: # solved a space, start over from depth 1
-                    if solve_report and depth == 2:
-                        print self
-                        print                        
-                    if solve_debug_display:
-                        if depth >= 2:
-                            print 'conclusion'
-                        else:
-                            print 'try'
-                        print self
-                    break
-                elif result == False: # no more spaces to solve at this depth
-                    if solve_debug_display:
-                        print 'deadend'
-                    #TODO, test if whole board has been solved
-                    continue
-            else: # max depth reached, done solving
-                return False
-
-
-    def make_conclusion(self, depth):
-        """Make one conclusion about board with specified depth.
-        
-        If nothing was solved, return False. If something was solved,
-        return True. If a contradiction was found, return CONTRADICTION.
-        """
-
-        global abort
-        if abort:
-            return False
-        global max_steps
-
-        for pos in self.prioritized_positions():
-            if max_steps is not None:
-                max_steps -= 1
-                if max_steps <= 0:
-                    abort = True
-                    return False
-            if self.is_unknown(pos):
-                # assume black
-                test_board_black = copy(self)
-                test_board_black.set_black(pos)
-                result_black = test_board_black.solve(depth-1)
-                # assume white
-                test_board_white = copy(self)
-                test_board_white.set_white(pos)
-                result_white = test_board_white.solve(depth-1) 
-                if result_white == CONTRADICTION and result_black == CONTRADICTION: # contradiction reached, board unsolvable
-                    self[pos] = CONTRADICTION
-                    return CONTRADICTION
-                elif result_black == CONTRADICTION:
-                    self.set_white(pos)
-                    self.last_conclusion = pos
-                    return True
-                elif result_white == CONTRADICTION:
-                    self.set_black(pos)
-                    self.last_conclusion = pos
-                    return True
-                else: # no contradictions either way
-                    self.set_unknown(pos)
-                    if solve_debug_display:
-                        print '.',
-        return False # no spaces determinable
-
+        if DEBUG2(): print 'no threads left, quit'
 
     # puzzle overrides #
     def is_valid(self):
@@ -164,8 +51,7 @@ class Board(object):
             return self._valid
 
     def prioritized_positions(self):
-        if solve_debug_display:
-            print 'sort'
+        if DEBUG2(): print 'sort'
         priority_dic = {}
         for pos in self.positions:
             score = 0
@@ -225,7 +111,7 @@ class Board(object):
         """Iterate through board values."""
         for (x,y) in self.positions:
             yield self.data[y][x]
-
+        
 
 # utility functions #
 def mdist(pos1, pos2):

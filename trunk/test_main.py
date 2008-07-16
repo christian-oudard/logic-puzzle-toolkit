@@ -42,9 +42,4 @@ class TestNewSolve(unittest.TestCase):
 if __name__ == '__main__':
     import sys
     sys.argv.append('-v')
-    #unittest.main()
-    Mines('''
-          2---
-          --1-
-          -2--
-          ---1''').solve(2)
+    unittest.main()

@@ -1,9 +1,10 @@
 # debug
-DEBUG = True
-max_steps = None
-abort = False
-solve_debug_display = False
-solve_report = False
+DEBUG_LEVEL = 0
+def SET_DEBUG(level):
+    global DEBUG_LEVEL
+    DEBUG_LEVEL = level
+def DEBUG1(): return DEBUG_LEVEL >= 1
+def DEBUG2(): return DEBUG_LEVEL >= 2
 
 # board space status codes
 BLACK = -1

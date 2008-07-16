@@ -100,7 +100,6 @@ Widetower('''
 ''')
 ),
 )   
-        #board.solve_debug_display = True
         for unsolved_board, solved_board in test_boards:
             unsolved_board.solve(3)
             self.assertEqual(unsolved_board, solved_board)
