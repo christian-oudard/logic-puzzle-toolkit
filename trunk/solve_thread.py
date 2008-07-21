@@ -32,6 +32,8 @@ class SolveThread(object):
                 if DEBUG1(): print 'board solved at depth',self.depth
                 yield True # board solved
                 raise StopIteration
+        if self.depth > self.board.max_depth:
+            raise StopIteration
         while True:
             for result in self.board.conclusion_thread(self.depth):
                 if is_success(result):
@@ -76,27 +78,6 @@ class AssumptionThread(object):
         self.board = copy_board(self.board)
 
         self.board.set_black(self.position)
-        valid_black = self.board.is_valid()
-        self.board.set_white(self.position)
-        valid_white = self.board.is_valid()
-        
-        if not valid_white and not valid_black:
-            if DEBUG2():
-                print 'contradiction'
-                print 'invalid board:'
-                print self.board
-            yield CONTRADICTION
-        elif not valid_black:
-            yield (self.position, WHITE)
-        elif not valid_white:
-            yield (self.position, BLACK)
-        else:
-            yield UNKNOWN
-
-        if self.depth >= self.board.max_depth:
-            raise StopIteration
-        
-        self.board.set_black(self.position)
         if DEBUG2(): print 'assuming', self.position, 'BLACK'
         solve_black = SolveThread(self.board, self.depth + 1)
 
@@ -104,12 +85,11 @@ class AssumptionThread(object):
         if DEBUG2(): print 'assuming', self.position, 'WHITE'
         solve_white = SolveThread(self.board, self.depth + 1)
         
-## OLD
         contradiction_black = any(result == CONTRADICTION for result in solve_black)
         contradiction_white = any(result == CONTRADICTION for result in solve_white)
 
         if contradiction_white and contradiction_black:
-            if DEBUG2(): print 'deep contradiction'
+            if DEBUG2(): print 'contradiction'
             yield CONTRADICTION
         elif contradiction_black:
             yield (self.position, WHITE)
@@ -117,10 +97,16 @@ class AssumptionThread(object):
             yield (self.position, BLACK)
         else:
             yield UNKNOWN
-##
 
+## WRONG
 #        for (result_black, result_white) in izip(solve_black, solve_white):
-
+#            if result_black == CONTRADICTION:
+#                yield (self.position, WHITE)
+#                break
+#            elif result_white == CONTRADICTION:
+#                yield (self.position, BLACK)
+#                break
+#
 ## BROKEN
 #        black_done = False
 #        white_done = False

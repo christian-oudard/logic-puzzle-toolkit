@@ -2,7 +2,34 @@ import unittest
 from constants import *
 from mines import Mines
 
+valid_boards = (
+    Mines('X1'),
+    Mines('.0.'),
+    Mines('''
+          .1
+          1X'''),
+)
+
+invalid_boards = (
+    Mines('X1X2-'),
+    Mines('X1X2'),
+)
+
+unsolvable_boards = (
+    Mines('''
+          -1
+          2-'''),
+)
+
 class TestMines(unittest.TestCase):
+    def test_is_valid_pass(self):
+        for vb in valid_boards:
+            self.assertTrue(vb.is_valid())
+
+    def test_is_valid_fail(self):
+        for ib in invalid_boards:
+            self.assertFalse(ib.is_valid())
+
     def test_solve(self):
         test_boards = (
             (Mines('1-'), Mines('1X')),
@@ -43,13 +70,9 @@ class TestMines(unittest.TestCase):
             self.assertEqual(unsolved_board, solved_board)
 
     def test_contradiction(self):
-        invalid_boards = (
-            Mines('X1X2-'),
-            Mines('X1X2'),
-            Mines('''
-                  -1
-                  2-'''),
-        )
-        for ib in invalid_boards:
+        for ib in unsolvable_boards + invalid_boards:
             self.assertEqual(CONTRADICTION, ib.solve())
 
+    def test_already_solved(self):
+        for sb in valid_boards:
+            self.assertEqual(True, sb.solve())
