@@ -1,6 +1,10 @@
 from constants import *
 from solve_thread import SolveThread, AssumptionThread
 
+# every non-abstract subclass of board must implement an is_valid function.
+# this function returns false if the current state is certainly invalid, or
+# true if it is valid or potentially valid
+
 # debug levels
 # 1: show start and solved state
 # 2: show steps in between
@@ -8,8 +12,7 @@ from solve_thread import SolveThread, AssumptionThread
 
 class Board(object):    
     def __init__(self):
-        self.last_conclusion = None
-        self._valid = None
+        self.last_conclusion = None # used for search heuristics
         
     def solve(self, max_depth=2):
         if DEBUG(1): print 'solving...'
@@ -34,21 +37,6 @@ class Board(object):
             print self
         return result
 
-    def _sanity_check(self, test_set, filter_func):
-        if self.black_positions.union(self.white_positions.union(self.unknown_positions)) != self.positions:
-            return False
-        if len(self.black_positions.intersection(self.white_positions)) != 0:
-            return False
-        if len(self.white_positions.intersection(self.unknown_positions)) != 0:
-            return False
-        if len(self.black_positions.intersection(self.unknown_positions)) != 0:
-            return False
-        real_positions = set()
-        for pos in self.positions:
-            if filter_func(pos):
-                real_positions.add(pos)
-        return real_positions == test_set
-    
     def conclusion_thread(self, depth):
         assumption_threads = []
         for pos in self.prioritized_positions():
@@ -66,23 +54,12 @@ class Board(object):
                 if is_success(result):
                     self.last_conclusion = result[0]
                     yield result
-                    raise StopIteration
+                    return
                 elif result == CONTRADICTION:
                     yield CONTRADICTION
-                else:
-                    yield UNKNOWN
             for ft in finished_threads:
                 assumption_threads.remove(ft)
         # all threads exited with no conclusion, quit
-
-    # puzzle overrides #
-    def is_valid(self):
-        """Determine whether a board has a legal or illegal position."""
-        if self._valid is not None:
-            return self._valid
-        else:
-            self._valid = self._is_valid()
-            return self._valid
 
     # optimization #
     def prioritized_positions(self):
@@ -136,8 +113,6 @@ class Board(object):
             self.white_positions.add(pos)
         elif value == UNKNOWN:
             self.unknown_positions.add(pos)
-            
-            
 
     # grid overrides #
     def _in_bounds(self, x, y):
@@ -169,7 +144,6 @@ class Board(object):
     def _set_value(self, pos, value):
         if pos in self.positions:
             if self[pos] != value:
-                self._valid = None # clear is_valid cache
                 self[pos] = value
                 self.update_color_caches(pos, value)
     set_number = _set_value    

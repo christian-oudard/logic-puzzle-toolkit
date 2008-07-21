@@ -20,16 +20,16 @@ class SolveThread(object):
         return self.gen.next()
 
     def generator(self):
-        currently_valid = self.board.is_valid()
-        if not currently_valid:
+        valid = self.board.is_valid()
+        if not valid:
             yield CONTRADICTION
-            raise StopIteration
+            return
         else: # board valid
             if self.board.unknown_positions == 0:
                 yield True # board solved
-                raise StopIteration
+                return
         if self.depth > self.board.max_depth:
-            raise StopIteration
+            return
         while True:
             for result in self.board.conclusion_thread(self.depth):
                 if is_success(result):
@@ -39,7 +39,7 @@ class SolveThread(object):
                     break # continue solving. break for loop, continue while loop normally
                 elif result == CONTRADICTION:
                     yield CONTRADICTION
-                    raise StopIteration
+                    return
                 elif result == UNKNOWN:
                     yield UNKNOWN
             else: # conclusion thread ran out, no more to solve
@@ -89,39 +89,7 @@ class AssumptionThread(object):
             yield (self.position, BLACK)
         else:
             yield UNKNOWN
-
-## WRONG
-#        for (result_black, result_white) in izip(solve_black, solve_white):
-#            if result_black == CONTRADICTION:
-#                yield (self.position, WHITE)
-#                break
-#            elif result_white == CONTRADICTION:
-#                yield (self.position, BLACK)
-#                break
-#
-## BROKEN
-#        black_done = False
-#        white_done = False
-#        while not (black_done and white_done):
-#            try:
-#                result_black = solve_black.next()
-#                if result_black == CONTRADICTION:
-#                    #yield (self.position, WHITE)
-#                    yield (self.position, BLACK)
-#                else:
-#                    yield UNKNOWN
-#            except StopIteration:
-#                black_done = True
-#            try:
-#                result_white = solve_white.next()
-#                if result_white == CONTRADICTION:
-#                    #yield (self.position, BLACK)
-#                    yield (self.position, WHITE)
-#                else:
-#                    yield UNKNOWN
-#            except StopIteration:
-#                white_done = True
-
+            
 def copy_board(board):
     new_board = copy(board)
     new_board.data = copy(board.data)

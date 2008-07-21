@@ -107,8 +107,8 @@ def time_main():
     stats.print_stats()
 
 if __name__ == '__main__':
-    #time_main()
-    SET_DEBUG(3)
-    solve_small()
+    time_main()
+    #SET_DEBUG(3)
+    #solve_small()
     #solve_medium()
     #solve_large()

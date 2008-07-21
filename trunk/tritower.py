@@ -3,7 +3,7 @@ from board import *
 from trianglegrid import TriangleGrid
 
 class Tritower(TriangleGrid):
-    def _is_valid(self):
+    def is_valid(self):
         """Determine whether a board has a legal or illegal position."""
         return all((
             self.valid_tower_adjacency(),
