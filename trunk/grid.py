@@ -40,18 +40,9 @@ class Grid(Board):
         self.max_x = max_x - min_x
         self.max_y = max_y - min_y
 
-        # in-bounds position list
-        self.positions = []
-        for key, value in self.data.iteritems():
-            if value != OUT_OF_BOUNDS:
-                self.positions.append(key)
-
-        # calculate adjacency graphs
-        self.adjacencies = {}
-        self.corner_adjacencies = {}
-        for pos in self.positions:
-            self.adjacencies[pos] = self._adjacencies(pos)
-            self.corner_adjacencies[pos] = self._corner_adjacencies(pos)
+        # optimization precalculations
+        self.precalc_positions()
+        self.precalc_adjacency()
 
     def _cull_bounds(self, position_list):
         """Remove all positions that are out of bounds, and return the remainder."""

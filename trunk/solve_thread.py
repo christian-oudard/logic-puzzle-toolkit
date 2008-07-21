@@ -83,12 +83,10 @@ class AssumptionThread(object):
         else:
             yield UNKNOWN
 
-        # recurse to deeper level
-        #TODO make solve call incremental here
-        # and reduce code duplication
         if self.depth >= self.board.max_depth:
             raise StopIteration
         
+
         self.board.set_black(self.position)
         if DEBUG2(): print 'assuming', self.position, 'BLACK'
         solve_black = SolveThread(self.board, self.depth + 1)
@@ -112,5 +110,9 @@ class AssumptionThread(object):
 def copy_board(board):
     new_board = copy(board)
     new_board.data = copy(board.data)
+    new_board.positions = copy(board.positions)
+    new_board.black_positions = copy(board.black_positions)
+    new_board.white_positions = copy(board.white_positions)
+    new_board.unknown_positions = copy(board.unknown_positions)
     return new_board
 

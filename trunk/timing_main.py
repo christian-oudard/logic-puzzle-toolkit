@@ -12,10 +12,13 @@ from mines import Mines
 
 def solve_tiny():
     puzzle = Mines('''
-        -2-
+        2---
+        --1-
+        -2--
+        ---1
     ''')
     print puzzle
-    puzzle.new_solve()
+    puzzle.solve()
     print puzzle
 
 def solve_medium():
@@ -70,13 +73,13 @@ def solve_big():
     
 def time_main():
     stats_file = 'lpt.stat'
-    cProfile.run('solve_medium()', stats_file)
+    cProfile.run('from timing_main import *; solve_medium()', stats_file)
     stats = Stats(stats_file)
     stats.sort_stats('time')
     stats.print_stats()
 
 if __name__ == '__main__':
     #time_main()
-    SET_DEBUG(1)
-    #solve_medium()
-    solve_big()
+    #SET_DEBUG(1)
+    solve_medium()
+    #solve_big()

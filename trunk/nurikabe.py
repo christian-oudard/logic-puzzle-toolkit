@@ -13,17 +13,13 @@ class Nurikabe(SquareGrid):
         ))
     
     def valid_no_black_2by2(self):
-        black_spaces = []
-        for pos in self.positions:
-            if self.is_black(pos):
-                black_spaces.append(pos)
-        for bs in black_spaces:
-            x, y = bs
-            square = [bs,
+        for pos in self.black_positions:
+            x, y = pos
+            square = [pos,
                       (x+1, y),
                       (x, y+1),
                       (x+1, y+1)]
-            if all(s in black_spaces for s in square):
+            if all(s in self.black_positions for s in square):
                 return False
         return True
     

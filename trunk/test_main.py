@@ -40,6 +40,15 @@ class TestNewSolve(unittest.TestCase):
         for ib in invalid_boards:
             self.assertEqual(CONTRADICTION, ib.solve())
 if __name__ == '__main__':
-    import sys
-    sys.argv.append('-v')
-    unittest.main()
+#    import sys
+#    sys.argv.append('-v')
+#    unittest.main()
+    from tritower import Tritower
+    SET_DEBUG(1)
+    t = Tritower('''
+     -1---
+    ----2-1
+    --2----
+     ----0
+    ''')
+    t.solve()
