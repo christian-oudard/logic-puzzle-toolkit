@@ -154,17 +154,6 @@ class Board(object):
                 self._valid = None # clear is_valid cache
                 self[pos] = value
                 self.update_color_caches(pos, value)
-                self.sanity_check() #DEBUG
-                
-    def sanity_check(self):
-        if not self._sanity_check(self.black_positions, self.is_black):
-            print 'sanity check failed'
-            print self
-            assert(False)
-        else:
-            pass#print 'p',
-        
-        
     set_number = _set_value    
 
     def __getitem__(self, key):

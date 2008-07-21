@@ -15,11 +15,10 @@ class Tritower(TriangleGrid):
 
 
     def valid_tower_adjacency(self):
-        for pos in self.positions:
-            if self.is_black(pos): # found a tower
-                for adj in self.adjacencies[pos]:
-                    if self.is_black(adj): # with another tower next to it
-                        return False
+        for pos in self.black_positions:
+            for adj in self.adjacencies[pos]:
+                if self.is_black(adj): # found a tower with another tower next to it
+                    return False
         return True
 
     def valid_given_numbers(self):
@@ -42,20 +41,18 @@ class Tritower(TriangleGrid):
 
     def valid_white_triangles(self):
         # white triangles of size 2 are illegal
-        for pos in self.positions: # consider every space and see if it is a center
-            if self.is_white(pos):
-                adjs = self.adjacencies[pos]
-                if len(adjs) == 3: # must not be on the edge of the board
-                    if all(self.is_white(a) for a in adjs):
-                        return False
+        for pos in self.white_positions: # consider every space and see if it is a center
+            adjs = self.adjacencies[pos]
+            if len(adjs) == 3: # must not be on the edge of the board
+                if all(self.is_white(a) for a in adjs):
+                    return False
         return True
 
 
     def valid_tower_loops(self):
         marks = {}
-        for pos in self.positions:
-            if self.is_white(pos) or self.is_unknown(pos):
-                marks[pos] = 'unvisited' # init marks
+        for pos in self.white_positions.union(self.unknown_positions):
+            marks[pos] = 'unvisited' # init marks
 
         def search_white(pos):
             marks[pos] = 'visited'
@@ -72,8 +69,8 @@ class Tritower(TriangleGrid):
                 return 'edge'
             return BLACK # no neighbor returned a path to an edge
 
-        for pos in self.positions: # for every unvisited space
-            if pos in marks and marks[pos] == 'unvisited':
+        for pos in marks: # for every unvisited space
+            if marks[pos] == 'unvisited':
                 if search_white(pos) == BLACK:
                     return False
 
@@ -83,9 +80,8 @@ class Tritower(TriangleGrid):
     def valid_towers_connected(self):
         # test that all towers are connected
         marks = {}
-        for pos in self.positions:
-            if self.is_black(pos) or self.is_unknown(pos):
-                marks[pos] = 'unvisited' # init marks
+        for pos in self.black_positions.union(self.unknown_positions):
+            marks[pos] = 'unvisited' # init marks
 
         def search_black(pos): # just mark everything in the group 'visited'
             marks[pos] = 'visited'
@@ -95,8 +91,8 @@ class Tritower(TriangleGrid):
                     search_black(adj)
 
         group_count = 0
-        for pos in self.positions: # for every unvisited tower
-            if self.is_black(pos) and marks[pos] == 'unvisited': # don't start a group with an unknown space
+        for pos in self.black_positions: # for every unvisited tower
+            if marks[pos] == 'unvisited': # don't start a group with an unknown space
                 group_count += 1
                 if group_count >= 2:
                     return False

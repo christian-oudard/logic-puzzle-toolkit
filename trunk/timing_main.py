@@ -79,7 +79,6 @@ def time_main():
     stats.print_stats()
 
 if __name__ == '__main__':
-    #time_main()
-    #SET_DEBUG(1)
-    solve_medium()
+    time_main()
+    #solve_medium()
     #solve_big()

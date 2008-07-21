@@ -26,9 +26,8 @@ class Nurikabe(SquareGrid):
     def valid_white_groups(self):
         global group_count
         marks = {}
-        for pos in self.positions:
-            if self.is_white(pos):
-                marks[pos] = 'unvisited' # initialize marks
+        for pos in self.white_positions:
+            marks[pos] = 'unvisited' # initialize marks
 
         def search_white(pos):
             global group_count
@@ -66,8 +65,8 @@ class Nurikabe(SquareGrid):
                     return False
 
         # find orphan groups
-        for pos in self.positions:
-            if pos in marks and marks[pos] == 'unvisited':
+        for pos in marks:
+            if marks[pos] == 'unvisited':
                 group_count = 0
                 if search_white(pos) == BLACK:
                     return False # orphan group can't connect to a given number
@@ -76,9 +75,8 @@ class Nurikabe(SquareGrid):
     
     def valid_black_connected(self):
         marks = {}
-        for pos in self.positions:
-            if self.is_black(pos) or self.is_unknown(pos):
-                marks[pos] = 'unvisited' # init marks
+        for pos in self.black_positions.union(self.unknown_positions):
+            marks[pos] = 'unvisited' # init marks
 
         def search_black(pos): # just mark everything in the group 'visited'
             marks[pos] = 'visited'
@@ -88,8 +86,8 @@ class Nurikabe(SquareGrid):
                     search_black(adj)
 
         group_count = 0
-        for pos in self.positions: # for every unvisited tower
-            if self.is_black(pos) and marks[pos] == 'unvisited': # don't start a group with an unknown space
+        for pos in self.black_positions: # for every unvisited tower
+            if marks[pos] == 'unvisited': # don't start a group with an unknown space
                 group_count += 1
                 if group_count >= 2:
                     return False
