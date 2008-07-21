@@ -1,4 +1,5 @@
 from copy import copy
+from itertools import izip
 from constants import *
 
 # a solve thread yields UNKNOWN if nothing was determined,
@@ -8,7 +9,7 @@ from constants import *
 # and CONTRADICTION if a contradiction was found
 class SolveThread(object):
     def __init__(self, board, depth):
-        self.board = board
+        self.board = copy_board(board)
         self.depth = depth
         self.gen = self.generator()
 
@@ -19,12 +20,18 @@ class SolveThread(object):
         return self.gen.next()
 
     def generator(self):
-        self.board = copy_board(self.board)
         if DEBUG1(): print 'depth', self.depth
         if DEBUG2(): print self.board
-        if not self.board.is_valid():
+        currently_valid = self.board.is_valid()
+        if not currently_valid:
+            if DEBUG1(): print 'board unsolvable at depth',self.depth
             yield CONTRADICTION
             raise StopIteration
+        else: # board valid
+            if self.board.unknown_positions == 0:
+                if DEBUG1(): print 'board solved at depth',self.depth
+                yield True # board solved
+                raise StopIteration
         while True:
             for result in self.board.conclusion_thread(self.depth):
                 if is_success(result):
@@ -74,7 +81,10 @@ class AssumptionThread(object):
         valid_white = self.board.is_valid()
         
         if not valid_white and not valid_black:
-            if DEBUG2(): print 'simple contradiction'
+            if DEBUG2():
+                print 'contradiction'
+                print 'invalid board:'
+                print self.board
             yield CONTRADICTION
         elif not valid_black:
             yield (self.position, WHITE)
@@ -86,15 +96,16 @@ class AssumptionThread(object):
         if self.depth >= self.board.max_depth:
             raise StopIteration
         
-
         self.board.set_black(self.position)
         if DEBUG2(): print 'assuming', self.position, 'BLACK'
         solve_black = SolveThread(self.board, self.depth + 1)
-        contradiction_black = any(result == CONTRADICTION for result in solve_black)
 
         self.board.set_white(self.position)
         if DEBUG2(): print 'assuming', self.position, 'WHITE'
         solve_white = SolveThread(self.board, self.depth + 1)
+        
+## OLD
+        contradiction_black = any(result == CONTRADICTION for result in solve_black)
         contradiction_white = any(result == CONTRADICTION for result in solve_white)
 
         if contradiction_white and contradiction_black:
@@ -106,6 +117,36 @@ class AssumptionThread(object):
             yield (self.position, BLACK)
         else:
             yield UNKNOWN
+##
+
+#        for (result_black, result_white) in izip(solve_black, solve_white):
+
+## BROKEN
+#        black_done = False
+#        white_done = False
+#        c = 0 #DEBUG
+#        while not (black_done and white_done):
+#            c += 1
+#            if DEBUG2(): print 'pass number',c,hash(self)
+#            
+#            try:
+#                result_black = solve_black.next()
+#                if result_black == CONTRADICTION:
+#                    #yield (self.position, WHITE)
+#                    yield (self.position, BLACK)
+#                else:
+#                    yield UNKNOWN
+#            except StopIteration:
+#                black_done = True
+#            try:
+#                result_white = solve_white.next()
+#                if result_white == CONTRADICTION:
+#                    #yield (self.position, BLACK)
+#                    yield (self.position, WHITE)
+#                else:
+#                    yield UNKNOWN
+#            except StopIteration:
+#                white_done = True
 
 def copy_board(board):
     new_board = copy(board)
