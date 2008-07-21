@@ -10,16 +10,14 @@ from nurikabe import Nurikabe
 from tritower import Tritower
 from mines import Mines
 
-def solve_tiny():
+def solve_small():
     puzzle = Mines('''
         2---
         --1-
         -2--
         ---1
     ''')
-    print puzzle
     puzzle.solve()
-    print puzzle
 
 def solve_medium():
     puzzle = Tritower('''
@@ -34,7 +32,7 @@ def solve_medium():
     ''')
     puzzle.solve()
 
-def solve_big():
+def solve_large():
     puzzle = Nurikabe('''
 ------------------------------------
 --2-3-7----b-----2--1------1--------
@@ -100,8 +98,6 @@ def solve_big():
 --------------------------------X---
 ''')
     puzzle.solve()
-    print 'done'
-    print puzzle
     
 def time_main():
     stats_file = 'lpt.stat'
@@ -112,6 +108,7 @@ def time_main():
 
 if __name__ == '__main__':
     #time_main()
+    SET_DEBUG(3)
+    solve_small()
     #solve_medium()
-    SET_DEBUG(1)
-    solve_big()
+    #solve_large()

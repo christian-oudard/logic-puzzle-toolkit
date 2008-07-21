@@ -3,8 +3,7 @@ DEBUG_LEVEL = 0
 def SET_DEBUG(level):
     global DEBUG_LEVEL
     DEBUG_LEVEL = level
-def DEBUG1(): return DEBUG_LEVEL >= 1
-def DEBUG2(): return DEBUG_LEVEL >= 2
+def DEBUG(level): return DEBUG_LEVEL >= level
 
 # board space status codes
 BLACK = -1
@@ -32,5 +31,9 @@ for key, value in CHARS.iteritems():
 
 # convenience function to check success
 def is_success(result):
-    return result != UNKNOWN and result != CONTRADICTION and result is not None
+    return (
+        result != UNKNOWN and
+        result != CONTRADICTION and
+        result is not False and
+        result is not True)
 

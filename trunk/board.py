@@ -1,17 +1,37 @@
 from constants import *
 from solve_thread import SolveThread, AssumptionThread
 
+# debug levels
+# 1: show start and solved state
+# 2: show steps in between
+# 3: show details of solving
+
 class Board(object):    
     def __init__(self):
         self.last_conclusion = None
         self._valid = None
         
     def solve(self, max_depth=2):
+        if DEBUG(1): print 'solving...'
+        if DEBUG(3): print 'max depth:', max_depth
+        if DEBUG(1): print self
         self.max_depth = max_depth
-        solve_thread = SolveThread(self, 1)
+        solve_thread = SolveThread(self, depth=1)
         for result in solve_thread:
-            pass
+            if DEBUG(2):
+                if is_success(result):
+                    pos, color = result
+                    print pos, '=', CHARS[color]
+                    print solve_thread.board
         self.data = solve_thread.board.data
+        if DEBUG(1):
+            if result == True:
+                print 'solved'
+            elif result == False:
+                print 'unable to solve'
+            elif result == CONTRADICTION:
+                print 'unsolvable'
+            print self
         return result
 
     def _sanity_check(self, test_set, filter_func):
@@ -44,7 +64,6 @@ class Board(object):
                     finished_threads.append(at)
                     break
                 if is_success(result):
-                    if DEBUG2(): print 'level', depth, 'found:', result
                     self.last_conclusion = result[0]
                     yield result
                     raise StopIteration
@@ -55,7 +74,6 @@ class Board(object):
             for ft in finished_threads:
                 assumption_threads.remove(ft)
         # all threads exited with no conclusion, quit
-        if DEBUG1(): print 'failed to find deep conclusion'
 
     # puzzle overrides #
     def is_valid(self):

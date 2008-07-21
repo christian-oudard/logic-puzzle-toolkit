@@ -20,16 +20,12 @@ class SolveThread(object):
         return self.gen.next()
 
     def generator(self):
-        if DEBUG1(): print 'depth', self.depth
-        if DEBUG2(): print self.board
         currently_valid = self.board.is_valid()
         if not currently_valid:
-            if DEBUG1(): print 'board unsolvable at depth',self.depth
             yield CONTRADICTION
             raise StopIteration
         else: # board valid
             if self.board.unknown_positions == 0:
-                if DEBUG1(): print 'board solved at depth',self.depth
                 yield True # board solved
                 raise StopIteration
         if self.depth > self.board.max_depth:
@@ -39,7 +35,6 @@ class SolveThread(object):
                 if is_success(result):
                     position, color = result
                     self.board._set_value(position, color)
-                    if DEBUG2() or DEBUG1() and self.depth == 1: print self.board
                     yield result
                     break # continue solving. break for loop, continue while loop normally
                 elif result == CONTRADICTION:
@@ -78,18 +73,15 @@ class AssumptionThread(object):
         self.board = copy_board(self.board)
 
         self.board.set_black(self.position)
-        if DEBUG2(): print 'assuming', self.position, 'BLACK'
         solve_black = SolveThread(self.board, self.depth + 1)
 
         self.board.set_white(self.position)
-        if DEBUG2(): print 'assuming', self.position, 'WHITE'
         solve_white = SolveThread(self.board, self.depth + 1)
         
         contradiction_black = any(result == CONTRADICTION for result in solve_black)
         contradiction_white = any(result == CONTRADICTION for result in solve_white)
 
         if contradiction_white and contradiction_black:
-            if DEBUG2(): print 'contradiction'
             yield CONTRADICTION
         elif contradiction_black:
             yield (self.position, WHITE)
@@ -110,11 +102,7 @@ class AssumptionThread(object):
 ## BROKEN
 #        black_done = False
 #        white_done = False
-#        c = 0 #DEBUG
 #        while not (black_done and white_done):
-#            c += 1
-#            if DEBUG2(): print 'pass number',c,hash(self)
-#            
 #            try:
 #                result_black = solve_black.next()
 #                if result_black == CONTRADICTION:
