@@ -26,7 +26,6 @@ class Board(object):
                     pos, color = result
                     print pos, '=', CHARS[color]
                     print solve_thread.board
-        self.data = solve_thread.board.data
         if DEBUG(1):
             if result == True:
                 print 'solved'

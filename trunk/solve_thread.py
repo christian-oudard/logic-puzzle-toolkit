@@ -9,7 +9,7 @@ from constants import *
 # and CONTRADICTION if a contradiction was found
 class SolveThread(object):
     def __init__(self, board, depth):
-        self.board = copy_board(board)
+        self.board = board
         self.depth = depth
         self.gen = self.generator()
 
@@ -44,12 +44,7 @@ class SolveThread(object):
                     yield UNKNOWN
             else: # conclusion thread ran out, no more to solve
                 break
-        # see if board was fully solved
-        unknown_count = 0
-        for pos in self.board.positions:
-            if self.board.is_unknown(pos):
-                unknown_count += 1
-        if unknown_count > 0:
+        if len(self.board.unknown_positions) > 0:
             yield False # incomplete
         else:
             yield True # fully solved
@@ -70,14 +65,16 @@ class AssumptionThread(object):
         return self.gen.next()
 
     def generator(self):
-        self.board = copy_board(self.board)
+        black_board = copy_board(self.board)
+        black_board.set_black(self.position)
+        valid_black = black_board.is_valid()
 
-        self.board.set_black(self.position)
-        solve_black = SolveThread(self.board, self.depth + 1)
-
-        self.board.set_white(self.position)
-        solve_white = SolveThread(self.board, self.depth + 1)
+        white_board = copy_board(self.board)
+        white_board.set_white(self.position)
+        valid_white = white_board.is_valid()
         
+        solve_black = SolveThread(black_board, self.depth + 1)
+        solve_white = SolveThread(white_board, self.depth + 1)
         contradiction_black = any(result == CONTRADICTION for result in solve_black)
         contradiction_white = any(result == CONTRADICTION for result in solve_white)
 
