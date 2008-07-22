@@ -72,10 +72,9 @@ class Board(object):
             yield True # fully solved
 
     def conclusion_thread(self, depth):
-        assumption_threads = []
-        for pos in self.prioritized_positions():
-            assumption_threads.append(self.assumption_thread(pos, depth))
-        while len(assumption_threads) > 0:
+        assumption_threads = [
+            self.assumption_thread(pos, depth) for pos in self.prioritized_positions()]
+        while assumption_threads:
             finished_threads = []
             for at in assumption_threads:
                 try:
