@@ -73,8 +73,7 @@ class Board(object):
     def conclusion_thread(self, depth):
         assumption_threads = []
         for pos in self.prioritized_positions():
-            if self.is_unknown(pos):
-                assumption_threads.append(self.assumption_thread(pos, depth))
+            assumption_threads.append(self.assumption_thread(pos, depth))
         while len(assumption_threads) > 0:
             finished_threads = []
             for at in assumption_threads:
@@ -126,7 +125,7 @@ class Board(object):
     # optimization #
     def prioritized_positions(self):
         priority_dict = {}
-        for pos in self.positions:
+        for pos in self.unknown_positions:
             score = 0
             if self.last_conclusion is not None:
                 dist = mdist(pos, self.last_conclusion)
@@ -137,7 +136,7 @@ class Board(object):
                 if self[adj] in GIVENS: # priority up for being next to a given
                     score += 1
             priority_dict[pos] = score
-        position_list = list(self.positions)
+        position_list = list(self.unknown_positions)
         return sorted(position_list, key=priority_dict.__getitem__, reverse=True)
 
     def precalc_adjacency(self):
