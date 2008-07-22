@@ -53,35 +53,25 @@ class Board(object):
         if depth > self.max_depth:
             return
         while True:
-            for result in self.conclusion_thread(depth):
+            assumption_threads = [self.assumption_thread(pos, depth) for pos in self.prioritized_positions()]
+            for result in imix(*assumption_threads):
                 if is_success(result):
                     position, color = result
+                    self.last_conclusion = position
                     self._set_value(position, color)
                     yield result
-                    break # continue solving. break for loop, continue while loop normally
+                    break # continue solving
                 elif result == CONTRADICTION:
                     yield CONTRADICTION
                     return
                 elif result == UNKNOWN:
                     yield UNKNOWN
-            else: # conclusion thread ran out, no more to solve
+            else: # no more to solve
                 break
         if len(self.unknown_positions) > 0:
             yield False # incomplete
         else:
             yield True # fully solved
-
-    def conclusion_thread(self, depth):
-        assumption_threads = [
-            self.assumption_thread(pos, depth) for pos in self.prioritized_positions()]
-        for result in imix(*assumption_threads):
-            if is_success(result):
-                self.last_conclusion = result[0]
-                yield result
-                return
-            elif result == CONTRADICTION:
-                yield CONTRADICTION
-                return
 
     def assumption_thread(self, position, depth):
         black_board = copy_board(self)
