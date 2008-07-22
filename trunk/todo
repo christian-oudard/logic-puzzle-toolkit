@@ -14,6 +14,7 @@ housekeeping:
 - add more complex test solves for nurikabe
 
 solving:
+- make a unit test with a huge blank board
 - move is_valid test out of solve thread and into solve()
 - set up short circuit shallow exit from AssumptionThread
 - change AssumptionThread to solve incrementally correctly

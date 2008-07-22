@@ -135,6 +135,18 @@ class TestNurikabe(unittest.TestCase):
         test_boards = (
             (
                 Nurikabe('''
+                         ---
+                         ---
+                         3--
+                         '''),
+                Nurikabe('''
+                         XXX
+                         -.X
+                         3-X
+                         ''')
+            ),
+            (
+                Nurikabe('''
                          -1-----
                          -------
                          2---3-3
@@ -161,6 +173,7 @@ class TestNurikabe(unittest.TestCase):
                          a.........X2.
                          ''')
             ),
+            (Nurikabe('-2-'), Nurikabe('-2-')),
         )
         for unsolved_board, solved_board in test_boards:
             unsolved_board.solve()

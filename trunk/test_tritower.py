@@ -92,6 +92,7 @@ class TestTritower(unittest.TestCase):
 
     def test_solve(self):
         test_boards = (
+            (Tritower('-'), Tritower('-')),
             (
                 Tritower('''
                          *-2--0

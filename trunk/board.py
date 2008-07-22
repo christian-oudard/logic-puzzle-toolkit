@@ -15,17 +15,20 @@ class Board(object):
         self.last_conclusion = None # used for search heuristics
         
     def solve(self, max_depth=2):
-        if DEBUG(1): print 'solving...'
-        if DEBUG(3): print 'max depth:', max_depth
-        if DEBUG(1): print self
         self.max_depth = max_depth
+        Board.depth_reached = 0
+        if DEBUG(3): print 'solving to depth', max_depth
+        elif DEBUG(1): print 'solving...'
+        if DEBUG(1): print self
+        if not self.is_valid():
+            return CONTRADICTION
         solve_thread = self.solve_thread(depth=1)
         for result in solve_thread:
             if DEBUG(2):
                 if is_success(result):
                     pos, color = result
                     print pos, '=', CHARS[color]
-                    print solve_thread.board
+                    print self
         if DEBUG(1):
             if result == True:
                 print 'solved'
@@ -34,6 +37,7 @@ class Board(object):
             elif result == CONTRADICTION:
                 print 'unsolvable'
             print self
+        if DEBUG(3): print 'reached maximum depth of', Board.depth_reached
         return result
 
     # a solve thread yields UNKNOWN if nothing was determined,
@@ -42,14 +46,17 @@ class Board(object):
     # False for giving up,
     # and CONTRADICTION if a contradiction was found
     def solve_thread(self, depth):
-        valid = self.is_valid()
-        if not valid:
-            yield CONTRADICTION
-            return
-        else: # board valid
-            if self.unknown_positions == 0:
-                yield True # board solved
-                return
+        if depth > Board.depth_reached:
+            Board.depth_reached = depth
+        if DEBUG(3): print 'level', depth
+#        valid = self.is_valid()
+#        if not valid:
+#            yield CONTRADICTION
+#            return
+#        else: # board valid
+#            if self.unknown_positions == 0:
+#                yield True # board solved
+#                return
         if depth > self.max_depth:
             return
         while True:

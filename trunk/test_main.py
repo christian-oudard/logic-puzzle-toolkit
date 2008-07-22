@@ -9,7 +9,7 @@ from test_widetower import TestWidetower
 from test_nurikabe import TestNurikabe
 
 if __name__ == '__main__':
-    #SET_DEBUG(1)
+    SET_DEBUG(3)
     import sys
     sys.argv.append('-v')
     unittest.main()
