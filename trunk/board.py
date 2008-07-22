@@ -1,4 +1,4 @@
-from iterators import izip_longest
+from iterators import izip_longest, imix
 from constants import *
 
 # every non-abstract subclass of board must implement an is_valid function.
@@ -74,25 +74,14 @@ class Board(object):
     def conclusion_thread(self, depth):
         assumption_threads = [
             self.assumption_thread(pos, depth) for pos in self.prioritized_positions()]
-        while assumption_threads:
-            finished_threads = []
-            for at in assumption_threads:
-                try:
-                    result = at.next()
-                except StopIteration:
-                    # thread finished, delete it
-                    finished_threads.append(at)
-                    break
-                if is_success(result):
-                    self.last_conclusion = result[0]
-                    yield result
-                    return
-                elif result == CONTRADICTION:
-                    yield CONTRADICTION
-                    return
-            for ft in finished_threads:
-                assumption_threads.remove(ft)
-        # all threads exited with no conclusion, quit
+        for result in imix(*assumption_threads):
+            if is_success(result):
+                self.last_conclusion = result[0]
+                yield result
+                return
+            elif result == CONTRADICTION:
+                yield CONTRADICTION
+                return
 
     def assumption_thread(self, position, depth):
         black_board = copy_board(self)
