@@ -72,15 +72,22 @@ class AssumptionThread(object):
         white_board = copy_board(self.board)
         white_board.set_white(self.position)
         valid_white = white_board.is_valid()
+
+        if not valid_white and not valid_black:
+            yield CONTRADICTION
+        elif not valid_black:
+            yield (self.position, WHITE)
+        elif not valid_white:
+            yield (self.position, BLACK)
+        else:
+            yield UNKNOWN
         
         solve_black = SolveThread(black_board, self.depth + 1)
         solve_white = SolveThread(white_board, self.depth + 1)
         contradiction_black = any(result == CONTRADICTION for result in solve_black)
         contradiction_white = any(result == CONTRADICTION for result in solve_white)
 
-        if contradiction_white and contradiction_black:
-            yield CONTRADICTION
-        elif contradiction_black:
+        if contradiction_black:
             yield (self.position, WHITE)
         elif contradiction_white:
             yield (self.position, BLACK)
