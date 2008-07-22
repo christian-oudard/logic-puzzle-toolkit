@@ -1,5 +1,4 @@
 from constants import *
-from solve_thread import SolveThread, AssumptionThread
 
 # every non-abstract subclass of board must implement an is_valid function.
 # this function returns false if the current state is certainly invalid, or
@@ -19,7 +18,7 @@ class Board(object):
         if DEBUG(3): print 'max depth:', max_depth
         if DEBUG(1): print self
         self.max_depth = max_depth
-        solve_thread = SolveThread(self, depth=1)
+        solve_thread = self.solve_thread(depth=1)
         for result in solve_thread:
             if DEBUG(2):
                 if is_success(result):
@@ -36,11 +35,46 @@ class Board(object):
             print self
         return result
 
+    # a solve thread yields UNKNOWN if nothing was determined,
+    # a result if a space was solved,
+    # True for a fully solved board,
+    # False for giving up,
+    # and CONTRADICTION if a contradiction was found
+    def solve_thread(self, depth):
+        valid = self.is_valid()
+        if not valid:
+            yield CONTRADICTION
+            return
+        else: # board valid
+            if self.unknown_positions == 0:
+                yield True # board solved
+                return
+        if depth > self.max_depth:
+            return
+        while True:
+            for result in self.conclusion_thread(depth):
+                if is_success(result):
+                    position, color = result
+                    self._set_value(position, color)
+                    yield result
+                    break # continue solving. break for loop, continue while loop normally
+                elif result == CONTRADICTION:
+                    yield CONTRADICTION
+                    return
+                elif result == UNKNOWN:
+                    yield UNKNOWN
+            else: # conclusion thread ran out, no more to solve
+                break
+        if len(self.unknown_positions) > 0:
+            yield False # incomplete
+        else:
+            yield True # fully solved
+
     def conclusion_thread(self, depth):
         assumption_threads = []
         for pos in self.prioritized_positions():
             if self.is_unknown(pos):
-                assumption_threads.append(AssumptionThread(self, pos, depth))
+                assumption_threads.append(self.assumption_thread(pos, depth))
         while len(assumption_threads) > 0:
             finished_threads = []
             for at in assumption_threads:
@@ -59,6 +93,36 @@ class Board(object):
             for ft in finished_threads:
                 assumption_threads.remove(ft)
         # all threads exited with no conclusion, quit
+
+    def assumption_thread(self, position, depth):
+        black_board = copy_board(self)
+        black_board.set_black(position)
+        valid_black = black_board.is_valid()
+
+        white_board = copy_board(self)
+        white_board.set_white(position)
+        valid_white = white_board.is_valid()
+
+        if not valid_white and not valid_black:
+            yield CONTRADICTION
+        elif not valid_black:
+            yield (position, WHITE)
+        elif not valid_white:
+            yield (position, BLACK)
+        else:
+            yield UNKNOWN
+        
+        solve_black = black_board.solve_thread(depth + 1)
+        solve_white = white_board.solve_thread(depth + 1)
+        contradiction_black = any(result == CONTRADICTION for result in solve_black)
+        contradiction_white = any(result == CONTRADICTION for result in solve_white)
+
+        if contradiction_black:
+            yield (position, WHITE)
+        elif contradiction_white:
+            yield (position, BLACK)
+        else:
+            yield UNKNOWN
 
     # optimization #
     def prioritized_positions(self):
@@ -162,6 +226,16 @@ class Board(object):
         
 
 # utility functions #
+from copy import copy
+def copy_board(board):
+    new_board = copy(board)
+    new_board.data = copy(board.data)
+    new_board.positions = copy(board.positions)
+    new_board.black_positions = copy(board.black_positions)
+    new_board.white_positions = copy(board.white_positions)
+    new_board.unknown_positions = copy(board.unknown_positions)
+    return new_board
+
 def mdist(pos1, pos2):
     x1, y1 = pos1
     x2, y2 = pos2
