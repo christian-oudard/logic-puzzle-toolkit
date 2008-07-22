@@ -35,5 +35,6 @@ def is_success(result):
         result != UNKNOWN and
         result != CONTRADICTION and
         result is not False and
-        result is not True)
+        result is not True and
+        result is not None)
 

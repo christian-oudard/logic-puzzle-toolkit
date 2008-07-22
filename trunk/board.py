@@ -1,3 +1,4 @@
+from iterators import izip_longest
 from constants import *
 
 # every non-abstract subclass of board must implement an is_valid function.
@@ -116,7 +117,7 @@ class Board(object):
         solve_white = white_board.solve_thread(depth + 1)
         
         # look for results in parallel
-        for (result_black, result_white) in zip_pad(solve_black, solve_white):
+        for (result_black, result_white) in izip_longest(solve_black, solve_white):
             if result_black == CONTRADICTION:
                 yield (position, WHITE)
             elif result_white == CONTRADICTION:
@@ -238,21 +239,4 @@ def mdist(pos1, pos2):
     x1, y1 = pos1
     x2, y2 = pos2
     return abs(x1 - x2) + abs(y1 - y2)
-
-from itertools import izip, chain
-def zip_pad(*iterables, **kw):
-    if kw:
-        assert len(kw) == 1
-        pad = kw["pad"]
-    else:
-        pad = None
-    done = [len(iterables)-1]
-    def pad_iter():
-        if not done[0]:
-            return
-        done[0] -= 1
-        while 1:
-            yield pad
-    iterables = [chain(seq, pad_iter()) for seq in iterables]
-    return izip(*iterables)
 

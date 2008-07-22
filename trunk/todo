@@ -26,7 +26,7 @@ solving:
 - track initial max depth, for debugging purposes (display only when conclusion made in root thread)
 
 optimization:
--? quick exit from assumption thread for shallow conclusions? avoid creating new solve thread
+- try different version of is_success function
 - make switches to quickly turn on or off optimization methods. test every combination and see whether they are all necessary
 
 notes:
