@@ -90,6 +90,7 @@ class Board(object):
                     return
                 elif result == CONTRADICTION:
                     yield CONTRADICTION
+                    return
             for ft in finished_threads:
                 assumption_threads.remove(ft)
         # all threads exited with no conclusion, quit
@@ -114,15 +115,13 @@ class Board(object):
         
         solve_black = black_board.solve_thread(depth + 1)
         solve_white = white_board.solve_thread(depth + 1)
-        contradiction_black = any(result == CONTRADICTION for result in solve_black)
-        contradiction_white = any(result == CONTRADICTION for result in solve_white)
-
-        if contradiction_black:
-            yield (position, WHITE)
-        elif contradiction_white:
-            yield (position, BLACK)
-        else:
-            yield UNKNOWN
+        
+        # look for results in parallel
+        for (result_black, result_white) in zip_pad(solve_black, solve_white):
+            if result_black == CONTRADICTION:
+                yield (position, WHITE)
+            elif result_white == CONTRADICTION:
+                yield (position, BLACK)
 
     # optimization #
     def prioritized_positions(self):
@@ -240,4 +239,21 @@ def mdist(pos1, pos2):
     x1, y1 = pos1
     x2, y2 = pos2
     return abs(x1 - x2) + abs(y1 - y2)
+
+from itertools import izip, chain
+def zip_pad(*iterables, **kw):
+    if kw:
+        assert len(kw) == 1
+        pad = kw["pad"]
+    else:
+        pad = None
+    done = [len(iterables)-1]
+    def pad_iter():
+        if not done[0]:
+            return
+        done[0] -= 1
+        while 1:
+            yield pad
+    iterables = [chain(seq, pad_iter()) for seq in iterables]
+    return izip(*iterables)
 

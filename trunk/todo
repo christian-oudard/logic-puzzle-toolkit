@@ -11,6 +11,7 @@
 housekeeping:
 - refactor Board.set_number, it's only used once
 - redo debug messages
+- add more complex test solves for nurikabe
 
 solving:
 - move is_valid test out of solve thread and into solve()

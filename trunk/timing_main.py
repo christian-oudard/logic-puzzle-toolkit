@@ -99,15 +99,15 @@ def solve_large():
 ''')
     puzzle.solve()
     
-def time_main():
+def time_main(command):
     stats_file = 'lpt.stat'
-    cProfile.run('from timing_main import *; solve_medium()', stats_file)
+    cProfile.run('from timing_main import *; ' + command, stats_file)
     stats = Stats(stats_file)
-    stats.sort_stats('time')
+    stats.sort_stats('cum')
     stats.print_stats()
 
 if __name__ == '__main__':
-    time_main()
+    time_main('solve_medium()')
     #SET_DEBUG(3)
     #solve_small()
     #solve_medium()
