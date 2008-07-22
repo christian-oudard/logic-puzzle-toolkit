@@ -1,0 +1,40 @@
+- puzzles using square grid
+  . kuromasu
+  . mochikoro
+  . bijutsukan
+  . hitori
+- puzzles using hex grid
+- loop puzzles
+  . slither link
+- update Tritower.valid_tower_loops to handle arbitrary shapes
+
+housekeeping:
+- refactor Board.set_number, it's only used once
+- redo debug messages
+
+solving:
+- move is_valid test out of solve thread and into solve()
+- set up short circuit shallow exit from AssumptionThread
+- change AssumptionThread to solve incrementally correctly
+- test if board is already solved
+  . audit how it's currently being checked for solution
+  . branch finding solution when looking for contradiction
+    . detect multiple solutions
+- adjust priority function constants
+- priority function only return unknowns
+- track initial max depth, for debugging purposes (display only when conclusion made in root thread)
+
+optimization:
+-? quick exit from assumption thread for shallow conclusions? avoid creating new solve thread
+- make switches to quickly turn on or off optimization methods. test every combination and see whether they are all necessary
+
+notes:
+breadth first solving
+solve thread function which solves based on assumptions from a single space
+each solve thread corresponds to a single space and a single color. this means that at the root level, there are 2 times as many solve threads as spaces.
+thread yields results like an iterator
+each call to solve_thread.next() corresponds to a single call to is_valid
+each next() call returns various constants based on the status of the search:
+- unknown: at this step, nothing is yet known
+- contradiction: a contradiction was found
+- 
