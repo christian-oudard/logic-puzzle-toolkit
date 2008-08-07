@@ -176,6 +176,6 @@ class TestNurikabe(unittest.TestCase):
             (Nurikabe('-2-'), Nurikabe('-2-')),
         )
         for unsolved_board, solved_board in test_boards:
-            unsolved_board.solve()
+            unsolved_board.solve(3)
             self.assertEqual(unsolved_board, solved_board)
 

@@ -23,6 +23,7 @@ class Board(object):
         if not self.is_valid():
             return CONTRADICTION
         solve_thread = self.solve_thread(depth=1)
+        result = None
         for result in solve_thread:
             if DEBUG(2):
                 if is_success(result):
@@ -37,7 +38,7 @@ class Board(object):
             elif result == CONTRADICTION:
                 print 'unsolvable'
             print self
-        if DEBUG(3): print 'reached maximum depth of', Board.depth_reached
+        if DEBUG(3): print 'greatest depth reached:', Board.depth_reached
         return result
 
     # a solve thread yields UNKNOWN if nothing was determined,
@@ -46,9 +47,6 @@ class Board(object):
     # False for giving up,
     # and CONTRADICTION if a contradiction was found
     def solve_thread(self, depth):
-        if depth > Board.depth_reached:
-            Board.depth_reached = depth
-        if DEBUG(3): print 'level', depth
 #        valid = self.is_valid()
 #        if not valid:
 #            yield CONTRADICTION
@@ -59,20 +57,23 @@ class Board(object):
 #                return
         if depth > self.max_depth:
             return
+        if DEBUG(3): print 'level', depth
+        if depth > Board.depth_reached:
+            Board.depth_reached = depth
         while True:
             assumption_threads = [self.assumption_thread(pos, depth) for pos in self.prioritized_positions()]
             for result in imix(*assumption_threads):
-                if is_success(result):
+                if result == UNKNOWN:
+                    yield UNKNOWN
+                elif is_success(result):
                     position, color = result
                     self.last_conclusion = position
                     self._set_value(position, color)
                     yield result
-                    break # continue solving
+                    break # restart while loop. clear threads, continue searching
                 elif result == CONTRADICTION:
                     yield CONTRADICTION
                     return
-                elif result == UNKNOWN:
-                    yield UNKNOWN
             else: # no more to solve
                 break
         if len(self.unknown_positions) > 0:
@@ -101,12 +102,14 @@ class Board(object):
         solve_black = black_board.solve_thread(depth + 1)
         solve_white = white_board.solve_thread(depth + 1)
         
-        # look for results in parallel
+        # look for results in parallel, until both return
         for (result_black, result_white) in izip_longest(solve_black, solve_white):
             if result_black == CONTRADICTION:
                 yield (position, WHITE)
             elif result_white == CONTRADICTION:
                 yield (position, BLACK)
+            else:
+                yield UNKNOWN
 
     # optimization #
     def prioritized_positions(self):
