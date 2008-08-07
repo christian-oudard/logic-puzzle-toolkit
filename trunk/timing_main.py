@@ -42,7 +42,7 @@ def solve_medium_nurikabe():
         ----------
         -1----2-4-
     ''')
-    puzzle.solve()
+    puzzle.solve(3)
 
 def solve_medium_tritower():
     puzzle = Tritower('''

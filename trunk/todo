@@ -10,9 +10,8 @@ new puzzles:
 - update Tritower.valid_tower_loops to handle arbitrary shapes
 
 housekeeping:
+- reduce duplication (last_conclusion, etc) in board.solve 
 - refactor Board.set_number, it's only used once
-- redo debug messages
-- add more complex test solves for nurikabe
 
 solving:
 - make a unit test with a huge blank board
@@ -34,12 +33,12 @@ gui:
 - localized invalidity display
 
 optimization:
+- yield unknown only at depth points
 - incremental validity. base it only on assumption square
 - try different version of is_success function
 - make switches to quickly turn on or off optimization methods. test every combination and see whether they are all necessary
 
 nurikabe 
-
     def valid_white_reachable(self):
         for pos_white in self.white_positions:
             for pos_given in self.positions:

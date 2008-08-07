@@ -77,13 +77,11 @@ class Board(object):
             yield True # fully solved
 
     def assumption_thread(self, position, depth):
-        black_board = copy_board(self)
-        black_board.set_black(position)
-        valid_black = black_board.is_valid()
-
-        white_board = copy_board(self)
-        white_board.set_white(position)
-        valid_white = white_board.is_valid()
+        self.set_black(position)
+        valid_black = self.is_valid()
+        self.set_white(position)
+        valid_white = self.is_valid()
+        self.set_unknown(position)
 
         if not valid_white and not valid_black:
             yield CONTRADICTION
@@ -94,18 +92,23 @@ class Board(object):
         else:
             yield UNKNOWN
         
+        black_board = copy_board(self)
+        black_board.set_black(position)
         solve_black = black_board.solve_thread(depth + 1)
+
+        white_board = copy_board(self)
+        white_board.set_white(position)
         solve_white = white_board.solve_thread(depth + 1)
         
         # look for results in parallel, until one returns
-        for (result_black, result_white) in izip_longest(solve_black, solve_white):
+        for (result_black, result_white) in izip(solve_black, solve_white):
             if result_black == True or result_white == True:
                 pass #print 'early solution found'
             if result_black == CONTRADICTION:
                 yield (position, WHITE)
             elif result_white == CONTRADICTION:
                 yield (position, BLACK)
-            else:
+            elif result_white == UNKNOWN or result_black == UNKNOWN:
                 yield UNKNOWN
 
     # optimization #
