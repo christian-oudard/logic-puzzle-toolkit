@@ -133,6 +133,15 @@ class TestNurikabe(unittest.TestCase):
 
     def test_solve(self):
         test_boards = (
+            (Nurikabe('-2-'), Nurikabe('-2-')),
+            (
+                Nurikabe('''
+                         a----------2-
+                         '''),
+                Nurikabe('''
+                         a.........X2.
+                         ''')
+            ),
             (
                 Nurikabe('''
                          ---
@@ -145,6 +154,20 @@ class TestNurikabe(unittest.TestCase):
                          3-X
                          ''')
             ),
+#            (
+#                Nurikabe('''
+#                         ----
+#                         ----
+#                         ----
+#                         5-- 
+#                         '''),
+#                Nurikabe('''
+#                         XXXX
+#                         X..X
+#                         -.XX
+#                         5-X 
+#                         ''')
+#            ),
             (
                 Nurikabe('''
                          -1-----
@@ -165,15 +188,30 @@ class TestNurikabe(unittest.TestCase):
                          4X3.X.2
                          ''')
             ),
-            (
-                Nurikabe('''
-                         a----------2-
-                         '''),
-                Nurikabe('''
-                         a.........X2.
-                         ''')
-            ),
-            (Nurikabe('-2-'), Nurikabe('-2-')),
+#            (
+#                Nurikabe('''
+#                         2--------2
+#                         ------2---
+#                         -2--7-----
+#                         ----------
+#                         ------3-3-
+#                         --2----3--
+#                         2--4------
+#                         ----------
+#                         -1----2-4-
+#                         '''),
+#                Nurikabe('''
+#                         2.X...XX.2
+#                         XXX..X2XXX
+#                         X2X.7X.X.X
+#                         X.XXXXXX.X
+#                         XX.X..3X3X
+#                         .X2XXXX3XX
+#                         2XX4.X..X.
+#                         XX..XXXXX.
+#                         X1XXX.2X4.
+#                         ''')
+#            ),
         )
         for unsolved_board, solved_board in test_boards:
             unsolved_board.solve(3)

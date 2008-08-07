@@ -50,10 +50,8 @@ class Nurikabe(SquareGrid):
                 return UNKNOWN
                 
         # mark every numbered group visited, and check that the number is correct
-        for pos in self.positions:
+        for pos in self.given_positions:
             number = self[pos]
-            if number not in GIVENS:
-                continue
             group_count = 0
             search_result = search_white(pos)
             if search_result == CONTRADICTION:

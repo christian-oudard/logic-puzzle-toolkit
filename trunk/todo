@@ -34,6 +34,22 @@ gui:
 - localized invalidity display
 
 optimization:
+- incremental validity. base it only on assumption square
 - try different version of is_success function
 - make switches to quickly turn on or off optimization methods. test every combination and see whether they are all necessary
 
+nurikabe 
+
+    def valid_white_reachable(self):
+        for pos_white in self.white_positions:
+            for pos_given in self.positions:
+                number = self[pos]
+                if number not in GIVENS:
+                    continue
+                if manhattan_distance(pos_given, pos_white) < number:
+					...
+
+def manhattan_distance(pos1, pos2):
+    x1, y1 = pos1
+    x2, y2 = pos2
+    return abs(x2 - x1) + abs(y2 - y1)

@@ -10,7 +10,7 @@ from nurikabe import Nurikabe
 from tritower import Tritower
 from mines import Mines
 
-def solve_small():
+def solve_tiny():
     puzzle = Mines('''
         2---
         --1-
@@ -19,7 +19,32 @@ def solve_small():
     ''')
     puzzle.solve()
 
-def solve_medium():
+def solve_small():
+    puzzle = Mines('''
+        --2-3-
+        2-----
+        --24-3
+        1-34--
+        -----3
+        -3-3--
+    ''')
+    puzzle.solve()
+
+def solve_medium_nurikabe():
+    puzzle = Nurikabe('''
+        2--------2
+        ------2---
+        -2--7-----
+        ----------
+        ------3-3-
+        --2----3--
+        2--4------
+        ----------
+        -1----2-4-
+    ''')
+    puzzle.solve()
+
+def solve_medium_tritower():
     puzzle = Tritower('''
            ---------
           -----------
@@ -32,7 +57,7 @@ def solve_medium():
     ''')
     puzzle.solve()
 
-def solve_large():
+def solve_huge():
     puzzle = Nurikabe('''
 ------------------------------------
 --2-3-7----b-----2--1------1--------
@@ -107,8 +132,5 @@ def time_main(command):
     stats.print_stats()
 
 if __name__ == '__main__':
-    time_main('solve_medium()')
-    #SET_DEBUG(3)
-    #solve_small()
-    #solve_medium()
-    #solve_large()
+    SET_DEBUG(1)
+    time_main('solve_medium_nurikabe()')

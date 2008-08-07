@@ -1,3 +1,4 @@
+from itertools import izip
 from iterators import izip_longest, imix
 from constants import *
 
@@ -38,7 +39,7 @@ class Board(object):
             elif result == CONTRADICTION:
                 print 'unsolvable'
             print self
-        if DEBUG(3): print 'greatest depth reached:', Board.depth_reached
+        if DEBUG(2): print 'greatest depth reached:', Board.depth_reached
         return result
 
     # a solve thread yields UNKNOWN if nothing was determined,
@@ -47,14 +48,6 @@ class Board(object):
     # False for giving up,
     # and CONTRADICTION if a contradiction was found
     def solve_thread(self, depth):
-#        valid = self.is_valid()
-#        if not valid:
-#            yield CONTRADICTION
-#            return
-#        else: # board valid
-#            if self.unknown_positions == 0:
-#                yield True # board solved
-#                return
         if depth > self.max_depth:
             return
         if DEBUG(3): print 'level', depth
@@ -69,6 +62,8 @@ class Board(object):
                     position, color = result
                     self.last_conclusion = position
                     self._set_value(position, color)
+                    if DEBUG(4):
+                        print self
                     yield result
                     break # restart while loop. clear threads, continue searching
                 elif result == CONTRADICTION:
@@ -102,8 +97,10 @@ class Board(object):
         solve_black = black_board.solve_thread(depth + 1)
         solve_white = white_board.solve_thread(depth + 1)
         
-        # look for results in parallel, until both return
+        # look for results in parallel, until one returns
         for (result_black, result_white) in izip_longest(solve_black, solve_white):
+            if result_black == True or result_white == True:
+                pass #print 'early solution found'
             if result_black == CONTRADICTION:
                 yield (position, WHITE)
             elif result_white == CONTRADICTION:
@@ -146,6 +143,7 @@ class Board(object):
         self.black_positions = set()
         self.white_positions = set()
         self.unknown_positions = set()
+        self.given_positions = set()
         for pos in self.positions:
             self.update_color_caches(pos, self[pos])
 
@@ -156,6 +154,8 @@ class Board(object):
             self.white_positions.remove(pos)
         if pos in self.unknown_positions:
             self.unknown_positions.remove(pos)
+        if pos in self.given_positions:
+            self.given_positions.remove(pos)
 
         if value == BLACK:
             self.black_positions.add(pos)
@@ -163,6 +163,8 @@ class Board(object):
             self.white_positions.add(pos)
         elif value == UNKNOWN:
             self.unknown_positions.add(pos)
+        if value in GIVENS:
+            self.given_positions.add(pos)
 
     # grid overrides #
     def _in_bounds(self, x, y):
