@@ -133,4 +133,4 @@ def time_main(command):
 
 if __name__ == '__main__':
     SET_DEBUG(1)
-    time_main('solve_medium_nurikabe()')
+    time_main('solve_medium_tritower()')

@@ -101,15 +101,21 @@ class Board(object):
         solve_white = white_board.solve_thread(depth + 1)
         
         # look for results in parallel, until one returns
-        for (result_black, result_white) in izip(solve_black, solve_white):
-            if result_black == True or result_white == True:
-                pass #print 'early solution found'
-            if result_black == CONTRADICTION:
+#        for (result_black, result_white) in izip(solve_black, solve_white):
+#            if result_black == True or result_white == True:
+#                pass #print 'early solution found'
+#            if result_black == CONTRADICTION:
+#                yield (position, WHITE)
+#            elif result_white == CONTRADICTION:
+#                yield (position, BLACK)
+#            elif result_white == UNKNOWN or result_black == UNKNOWN:
+#                yield UNKNOWN
+        for result in solve_black:
+            if result == CONTRADICTION:
                 yield (position, WHITE)
-            elif result_white == CONTRADICTION:
+        for result in solve_white:
+            if result == CONTRADICTION:
                 yield (position, BLACK)
-            elif result_white == UNKNOWN or result_black == UNKNOWN:
-                yield UNKNOWN
 
     # optimization #
     def prioritized_positions(self):
