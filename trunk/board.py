@@ -146,6 +146,8 @@ class Board(object):
         self.given_positions = set()
         for pos in self.positions:
             self.update_color_caches(pos, self[pos])
+            if self[pos] in GIVENS:
+                self.given_positions.add(pos)
 
     def update_color_caches(self, pos, value):
         if pos in self.black_positions:
@@ -154,8 +156,6 @@ class Board(object):
             self.white_positions.remove(pos)
         if pos in self.unknown_positions:
             self.unknown_positions.remove(pos)
-        if pos in self.given_positions:
-            self.given_positions.remove(pos)
 
         if value == BLACK:
             self.black_positions.add(pos)
@@ -163,8 +163,6 @@ class Board(object):
             self.white_positions.add(pos)
         elif value == UNKNOWN:
             self.unknown_positions.add(pos)
-        if value in GIVENS:
-            self.given_positions.add(pos)
 
     # grid overrides #
     def _in_bounds(self, x, y):
