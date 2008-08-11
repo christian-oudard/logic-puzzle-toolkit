@@ -90,6 +90,14 @@ class TestTritower(unittest.TestCase):
         for ib in invalid_boards:
             self.assertFalse(ib.is_valid())
 
+    def test_is_valid_triangles_incremental(self):
+        b = Tritower('''
+                     X.X
+                     ...
+                     ''')
+        self.assertFalse(b.valid_white_triangles())
+        self.assertFalse(b.valid_white_triangles((1, 1)))
+
     def test_solve(self):
         test_boards = (
             (Tritower('-'), Tritower('-')),
@@ -139,28 +147,28 @@ class TestTritower(unittest.TestCase):
                          ***X1.X.0.
                          '''),
             ),
-#            (
-#                Tritower('''
-#                         ***---------
-#                         **-----------
-#                         *0------------
-#                         ---------------
-#                         ----1----------
-#                         *-------1-2--1
-#                         **-2--2------
-#                         ***-1-1--2--
-#                         '''),
-#                Tritower('''
-#                         ***..X...X..
-#                         **X....X....X
-#                         *0..X..X..X...
-#                         ..X.X...X.X..X.
-#                         X...1.X......X.
-#                         *..X..X.1X2X.1
-#                         **X2.X2..X..X
-#                         ***X1.1X.2X.
-#                         '''),
-#            ),
+            (
+                Tritower('''
+                         ***---------
+                         **-----------
+                         *0------------
+                         ---------------
+                         ----1----------
+                         *-------1-2--1
+                         **-2--2------
+                         ***-1-1--2--
+                         '''),
+                Tritower('''
+                         ***..X...X..
+                         **X....X....X
+                         *0..X..X..X...
+                         ..X.X...X.X..X.
+                         X...1.X......X.
+                         *..X..X.1X2X.1
+                         **X2.X2..X..X
+                         ***X1.1X.2X.
+                         '''),
+            ),
         )
         for unsolved_board, solved_board in test_boards:
             unsolved_board.solve()

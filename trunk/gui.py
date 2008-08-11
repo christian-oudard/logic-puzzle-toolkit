@@ -77,7 +77,7 @@ class GUI(object):
                     else:
                         try:
                             character = str(e.unicode).lower()
-                            self.board.set_number(self.selected_pos, RCHARS[character])
+                            self.board.set_value(self.selected_pos, RCHARS[character])
                         except KeyError:
                             pass                        
                 elif e.type == MOUSEMOTION:

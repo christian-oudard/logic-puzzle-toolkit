@@ -2,8 +2,12 @@ import board
 from tritower import Tritower
 
 class Widetower(Tritower):
-    def valid_given_numbers(self):
-        for pos in self.given_positions:
+    def valid_given_numbers(self, position=None, color=None):
+        candidates = self.given_positions
+        if position:
+            candidates = candidates.intersection(self.adjacencies[position] +
+                                                 self.corner_adjacencies[position])
+        for pos in candidates:
             number = self[pos]
             num_black = 0
             num_white = 0

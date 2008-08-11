@@ -11,6 +11,8 @@ class Board(object):
         self.last_conclusion = None # used for search heuristics
         
     def solve(self, max_depth=2):
+        if not self.is_valid():
+            return False
         Board.max_depth = max_depth
         Board.depth_reached = 0
         Board.is_valid_count = 0
@@ -28,12 +30,7 @@ class Board(object):
             return
         if depth > Board.depth_reached:
             Board.depth_reached = depth
-        Board.is_valid_count += 1
-        if not self.is_valid():
-            yield False
-            return
-        else:
-            yield None
+        yield None
         while True:
             for result in self.conclusion_thread(depth):
                 if result is None:
@@ -44,7 +41,7 @@ class Board(object):
                 else:
                     position, color = result
                     self.last_conclusion = position
-                    self._set_value(position, color)
+                    self.set_value(position, color)
                     Board.is_valid_count += 1
                     if not self.is_valid():
                         yield False
@@ -77,8 +74,14 @@ class Board(object):
             yield None # now that all threads have gone once, pass control
 
     def assumption_thread(self, position, color, depth):
+        self.set_value(position, color)
+        Board.is_valid_count += 1
+        if not self.is_valid(position, color):
+            yield (position, opposite_color(color))
+        self.set_value(position, UNKNOWN)
+        yield None
         assumption_board = copy_board(self)
-        assumption_board._set_value(position, color)
+        assumption_board.set_value(position, color)
         for result in assumption_board.solve_thread(depth + 1):
             if result is None:
                 yield None
@@ -165,17 +168,16 @@ class Board(object):
         return self[pos] == UNKNOWN
 
     def set_black(self, pos):
-        self._set_value(pos, BLACK)  
+        self.set_value(pos, BLACK)  
     def set_white(self, pos):
-        self._set_value(pos, WHITE)
+        self.set_value(pos, WHITE)
     def set_unknown(self, pos):
-        self._set_value(pos, UNKNOWN)
-    def _set_value(self, pos, value):
+        self.set_value(pos, UNKNOWN)
+    def set_value(self, pos, value):
         if pos in self.positions:
             if self[pos] != value:
                 self[pos] = value
                 self.update_color_caches(pos, value)
-    set_number = _set_value    
 
     def __getitem__(self, key):
         return self.data[key]

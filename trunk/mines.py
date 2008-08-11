@@ -3,8 +3,13 @@ from constants import GIVENS
 from squaregrid import SquareGrid
 
 class Mines(SquareGrid):
-    def is_valid(self):
-        for pos in self.given_positions:
+    def is_valid(self, position=None, color=None):
+        candidates = self.given_positions
+        if position:
+            adjacencies = set(self.adjacencies[position] +
+                             self.corner_adjacencies[position])
+            candidates = candidates.intersection(adjacencies)
+        for pos in candidates:
             number = self[pos]
             num_black = 0
             num_white = 0

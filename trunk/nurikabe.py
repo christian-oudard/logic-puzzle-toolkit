@@ -1,18 +1,19 @@
-import board
-from board import *
+from constants import *
 from squaregrid import SquareGrid
 
 group_count = 0 # workaround until nonlocal keyword is available
 
 class Nurikabe(SquareGrid):
-    def is_valid(self):
+    def is_valid(self, position=None, color=None):
         return all((
-            self.valid_white_groups(),
-            self.valid_black_connected(),
-            self.valid_no_black_2by2(),
+            self.valid_white_groups(position, color),
+            self.valid_black_connected(position, color),
+            self.valid_no_black_2by2(position, color),
         ))
     
-    def valid_no_black_2by2(self):
+    def valid_no_black_2by2(self, position=None, color=None):
+        if color == WHITE:
+            return True
         for pos in self.black_positions:
             x, y = pos
             square = [pos,
@@ -23,7 +24,7 @@ class Nurikabe(SquareGrid):
                 return False
         return True
     
-    def valid_white_groups(self):
+    def valid_white_groups(self, position=None, color=None):
         global group_count
         marks = {}
         for pos in self.white_positions:
@@ -71,7 +72,9 @@ class Nurikabe(SquareGrid):
 
         return True
     
-    def valid_black_connected(self):
+    def valid_black_connected(self, position=None, color=None):
+        if color == BLACK:
+            return True
         marks = {}
         for pos in self.black_positions.union(self.unknown_positions):
             marks[pos] = 'unvisited' # init marks

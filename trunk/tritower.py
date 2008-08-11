@@ -3,26 +3,35 @@ from board import *
 from trianglegrid import TriangleGrid
 
 class Tritower(TriangleGrid):
-    def is_valid(self):
+    def is_valid(self, position=None, color=None):
         """Determine whether a board has a legal or illegal position."""
         return all((
-            self.valid_tower_adjacency(),
-            self.valid_given_numbers(),
-            self.valid_white_triangles(),
-            self.valid_tower_loops(),
-            self.valid_towers_connected(),
+            self.valid_tower_adjacency(position, color),
+            self.valid_given_numbers(position, color),
+            self.valid_white_triangles(position, color),
+            self.valid_tower_loops(position, color),
+            self.valid_towers_connected(position, color),
         ))
 
 
-    def valid_tower_adjacency(self):
+    def valid_tower_adjacency(self, position=None, color=None):
+        if color == WHITE:
+            return True
+        if position and color == BLACK:
+            for adj in self.adjacencies[position]:
+                if self.is_black(adj):
+                    return False
         for pos in self.black_positions:
             for adj in self.adjacencies[pos]:
                 if self.is_black(adj): # found a tower with another tower next to it
                     return False
         return True
 
-    def valid_given_numbers(self):
-        for pos in self.given_positions:
+    def valid_given_numbers(self, position=None, color=None):
+        candidates = self.given_positions
+        if position:
+            candidates = candidates.intersection(self.adjacencies[position])
+        for pos in candidates:
             number = self[pos]
             num_black = 0
             num_white = 0
@@ -36,18 +45,24 @@ class Tritower(TriangleGrid):
                 return False
         return True
 
-
-    def valid_white_triangles(self):
+    def valid_white_triangles(self, position=None, color=None):
         # white triangles of size 2 are illegal
-        for pos in self.white_positions: # consider every space and see if it is a center
+        if color == BLACK:
+            return True
+        candidates = self.white_positions
+        if position:
+            candidates = candidates.intersection([position] +
+                                                 self.adjacencies[position])
+        for pos in candidates: # consider every space and see if it is a center
             adjs = self.adjacencies[pos]
             if len(adjs) == 3: # must not be on the edge of the board
                 if all(self.is_white(a) for a in adjs):
                     return False
         return True
 
-
-    def valid_tower_loops(self):
+    def valid_tower_loops(self, position=None, color=None):
+        if color == WHITE:
+            return True
         marks = {}
         for pos in self.white_positions.union(self.unknown_positions):
             marks[pos] = 'unvisited' # init marks
@@ -75,7 +90,7 @@ class Tritower(TriangleGrid):
         return True
 
 
-    def valid_towers_connected(self):
+    def valid_towers_connected(self, position=None, color=None):
         # test that all towers are connected
         marks = {}
         for pos in self.black_positions.union(self.unknown_positions):
