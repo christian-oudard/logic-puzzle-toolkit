@@ -1,5 +1,4 @@
 import unittest
-from constants import *
 from mines import Mines
 
 class TestMines(unittest.TestCase):
@@ -86,7 +85,7 @@ class TestMines(unittest.TestCase):
             
     def test_contradiction(self):
         for ib in self.unsolvable_boards + self.invalid_boards:
-            self.assertEqual(CONTRADICTION, ib.solve())
+            self.assertEqual(False, ib.solve())
 
     def test_already_solved(self):
         for sb in self.valid_boards:

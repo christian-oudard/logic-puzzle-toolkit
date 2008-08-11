@@ -11,28 +11,26 @@ class Board(object):
         self.last_conclusion = None # used for search heuristics
         
     def solve(self, max_depth=2):
-        self.max_depth = max_depth
+        Board.max_depth = max_depth
         Board.depth_reached = 0
         Board.is_valid_count = 0
         solve_thread = self.solve_thread(depth=0)
         result = None
         for result in solve_thread:
             pass
-        if result == CONTRADICTION:
-            return CONTRADICTION
-        if len(self.unknown_positions) > 0:
+        if result is False or len(self.unknown_positions) > 0:
             return False # incomplete
         else:
             return True # fully solved
 
     def solve_thread(self, depth):
-        if depth > self.max_depth:
+        if depth > Board.max_depth:
             return
         if depth > Board.depth_reached:
             Board.depth_reached = depth
         Board.is_valid_count += 1
         if not self.is_valid():
-            yield CONTRADICTION
+            yield False
             return
         else:
             yield None
@@ -40,21 +38,21 @@ class Board(object):
             for result in self.conclusion_thread(depth):
                 if result is None:
                     yield None
-                elif is_success(result):
+                elif result is False:
+                    yield False
+                    return
+                else:
                     position, color = result
                     self.last_conclusion = position
                     self._set_value(position, color)
                     Board.is_valid_count += 1
                     if not self.is_valid():
-                        yield CONTRADICTION
+                        yield False
                         return
                     yield result
                     break # restart while loop, continue searching
-                elif result == CONTRADICTION:
-                    yield CONTRADICTION
-                    return
             else:
-                break
+                return # conclusion thread found nothing, stop searching
                 
     def conclusion_thread(self, depth):
         assumption_threads = []
@@ -71,11 +69,8 @@ class Board(object):
                     finished_threads.append(at)
                 if result is None:
                     pass
-                elif is_success(result):
+                else:
                     yield result
-                    return
-                elif result == CONTRADICTION:
-                    yield CONTRADICTION
                     return
             for ft in finished_threads:
                 assumption_threads.remove(ft)
@@ -87,7 +82,7 @@ class Board(object):
         for result in assumption_board.solve_thread(depth + 1):
             if result is None:
                 yield None
-            elif result == CONTRADICTION:
+            elif result is False:
                 yield (position, opposite_color(color))
 
 
