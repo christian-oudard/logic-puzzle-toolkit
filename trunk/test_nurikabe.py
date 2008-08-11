@@ -188,30 +188,30 @@ class TestNurikabe(unittest.TestCase):
                          4X3.X.2
                          ''')
             ),
-#            (
-#                Nurikabe('''
-#                         2--------2
-#                         ------2---
-#                         -2--7-----
-#                         ----------
-#                         ------3-3-
-#                         --2----3--
-#                         2--4------
-#                         ----------
-#                         -1----2-4-
-#                         '''),
-#                Nurikabe('''
-#                         2.X...XX.2
-#                         XXX..X2XXX
-#                         X2X.7X.X.X
-#                         X.XXXXXX.X
-#                         XX.X..3X3X
-#                         .X2XXXX3XX
-#                         2XX4.X..X.
-#                         XX..XXXXX.
-#                         X1XXX.2X4.
-#                         ''')
-#            ),
+            (
+                Nurikabe('''
+                         2--------2
+                         ------2---
+                         -2--7-----
+                         ----------
+                         ------3-3-
+                         --2----3--
+                         2--4------
+                         ----------
+                         -1----2-4-
+                         '''),
+                Nurikabe('''
+                         2.X...XX.2
+                         XXX..X2XXX
+                         X2X.7X.X.X
+                         X.XXXXXX.X
+                         XX.X..3X3X
+                         .X2XXXX3XX
+                         2XX4.X..X.
+                         XX..XXXXX.
+                         X1XXX.2X4.
+                         ''')
+            ),
         )
         for unsolved_board, solved_board in test_boards:
             unsolved_board.solve(3)

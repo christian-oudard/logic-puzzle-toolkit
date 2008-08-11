@@ -20,6 +20,10 @@ class Board(object):
         result = None
         for result in solve_thread:
             pass
+            #if is_success(result):
+            #    print self
+            #if Board.is_valid_count > 1000:
+            #    return
         if result is False or len(self.unknown_positions) > 0:
             return False # incomplete
         else:

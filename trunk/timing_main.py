@@ -90,6 +90,9 @@ def solve_huge():
 -2------5--------3-------------2-2--
 ------------------------------------
 ''')
+    puzzle.solve()
+
+def solve_huge2():
     puzzle = Nurikabe('''
 --------------------X------X--------
 --2X3X7---Xb-----2-X1X----X1X-------
@@ -132,5 +135,4 @@ def time_main(command):
     stats.print_stats()
 
 if __name__ == '__main__':
-    SET_DEBUG(1)
-    time_main('solve_small()')
+    time_main('solve_huge2()')

@@ -14,14 +14,25 @@ class Nurikabe(SquareGrid):
     def valid_no_black_2by2(self, position=None, color=None):
         if color == WHITE:
             return True
-        for pos in self.black_positions:
+        candidates = self.black_positions
+        if position:
+            x, y = position
+            square = [position,
+                      (x-1, y),
+                      (x, y-1),
+                      (x-1, y-1)]
+            candidates = candidates.intersection(square)
+        for pos in candidates:
             x, y = pos
             square = [pos,
                       (x+1, y),
                       (x, y+1),
                       (x+1, y+1)]
-            if all(s in self.black_positions for s in square):
-                return False
+            try:
+                if all(self.is_black(s) for s in square):
+                    return False
+            except KeyError:
+                continue # square at edge, ignore it
         return True
     
     def valid_white_groups(self, position=None, color=None):
