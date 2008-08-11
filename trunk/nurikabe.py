@@ -63,6 +63,9 @@ class Nurikabe(SquareGrid):
                 if group_count > number:
                     return False
 
+        if color == WHITE:
+            return True # a white square cannot cut off a white group
+
         # find orphan groups
         for pos in marks:
             if marks[pos] == 'unvisited':

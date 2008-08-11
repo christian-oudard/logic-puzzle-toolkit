@@ -7,12 +7,11 @@ class Tritower(TriangleGrid):
         """Determine whether a board has a legal or illegal position."""
         return all((
             self.valid_tower_adjacency(position, color),
-            self.valid_given_numbers(position, color),
+            self.valid_given_numbers(position),
             self.valid_white_triangles(position, color),
             self.valid_tower_loops(position, color),
             self.valid_towers_connected(position, color),
         ))
-
 
     def valid_tower_adjacency(self, position=None, color=None):
         if color == WHITE:
@@ -27,7 +26,7 @@ class Tritower(TriangleGrid):
                     return False
         return True
 
-    def valid_given_numbers(self, position=None, color=None):
+    def valid_given_numbers(self, position=None):
         candidates = self.given_positions
         if position:
             candidates = candidates.intersection(self.adjacencies[position])
@@ -92,6 +91,8 @@ class Tritower(TriangleGrid):
 
     def valid_towers_connected(self, position=None, color=None):
         # test that all towers are connected
+        if color == BLACK:
+            return True
         marks = {}
         for pos in self.black_positions.union(self.unknown_positions):
             marks[pos] = 'unvisited' # init marks
