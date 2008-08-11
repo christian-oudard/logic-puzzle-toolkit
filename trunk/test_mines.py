@@ -75,7 +75,7 @@ class TestMines(unittest.TestCase):
 
     def test_solve_minimum_required_depth(self):
         for unsolved_board, solved_board in self.complex_boards:
-            unsolved_board.solve(5)
+            unsolved_board.solve(3)
             self.assert_(unsolved_board.depth_reached <= 2)
 
     def test_solve_depth_limit(self):

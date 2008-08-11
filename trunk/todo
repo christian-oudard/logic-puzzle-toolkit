@@ -12,10 +12,13 @@ new puzzles:
 housekeeping:
 - reduce duplication (last_conclusion, etc) in board.solve 
 - refactor Board.set_number, it's only used once
+- use dict.get where appropriate, instead of doing exception handling
 
 solving:
-- make a unit test with a huge blank board
-- audit solve order, breadth versus depth first
+- ABORT signal?
+- track depth reached from solve(), not from the threads
+  . use call stack?
+- make solver able to handle a huge blank board
 - test if board is already solved
   . audit how it's currently being checked for solution
   . branch finding solution when looking for contradiction
@@ -33,15 +36,19 @@ gui:
 - localized invalidity display
 
 optimization:
-- yield unknown only at depth points
 - incremental validity. base it only on assumption square
+- track number of operations, not just speed
+- yield unknown only at depth points
+- instead of copying whole board, create an overlay dictionary which only has the values of changed cells
+	- possibly use dict.update() to propagate changes
 - try different version of is_success function
 - make switches to quickly turn on or off optimization methods. test every combination and see whether they are all necessary
+- perhaps track positions that may duplicate each other, and detect transitions where 2 threads get to the same board
 
 nurikabe 
     def valid_white_reachable(self):
         for pos_white in self.white_positions:
-            for pos_given in self.positions:
+            for pos_given in self.given_positions:
                 number = self[pos]
                 if number not in GIVENS:
                     continue

@@ -6,11 +6,6 @@ from constants import *
 # this function returns false if the current state is certainly invalid, or
 # true if it is valid or potentially valid
 
-# debug levels
-# 1: show start and solved state
-# 2: show steps in between
-# 3: show details of solving
-
 class Board(object):    
     def __init__(self):
         self.last_conclusion = None # used for search heuristics
@@ -18,106 +13,86 @@ class Board(object):
     def solve(self, max_depth=2):
         self.max_depth = max_depth
         Board.depth_reached = 0
-        if DEBUG(3): print 'solving to depth', max_depth
-        elif DEBUG(1): print 'solving...'
-        if DEBUG(1): print self
-        if not self.is_valid():
-            return CONTRADICTION
-        solve_thread = self.solve_thread(depth=1)
+        Board.is_valid_count = 0
+        solve_thread = self.solve_thread(depth=0)
         result = None
         for result in solve_thread:
-            if DEBUG(2):
-                if is_success(result):
-                    pos, color = result
-                    print pos, '=', CHARS[color]
-                    print self
-        if DEBUG(1):
-            if result == True:
-                print 'solved'
-            elif result == False:
-                print 'unable to solve'
-            elif result == CONTRADICTION:
-                print 'unsolvable'
-            print self
-        if DEBUG(2): print 'greatest depth reached:', Board.depth_reached
-        return result
+            pass
+        if result == CONTRADICTION:
+            return CONTRADICTION
+        if len(self.unknown_positions) > 0:
+            return False # incomplete
+        else:
+            return True # fully solved
 
-    # a solve thread yields UNKNOWN if nothing was determined,
-    # a result if a space was solved,
-    # True for a fully solved board,
-    # False for giving up,
-    # and CONTRADICTION if a contradiction was found
     def solve_thread(self, depth):
         if depth > self.max_depth:
             return
-        if DEBUG(3): print 'level', depth
         if depth > Board.depth_reached:
             Board.depth_reached = depth
+        Board.is_valid_count += 1
+        if not self.is_valid():
+            yield CONTRADICTION
+            return
+        else:
+            yield None
         while True:
-            assumption_threads = [self.assumption_thread(pos, depth) for pos in self.prioritized_positions()]
-            for result in imix(*assumption_threads):
-                if result == UNKNOWN:
-                    yield UNKNOWN
+            for result in self.conclusion_thread(depth):
+                if result is None:
+                    yield None
                 elif is_success(result):
                     position, color = result
                     self.last_conclusion = position
                     self._set_value(position, color)
-                    if DEBUG(4):
-                        print self
+                    Board.is_valid_count += 1
+                    if not self.is_valid():
+                        yield CONTRADICTION
+                        return
                     yield result
-                    break # restart while loop. clear threads, continue searching
+                    break # restart while loop, continue searching
                 elif result == CONTRADICTION:
                     yield CONTRADICTION
                     return
-            else: # no more to solve
+            else:
                 break
-        if len(self.unknown_positions) > 0:
-            yield False # incomplete
-        else:
-            yield True # fully solved
+                
+    def conclusion_thread(self, depth):
+        assumption_threads = []
+        for pos in self.prioritized_positions():
+            for color in (BLACK, WHITE):
+                assumption_threads.append(self.assumption_thread(pos, color, depth))
+        while assumption_threads:
+            finished_threads = []
+            for at in assumption_threads:
+                result = None
+                try:
+                    result = at.next()
+                except StopIteration:
+                    finished_threads.append(at)
+                if result is None:
+                    pass
+                elif is_success(result):
+                    yield result
+                    return
+                elif result == CONTRADICTION:
+                    yield CONTRADICTION
+                    return
+            for ft in finished_threads:
+                assumption_threads.remove(ft)
+            yield None # now that all threads have gone once, pass control
 
-    def assumption_thread(self, position, depth):
-        self.set_black(position)
-        valid_black = self.is_valid()
-        self.set_white(position)
-        valid_white = self.is_valid()
-        self.set_unknown(position)
+    def assumption_thread(self, position, color, depth):
+        assumption_board = copy_board(self)
+        assumption_board._set_value(position, color)
+        for result in assumption_board.solve_thread(depth + 1):
+            if result is None:
+                yield None
+            elif result == CONTRADICTION:
+                yield (position, opposite_color(color))
 
-        if not valid_white and not valid_black:
-            yield CONTRADICTION
-        elif not valid_black:
-            yield (position, WHITE)
-        elif not valid_white:
-            yield (position, BLACK)
-        else:
-            yield UNKNOWN
-        
-        black_board = copy_board(self)
-        black_board.set_black(position)
-        solve_black = black_board.solve_thread(depth + 1)
-
-        white_board = copy_board(self)
-        white_board.set_white(position)
-        solve_white = white_board.solve_thread(depth + 1)
-        
-        # look for results in parallel, until one returns
-#        for (result_black, result_white) in izip(solve_black, solve_white):
-#            if result_black == True or result_white == True:
-#                pass #print 'early solution found'
-#            if result_black == CONTRADICTION:
-#                yield (position, WHITE)
-#            elif result_white == CONTRADICTION:
-#                yield (position, BLACK)
-#            elif result_white == UNKNOWN or result_black == UNKNOWN:
-#                yield UNKNOWN
-        for result in solve_black:
-            if result == CONTRADICTION:
-                yield (position, WHITE)
-        for result in solve_white:
-            if result == CONTRADICTION:
-                yield (position, BLACK)
 
     # optimization #
+    
     def prioritized_positions(self):
         priority_dict = {}
         for pos in self.unknown_positions:
@@ -237,3 +212,8 @@ def mdist(pos1, pos2):
     x2, y2 = pos2
     return abs(x1 - x2) + abs(y1 - y2)
 
+def opposite_color(color):
+    if color == WHITE:
+        return BLACK
+    if color == BLACK:
+        return WHITE
