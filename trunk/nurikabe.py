@@ -36,6 +36,14 @@ class Nurikabe(SquareGrid):
         return True
     
     def valid_white_groups(self, position=None, color=None):
+        if position:
+            next_to_white = any(self.is_white(adj) for adj in self.adjacencies[position])
+            if color == BLACK and not next_to_white:
+                return True
+            only_next_to_unknown = all(self.is_unknown(adj) for adj in self.adjacencies[position])
+            if color == WHITE and only_next_to_unknown:
+                return True
+
         global group_count
         marks = {}
         for pos in self.white_positions:
@@ -78,23 +86,28 @@ class Nurikabe(SquareGrid):
         for pos in marks:
             if marks[pos] == 'unvisited':
                 group_count = 0
-                if search_white(pos) == BLACK:
+                bordered_by = search_white(pos) 
+                if bordered_by == BLACK:
                     return False # orphan group can't connect to a given number
 
         return True
     
     def valid_black_connected(self, position=None, color=None):
-        marks = {}
-        for pos in self.black_positions.union(self.unknown_positions):
-            marks[pos] = 'unvisited' # init marks
-
+        if position:
+            next_to_black = any(self.is_black(adj) for adj in self.adjacencies[position])
+            if color == BLACK and next_to_black:
+                return True
+            elif color == WHITE and not next_to_black:
+                return True
         def search_black(pos): # just mark everything in the group 'visited'
             marks[pos] = 'visited'
             adjs = self.adjacencies[pos]
             for adj in adjs:
                 if adj in marks and marks[adj] == 'unvisited':
                     search_black(adj)
-
+        marks = {}
+        for pos in self.black_positions.union(self.unknown_positions):
+            marks[pos] = 'unvisited' # init marks
         group_count = 0
         for pos in self.black_positions: # for every unvisited tower
             if marks[pos] == 'unvisited': # don't start a group with an unknown space
@@ -102,6 +115,5 @@ class Nurikabe(SquareGrid):
                 if group_count >= 2:
                     return False
                 search_black(pos)
-
         return True
 
