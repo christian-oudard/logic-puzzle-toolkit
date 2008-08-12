@@ -1,6 +1,5 @@
-from itertools import izip
-from iterators import izip_longest, imix
 from constants import *
+from utility import *
 
 # every non-abstract subclass of board must implement an is_valid function.
 # this function returns false if the current state is certainly invalid, or
@@ -93,22 +92,25 @@ class Board(object):
 
 
     # optimization #
-    
+
     def prioritized_positions(self):
         priority_dict = {}
         for pos in self.unknown_positions:
-            score = 0
-            if self.last_conclusion is not None:
-                dist = mdist(pos, self.last_conclusion)
-                score += max(5 - dist, 0)
-            for adj in self.adjacencies[pos]:
-                if self.is_black(adj) or self.is_white(adj): # priority up for being next to a known space
-                    score += 1
-                if self[adj] in GIVENS: # priority up for being next to a given
-                    score += 1
-            priority_dict[pos] = score
+            priority_dict[pos] = self.priority(pos)
         position_list = list(self.unknown_positions)
         return sorted(position_list, key=priority_dict.__getitem__, reverse=True)
+
+    def priority(self, position):
+        score = 0
+        if self.last_conclusion is not None:
+            dist = mdist(position, self.last_conclusion)
+            score += max(5 - dist, 0)
+        for adj in self.adjacencies[position]:
+            if self.is_black(adj) or self.is_white(adj): # priority up for being next to a known space
+                score += 1
+            if self[adj] in GIVENS: # priority up for being next to a given
+                score += 1
+        return score
 
     def precalc_adjacency(self):
         # calculate adjacency graphs
@@ -196,24 +198,3 @@ class Board(object):
             yield self.data[y][x]
         
 
-# utility functions #
-from copy import copy
-def copy_board(board):
-    new_board = copy(board)
-    new_board.data = copy(board.data)
-    new_board.positions = copy(board.positions)
-    new_board.black_positions = copy(board.black_positions)
-    new_board.white_positions = copy(board.white_positions)
-    new_board.unknown_positions = copy(board.unknown_positions)
-    return new_board
-
-def mdist(pos1, pos2):
-    x1, y1 = pos1
-    x2, y2 = pos2
-    return abs(x1 - x2) + abs(y1 - y2)
-
-def opposite_color(color):
-    if color == WHITE:
-        return BLACK
-    if color == BLACK:
-        return WHITE

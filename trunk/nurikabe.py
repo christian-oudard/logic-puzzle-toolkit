@@ -1,4 +1,5 @@
 from constants import *
+from utility import mdist
 from squaregrid import SquareGrid
 
 group_count = 0 # workaround until nonlocal keyword is available
@@ -115,4 +116,23 @@ class Nurikabe(SquareGrid):
                     return False
                 search_black(pos)
         return True
+
+    distance_scores = {
+        1: 4,
+        2: 3,
+        3: 2,
+    }
+    def priority(self, position):
+        score = 0
+        if self.last_conclusion is not None:
+            dist = mdist(position, self.last_conclusion)
+            if dist in Nurikabe.distance_scores:
+                score += Nurikabe.distance_scores[dist]
+        for adj in self.adjacencies[position]:
+            if self.is_black(adj) or self.is_white(adj): # priority up for being next to a known space
+                score += 1
+            if self[adj] in GIVENS: # priority up for being next to a given
+                score += 2
+        return score
+
 
