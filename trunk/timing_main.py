@@ -90,6 +90,7 @@ def solve_huge():
 -2------5--------3-------------2-2--
 ------------------------------------
 ''')
+    puzzle.limit = 1000
     puzzle.solve()
 
 def solve_huge2():
@@ -125,6 +126,7 @@ def solve_huge2():
 -2------5--------3X----------X-2X2--
 --------------------------------X---
 ''')
+    puzzle.limit = 500
     puzzle.solve()
     
 def time_main(command):

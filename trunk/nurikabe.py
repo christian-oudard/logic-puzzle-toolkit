@@ -74,9 +74,6 @@ class Nurikabe(SquareGrid):
                 if group_count > number:
                     return False
 
-        if color == WHITE:
-            return True # a white square cannot cut off a white group
-
         # find orphan groups
         for pos in marks:
             if marks[pos] == 'unvisited':
@@ -87,8 +84,6 @@ class Nurikabe(SquareGrid):
         return True
     
     def valid_black_connected(self, position=None, color=None):
-        if color == BLACK:
-            return True
         marks = {}
         for pos in self.black_positions.union(self.unknown_positions):
             marks[pos] = 'unvisited' # init marks

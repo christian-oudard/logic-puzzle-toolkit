@@ -1,4 +1,5 @@
 import unittest
+from constants import WHITE, BLACK
 from nurikabe import Nurikabe
 
 class TestNurikabe(unittest.TestCase):
@@ -99,6 +100,57 @@ class TestNurikabe(unittest.TestCase):
         for ib in invalid_boards:
             self.assertFalse(ib.valid_white_groups())
 
+    def test_valid_white_groups_incremental(self):
+        invalid_boards = [
+            (
+                Nurikabe('''
+                         .X.
+                         .X.
+                         3X.
+                         '''),
+                (2, 0), WHITE
+            ),
+            (
+                Nurikabe('''
+                         .XX
+                         .X.
+                         3X.
+                         '''),
+                (2, 2), WHITE
+            ),
+            (
+                Nurikabe('''
+                         2.X---X--2
+                         XXX--X2X--
+                         X2XX7X.X--
+                         X.X.XXXX.-
+                         XX.X..3X3-
+                         .X2XXXX3XX
+                         2XX4.X..X.
+                         XX..XXXXX.
+                         X1XXX.2X4.
+                         '''),
+                (3, 3), WHITE
+            ),
+            (
+                Nurikabe('''
+                         2.X---X.X2
+                         XXX--X2XX.
+                         X2X.7X.X.X
+                         X.X-XXXX.X
+                         XX.X..3X3X
+                         .X2XXXX3XX
+                         2XX4.X..X.
+                         XX..XXXXX.
+                         X1XXX.2X4.
+                         '''),
+                (7, 0), WHITE
+            ),
+        ]
+        for ib, position, color in invalid_boards:
+            self.assertFalse(ib.valid_white_groups())
+            self.assertFalse(ib.valid_white_groups(position, color))
+
     def test_valid_black_connected_pass(self):
         valid_boards = [
             Nurikabe('''
@@ -130,6 +182,35 @@ class TestNurikabe(unittest.TestCase):
         ]
         for ib in invalid_boards:
             self.assertFalse(ib.valid_black_connected())
+
+    def test_valid_black_connected_incremental(self):
+        invalid_boards = [
+            (
+                Nurikabe('''
+                         ---
+                         -X.
+                         3.X
+                         '''),
+                (1, 1), BLACK
+            ),
+            (
+                Nurikabe('''
+                         2.X------2
+                         XXX---2---
+                         X2X-7--X--
+                         X.X----X.X
+                         XX.X.-3X3X
+                         .X2XXXX3XX
+                         2XX4.X..X.
+                         XX..XXXX..
+                         X1XXX.2X4X
+                         '''),
+                (9, 8), BLACK
+            ),
+        ]
+        for ib, position, color in invalid_boards:
+            self.assertFalse(ib.valid_black_connected())
+            self.assertFalse(ib.valid_black_connected(position, color))
 
     def test_solve(self):
         test_boards = (

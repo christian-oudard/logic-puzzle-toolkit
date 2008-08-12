@@ -91,8 +91,6 @@ class Tritower(TriangleGrid):
 
     def valid_towers_connected(self, position=None, color=None):
         # test that all towers are connected
-        if color == BLACK:
-            return True
         marks = {}
         for pos in self.black_positions.union(self.unknown_positions):
             marks[pos] = 'unvisited' # init marks

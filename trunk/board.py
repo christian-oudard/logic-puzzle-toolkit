@@ -9,6 +9,7 @@ from constants import *
 class Board(object):    
     def __init__(self):
         self.last_conclusion = None # used for search heuristics
+        self.limit = None
         
     def solve(self, max_depth=2):
         if not self.is_valid():
@@ -20,10 +21,10 @@ class Board(object):
         result = None
         for result in solve_thread:
             pass
+            if self.limit and Board.is_valid_count > self.limit:
+                return
             #if is_success(result):
             #    print self
-            #if Board.is_valid_count > 1000:
-            #    return
         if result is False or len(self.unknown_positions) > 0:
             return False # incomplete
         else:
@@ -39,15 +40,12 @@ class Board(object):
             for result in self.conclusion_thread(depth):
                 if result is None:
                     yield None
-                elif result is False:
-                    yield False
-                    return
                 else:
                     position, color = result
                     self.last_conclusion = position
                     self.set_value(position, color)
                     Board.is_valid_count += 1
-                    if not self.is_valid():
+                    if not self.is_valid(position, color):
                         yield False
                         return
                     yield result
@@ -80,9 +78,10 @@ class Board(object):
     def assumption_thread(self, position, color, depth):
         self.set_value(position, color)
         Board.is_valid_count += 1
-        if not self.is_valid(position, color):
-            yield (position, opposite_color(color))
+        valid = self.is_valid(position, color)
         self.set_value(position, UNKNOWN)
+        if not valid:
+            yield (position, opposite_color(color))
         yield None
         assumption_board = copy_board(self)
         assumption_board.set_value(position, color)

@@ -1,7 +1,24 @@
 import unittest
+from constants import BLACK, WHITE
 from widetower import Widetower
 
 class TestWidetower(unittest.TestCase):
+    def test_valid_towers_connected_incremental(self):
+        invalid_boards = [
+            (
+                Widetower('''
+                          *X-2--
+                          ....X4-
+                          .2X..3-
+                          *.X3X2
+                          '''),
+                (1, 0), BLACK
+            ),
+        ]
+        for ib, position, color in invalid_boards:
+            self.assertFalse(ib.valid_towers_connected())
+            self.assertFalse(ib.valid_towers_connected(position, color))
+
     def test_solve(self):
         test_boards = (
             (
