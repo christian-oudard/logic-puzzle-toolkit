@@ -36,12 +36,11 @@ class Nurikabe(SquareGrid):
         return True
     
     def valid_white_groups(self, position=None, color=None):
-        if position:
-            next_to_white = any(self.is_white(adj) for adj in self.adjacencies[position])
-            if color == BLACK and not next_to_white:
+        if color == BLACK:
+            if not any(self.is_white(adj) for adj in self.adjacencies[position]):
                 return True
-            only_next_to_unknown = all(self.is_unknown(adj) for adj in self.adjacencies[position])
-            if color == WHITE and only_next_to_unknown:
+        if color == WHITE:
+            if all(self.is_unknown(adj) for adj in self.adjacencies[position]):
                 return True
 
         global group_count
