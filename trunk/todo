@@ -36,13 +36,10 @@ gui:
 - localized invalidity display
 
 optimization:
-- incremental validity. base it only on assumption square
-- track number of operations, not just speed
-- yield unknown only at depth points
+- branch-merge 
+  . when opposing (black / white) solution branches reach common conclusions, it must be true
 - instead of copying whole board, create an overlay dictionary which only has the values of changed cells
 	- possibly use dict.update() to propagate changes
-- try different version of is_success function
-- make switches to quickly turn on or off optimization methods. test every combination and see whether they are all necessary
 - perhaps track positions that may duplicate each other, and detect transitions where 2 threads get to the same board
 
 nurikabe 

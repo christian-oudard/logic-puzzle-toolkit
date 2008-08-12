@@ -56,14 +56,41 @@ class TestNurikabe(unittest.TestCase):
                      -.
                      '''),
             Nurikabe('''
-                     .-.
+                     2-.
+                     '''),
+            Nurikabe('''
+                     ---
+                     X--
+                     3--
+                     '''),
+            Nurikabe('''
+                     ---
+                     ..-
+                     3--
+                     '''),
+            Nurikabe('''
+                     X--
+                     .X-
+                     3--
                      '''),
             Nurikabe('''
                      2-.
                      '''),
+            Nurikabe('''
+                     --4
+                     ..X
+                     '''),
+            Nurikabe('''
+                     --4
+                     -.X
+                     '''),
+            Nurikabe('''
+                     .--.
+                     6X.
+                     '''),
         ]
         for vb in valid_boards:
-            self.assertTrue(vb.valid_white_groups())
+            self.assertTrue(vb.valid_white_groups(), 'This board should test valid:\n%s' % vb)
 
     def test_valid_white_groups_fail(self):
         invalid_boards = [
@@ -96,9 +123,27 @@ class TestNurikabe(unittest.TestCase):
                      4.4
                      ---
                      '''),
+            Nurikabe('''
+                     .X3-
+                     XX--
+                     '''),
+            Nurikabe('''
+                     .X3-
+                     -X--
+                     '''),
+            Nurikabe('''
+                     .--
+                     .X-
+                     3.-
+                     '''),
+            Nurikabe('''
+                     .X.
+                     .X-
+                     3X-
+                     '''),
         ]
         for ib in invalid_boards:
-            self.assertFalse(ib.valid_white_groups())
+            self.assertFalse(ib.valid_white_groups(), 'This board should test invalid:\n%s' % ib)
 
     def test_valid_white_groups_incremental(self):
         invalid_boards = [
@@ -235,20 +280,20 @@ class TestNurikabe(unittest.TestCase):
                          3-X
                          ''')
             ),
-#            (
-#                Nurikabe('''
-#                         ----
-#                         ----
-#                         ----
-#                         5-- 
-#                         '''),
-#                Nurikabe('''
-#                         XXXX
-#                         X..X
-#                         -.XX
-#                         5-X 
-#                         ''')
-#            ),
+            (
+                Nurikabe('''
+                         ----
+                         ----
+                         ----
+                         5-- 
+                         '''),
+                Nurikabe('''
+                         XXXX
+                         X..X
+                         -.XX
+                         5-X 
+                         ''')
+            ),
             (
                 Nurikabe('''
                          -1-----

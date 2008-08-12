@@ -2,14 +2,13 @@ from constants import *
 from utility import mdist
 from squaregrid import SquareGrid
 
-group_count = 0 # workaround until nonlocal keyword is available
-
 class Nurikabe(SquareGrid):
     def is_valid(self, position=None, color=None):
         return all((
+            self.valid_no_black_2by2(position, color),
             self.valid_white_groups(position, color),
             self.valid_black_connected(position, color),
-            self.valid_no_black_2by2(position, color),
+            self.valid_white_reachable(position, color),
         ))
     
     def valid_no_black_2by2(self, position=None, color=None):
@@ -44,16 +43,14 @@ class Nurikabe(SquareGrid):
             if all(self.is_unknown(adj) for adj in self.adjacencies[position]):
                 return True
 
-        global group_count
         marks = {}
         for pos in self.white_positions:
             marks[pos] = 'unvisited' # initialize marks
 
         def search_white(pos):
-            global group_count
-            group_count += 1
             if marks[pos] == 'visited':
                 return CONTRADICTION # found given numbers connected to each other
+            Nurikabe.group_size += 1
             marks[pos] = 'visited'
             adjs = self.adjacencies[pos]
             results = []
@@ -69,25 +66,44 @@ class Nurikabe(SquareGrid):
             else: # reached an unknown
                 return UNKNOWN
                 
-        # mark every numbered group visited, and check that the number is correct
         for pos in self.given_positions:
             number = self[pos]
-            group_count = 0
+            Nurikabe.group_size = 0
             search_result = search_white(pos)
             if search_result == CONTRADICTION:
                 return False
-            if search_result == BLACK and group_count != number:
+            if search_result == BLACK and Nurikabe.group_size != number:
                 return False
             elif search_result == UNKNOWN:
-                if group_count > number:
+                if Nurikabe.group_size > number:
                     return False
 
-        # find orphan groups
+        # find orphaned groups
+        def search_white_orphan(pos):
+            orphan_marks[pos] = 'visited'
+            for adj in self.adjacencies[pos]:
+                if self.is_black(adj):
+                    continue
+                if self.is_white(adj) and marks[adj] == 'visited':
+                    return WHITE
+                if orphan_marks[adj] == WHITE:
+                    return WHITE
+                if orphan_marks[adj] == 'unvisited': # white or unknown, and unvisited
+                    if search_white_orphan(adj) == WHITE:
+                        orphan_marks[pos] = WHITE
+                        return WHITE
+            return BLACK
+
+        orphan_marks = {}
         for pos in marks:
             if marks[pos] == 'unvisited':
-                group_count = 0
-                bordered_by = search_white(pos) 
-                if bordered_by == BLACK:
+                orphan_marks[pos] = 'unvisited'
+        for pos in self.unknown_positions:
+            orphan_marks[pos] = 'unvisited'
+
+        for pos in orphan_marks:
+            if orphan_marks[pos] == 'unvisited' and self.is_white(pos):
+                if search_white_orphan(pos) == BLACK:
                     return False # orphan group can't connect to a given number
 
         return True
@@ -109,12 +125,28 @@ class Nurikabe(SquareGrid):
         for pos in self.black_positions.union(self.unknown_positions):
             marks[pos] = 'unvisited' # init marks
         group_count = 0
-        for pos in self.black_positions: # for every unvisited tower
-            if marks[pos] == 'unvisited': # don't start a group with an unknown space
+        for pos in self.black_positions:
+            if marks[pos] == 'unvisited':
                 group_count += 1
                 if group_count >= 2:
                     return False
                 search_black(pos)
+        return True
+
+    def valid_white_reachable(self, position=None, color=None):
+        if color == BLACK:
+            return True
+        if color == WHITE:
+            candidates = [position]
+        else:
+            candidates = self.white_positions.difference(self.given_positions)
+        for pos_white in candidates:
+            for pos_given in self.given_positions:
+                number = self[pos_given]
+                if mdist(pos_given, pos_white) < number:
+                    break # this candidate has a given close enough
+            else:
+                return False # no numbers close enough
         return True
 
     distance_scores = {
@@ -134,5 +166,3 @@ class Nurikabe(SquareGrid):
             if self[adj] in GIVENS: # priority up for being next to a given
                 score += 2
         return score
-
-

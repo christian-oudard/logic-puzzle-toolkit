@@ -22,8 +22,11 @@ class Board(object):
             pass
             if self.limit and Board.is_valid_count > self.limit:
                 return
-            #if is_success(result):
-            #    print self
+            if DEBUG(1):
+                if is_success(result):
+                    print self
+                elif result == False:
+                    print 'board unsolvable'
         if result is False or len(self.unknown_positions) > 0:
             return False # incomplete
         else:
