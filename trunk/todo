@@ -37,7 +37,9 @@ gui:
 
 optimization:
 - branch-merge 
-  . when opposing (black / white) solution branches reach common conclusions, it must be true
+  . when paired (black / white) solution branches reach common conclusions, it must be true
+- branch-substitution
+  . when one branch of a pair reaches a solution, and the other branch has already concluded things, those then apply to the parent branch, and it isn't necessary to derive them again
 - instead of copying whole board, create an overlay dictionary which only has the values of changed cells
 	- possibly use dict.update() to propagate changes
 - perhaps track positions that may duplicate each other, and detect transitions where 2 threads get to the same board

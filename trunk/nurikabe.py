@@ -90,6 +90,7 @@ class Nurikabe(SquareGrid):
                     return WHITE
                 if orphan_marks[adj] == 'unvisited': # white or unknown, and unvisited
                     if search_white_orphan(adj) == WHITE:
+                        orphan_marks[adj] = WHITE
                         orphan_marks[pos] = WHITE
                         return WHITE
             return BLACK

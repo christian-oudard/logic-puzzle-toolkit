@@ -25,6 +25,7 @@ class Board(object):
             if DEBUG(1):
                 if is_success(result):
                     print self
+                    print
                 elif result == False:
                     print 'board unsolvable'
         if result is False or len(self.unknown_positions) > 0:

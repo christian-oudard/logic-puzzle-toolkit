@@ -76,22 +76,22 @@ def solve_large():
 ''')
     puzzle.solve()
 
-def solve_large2():
+def solve_large_ip():
     puzzle = Nurikabe('''
-2XX-X1XXXXXXX1X--X--2---
-.X..XXX.2X..3XX-X1X-----
-XXX.X1XXXXXXX1X-3X-----6
-X1X.-X--5-..-X----------
-.XX---4-----X1X-------3-
-.X.----------X-7X7X3---X
-.X.--2-----------------X
-.X9X--------------X---.X
-.7X1X--4-----2---X1XXX.X
-.XXXX-----5-----..XX1X.X
-X-.4X4---------XX.X2XX.X
----X8XX-.------.X.X.X.7X
-----.X1X.X---5X.X.bXXXX5
-------X-6X2----.5XXX....
+2XXXX1XXXXXXX1XXXXX-2---
+.X..XXX.2X..3XX.X1X-X---
+XXX.X1XXX-XXX1X.3X-----6
+X1X.XX--5--.-XXXX-----X-
+.XX.X.4-----X1X.X--X-X3X
+.X..XX-------X-7X7X3X..X
+.X.X.2X----------.X.XXXX
+.X9XXXX-----------X.X..X
+.7X1X.X4-----2X--X1XXX.X
+.XXXX.X---5----...XX1X.X
+XX.4X4.X------XXX.X2XX.X
+X..X8XXX.------.X.X.X.7X
+XXXX.X1X.X-X-5X.X.bXXXX5
+......XX6X2-XX-.5XXX....
 ''')
     puzzle.solve()
 
@@ -131,42 +131,41 @@ def solve_huge():
     puzzle.limit = 1000
     puzzle.solve()
 
-def solve_huge2():
+def solve_huge_ip():
     puzzle = Nurikabe('''
---------------------X------X--------
---2X3X7---Xb-----2-X1X----X1X-------
-----------4X-----XX1X----.7X--9-----
----5---X------X--.8XX--3--X---XX4---
----X--X1X----X1X--X..X-X-X1X-X2.XX--
---X1XX1X--X-X1X---X3X3X4--X--3XXX1X-
----X2-X--X1X6XX---3XX.-----------X--
----------XX-.X1X---------------.----
---X-----X1X--XX..--X-----3Xa--X8X---
--3X4-XX8-X--X1XX4-X1X--------X1X1X--
--X6XX.2X-----XX1XX1XX5---X---XXXX--7
---.--XX-4----X1XX1XX1X-.X1X-X1X1X---
----X--4--X----X--X--X-X4XX1X-X4X----
---X1X-X-X1X--X1X-.----6X1XX3--.-X---
--X1X--3--XX6--X-X9XX---XX1X---XX1X--
---X----X-X1XX--.4XX1X----X4---4-X--5
--2-X-.X1X-X2.X--X2.X----X-----------
---X1X6XX---XX1X--XXX---X1X------X---
----X-X1X-XX1XX--..X1X4-XXX3----X1X--
---5X--X-6X1X3---4XXX--X1X6X-XX.-X-2-
---X4----X.XX---XX1X.---X-.-X.X4X1X--
---------X2X1XX--5X--4----X-X.3X-X4--
--X4---X-8X-XX1X----------5X1XX------
--3X--X1X----6X---X4--2-----XX1X3----
-----.4X---------..XXX--------X----3-
---X--X---------XX4X2.X--7X--.4X-----
--X1XX1X--------.8X7XX--XX1X-XX1X.---
---X2-X4---------XX..----4X-3X1XX3X--
--2------5--------3X----------X-2X2--
---------------------------------X---
+X-------------------X------X--------
+--2X3X7---Xb-----2-X1X.---X1X-------
+----------4X-----XX1XXXX-.7X--9-----
+---5---X------X--.8XX..3X.XX--XX4---
+---X--X1X----X1X--X..XXXXX1X-X2.XX--
+X-X1XX1X--X-X1X..-X3X3X4.-X--3XXX1X-
+X--X2-X--X1X6XX-.X3XX..X---------X--
+---------XX-.X1-XX..XXXX-------.----
+--X-----X1X--XX...XXX...X3Xa--X8X---
+-3X4-XX8-X--X1XX4XX1X.XXX.---X1X1X--
+-X6XX.2X-----XX1XX1XX5X.XX---XXXX--7
+--.--XXX4----X1XX1XX1X..X1X-X1X1X---
+---XX.4.XX----X-.XX.XXX4XX1X-X4X----
+--X1X.XXX1X--X1X....--6X1XX3--.-X---
+XX1XXX3..XX6--XXX9XXX--XX1X.--XX1X--
+X.X...XXXX1XX--.4XX1X----X4X--4-X--5
+X2XX..X1X.X2.X-.X2.X----X-.---------
+-XX1X6XX..XXX1XXXXXX---X1XX-----X---
+---XXX1X.XX1XXX...X1X4-XXX3.---X1XX-
+--5X.-X.6X1X3.XX4XXX--X1X6XXXX.-XX2X
+--X4.-XXX.XX.X.XX1X.--XX...X.X4X1X.X
+-------.X2X1XX..5XX-4-X..XXX.3XXX4XX
+-X4---X.8XXXX1X.X-.-X-XXX5X1XXX.X..X
+X3X--X1X.---6XXX-X4--2---.-XX1X3X.XX
+X.X-.4XX--------..XXX---X----XX.XX3X
+X.X--X-.-------XX4X2.X-.7X--.4XX.X.X
+XX1XX1X--------.8X7XX--XX1XXXX1X.X.X
+X.X2XX4---------XX..----4XX3X1XX3XXX
+X2X.X..X5--------3X-----..X..X.2X2.X
+XXXXX----------------------XXXXXXXXX
 ''')
-    puzzle.limit = 500
     puzzle.solve()
-    
+
 def time_main(command):
     stats_file = 'lpt.stat'
     cProfile.run('from timing_main import *; ' + command, stats_file)
@@ -177,4 +176,4 @@ def time_main(command):
 if __name__ == '__main__':
     SET_DEBUG(1)
     #time_main('solve_huge2()')
-    solve_large()
+    solve_huge_ip()

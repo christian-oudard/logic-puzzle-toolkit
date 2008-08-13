@@ -88,6 +88,44 @@ class TestNurikabe(unittest.TestCase):
                      .--.
                      6X.
                      '''),
+            Nurikabe('''
+                     XXXX
+                     X..X
+                     -.--
+                     5X-
+                     '''),
+            Nurikabe('''
+                     X-------------------X------X--------
+                     --2X3X7---Xb-----2-X1X.---X1X-------
+                     ----------4X-----XX1XXXX-.7X--9-----
+                     ---5---X------X--.8XX..3X.XX--XX4---
+                     ---X--X1X----X1X.-X..XXXXX1X-X2.XX--
+                     X-X1XX1X--X-X1X..-X3X3X4.-X--3XXX1X-
+                     X--X2-X--X1X6XXX.X3XX..X---------X--
+                     ---------XX-.X1XXX..XXXX-------.----
+                     --X-----X1X--XX...XXX...X3Xa--X8X---
+                     -3X4-XX8-X--X1XX4XX1X.XXX.---X1X1X--
+                     -X6XX.2X-----XX1XX1XX5X.XX---XXXX--7
+                     --.--XXX4----X1XX1XX1X..X1X-X1X1X---
+                     ---XX.4.XX----X-.XX.XXX4XX1X-X4X----
+                     --X1X.XXX1X--X1X....--6X1XX3--.-X---
+                     XX1XXX3..XX6--XXX9XXX--XX1X.--XX1X--
+                     X.X...XXXX1XX--.4XX1X----X4X--4-X--5
+                     X2XX..X1X.X2.X-.X2.X----X-.---------
+                     -XX1X6XX..XXX1XXXXXX---X1XX-----X---
+                     ---XXX1X.XX1XXX...X1X4-XXX3.---X1XX-
+                     --5X.-X.6X1X3.XX4XXX--X1X6XXXX.-XX2X
+                     --X4.-XXX.XX.X.XX1X.--XX...X.X4X1X.X
+                     -------.X2X1XX..5XX-4-X..XXX.3XXX4XX
+                     -X4---X.8XXXX1X.X-.-X-XXX5X1XXX.X..X
+                     X3X--X1X.---6XXX-X4--2---.-XX1X3X.XX
+                     X.X-.4XX--------..XXX---X----XX.XX3X
+                     X.X--X-.-------XX4X2.X-.7X--.4XX.X.X
+                     XX1XX1X--------.8X7XX--XX1XXXX1X.X.X
+                     X.X2XX4---------XX..----4XX3X1XX3XXX
+                     X2X.X..X5--------3X-----..X..X.2X2.X
+                     XXXXX----------------------XXXXXXXXX
+                     '''),
         ]
         for vb in valid_boards:
             self.assertTrue(vb.valid_white_groups(), 'This board should test valid:\n%s' % vb)
