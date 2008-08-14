@@ -296,40 +296,13 @@ class TestNurikabe(unittest.TestCase):
             self.assertFalse(ib.valid_black_connected(position, color))
 
     def test_solve(self):
-        test_boards = (
-            (Nurikabe('-2-'), Nurikabe('-2-')),
+        test_boards = [
             (
                 Nurikabe('''
                          a----------2-
                          '''),
                 Nurikabe('''
                          a.........X2.
-                         ''')
-            ),
-            (
-                Nurikabe('''
-                         ---
-                         ---
-                         3--
-                         '''),
-                Nurikabe('''
-                         XXX
-                         -.X
-                         3-X
-                         ''')
-            ),
-            (
-                Nurikabe('''
-                         ----
-                         ----
-                         ----
-                         5-- 
-                         '''),
-                Nurikabe('''
-                         XXXX
-                         X..X
-                         -.XX
-                         5-X 
                          ''')
             ),
             (
@@ -376,8 +349,42 @@ class TestNurikabe(unittest.TestCase):
                          X1XXX.2X4.
                          ''')
             ),
-        )
+        ]
         for unsolved_board, solved_board in test_boards:
-            unsolved_board.solve(3)
+            unsolved_board.solve(2)
+            self.assertEqual(unsolved_board, solved_board)
+
+    def test_solve_incomplete(self):
+        test_boards = [
+            (Nurikabe('-2-'), Nurikabe('-2-')),
+            (
+                Nurikabe('''
+                         ---
+                         ---
+                         3--
+                         '''),
+                Nurikabe('''
+                         XXX
+                         -.X
+                         3-X
+                         ''')
+            ),
+            (
+                Nurikabe('''
+                         ----
+                         ----
+                         ----
+                         5-- 
+                         '''),
+                Nurikabe('''
+                         XXXX
+                         X..X
+                         -.XX
+                         5-X 
+                         ''')
+            ),
+        ]
+        for unsolved_board, solved_board in test_boards:
+            unsolved_board.solve(2, True)
             self.assertEqual(unsolved_board, solved_board)
 

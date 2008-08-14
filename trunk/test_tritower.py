@@ -131,24 +131,6 @@ class TestTritower(unittest.TestCase):
             ),
             (
                 Tritower('''
-                         ***-------
-                         **---2-1--1
-                         *-21----2---
-                         *-----------
-                         **---------
-                         ***-1---0-
-                         '''),
-                Tritower('''
-                         ***..X..X.
-                         **X..2X1.X1
-                         *X21X..X2X.-
-                         *...X......-
-                         **X...X.X.-
-                         ***X1.X.0.
-                         '''),
-            ),
-            (
-                Tritower('''
                          ***---------
                          **-----------
                          *0------------
@@ -174,3 +156,27 @@ class TestTritower(unittest.TestCase):
             unsolved_board.solve()
             self.assertEqual(unsolved_board, solved_board)
 
+    def test_solve_incomplete(self):
+        test_boards = [
+            (
+                Tritower('''
+                         ***-------
+                         **---2-1--1
+                         *-21----2---
+                         *-----------
+                         **---------
+                         ***-1---0-
+                         '''),
+                Tritower('''
+                         ***..X..X.
+                         **X..2X1.X1
+                         *X21X..X2X.-
+                         *...X......-
+                         **X...X.X.-
+                         ***X1.X.0.
+                         '''),
+            ),
+        ]
+        for unsolved_board, solved_board in test_boards:
+            unsolved_board.solve(1, True)
+            self.assertEqual(unsolved_board, solved_board)

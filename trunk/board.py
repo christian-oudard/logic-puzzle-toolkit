@@ -10,18 +10,22 @@ class Board(object):
         self.last_conclusion = None # used for search heuristics
         self.limit = None
         
-    def solve(self, max_depth=2):
+    def solve(self, max_depth=1, verify_unique=False):
         if not self.is_valid():
             return False
+        Board.early_solution = None
+        Board.verify_unique = verify_unique
         Board.max_depth = max_depth
         Board.depth_reached = 0
         Board.is_valid_count = 0
         solve_thread = self.solve_thread(depth=0)
         result = None
         for result in solve_thread:
-            pass
             if self.limit and Board.is_valid_count > self.limit:
                 return
+            if result is True:
+                self.data = Board.early_solution.data
+                return True
             if DEBUG(1):
                 if is_success(result):
                     print self
@@ -43,6 +47,9 @@ class Board(object):
             for result in self.conclusion_thread(depth):
                 if result is None:
                     yield None
+                elif result is True:
+                    yield True
+                    return
                 else:
                     position, color = result
                     self.last_conclusion = position
@@ -52,6 +59,10 @@ class Board(object):
                         yield False
                         return
                     yield result
+                    if not Board.verify_unique and len(self.unknown_positions) == 0:
+                        Board.early_solution = self
+                        yield True
+                        return
                     break # restart while loop, continue searching
             else:
                 return # conclusion thread found nothing, stop searching
@@ -71,6 +82,9 @@ class Board(object):
                     finished_threads.append(at)
                 if result is None:
                     pass
+                elif result is True:
+                    yield True
+                    return
                 else:
                     yield result
                     return
@@ -93,6 +107,9 @@ class Board(object):
                 yield None
             elif result is False:
                 yield (position, opposite_color(color))
+            elif result is True:
+                yield True
+                return
 
 
     # optimization #

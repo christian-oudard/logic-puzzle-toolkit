@@ -10,9 +10,6 @@ new puzzles:
 - update Tritower.valid_tower_loops to handle arbitrary shapes
 
 housekeeping:
-- reduce duplication (last_conclusion, etc) in board.solve 
-- refactor Board.set_number, it's only used once
-- use dict.get where appropriate, instead of doing exception handling
 
 solving:
 - ABORT signal?
@@ -23,7 +20,6 @@ solving:
   . audit how it's currently being checked for solution
   . branch finding solution when looking for contradiction
     . detect multiple solutions
-- adjust priority function constants
 
 gui:
 - do square grid
@@ -36,6 +32,13 @@ gui:
 - localized invalidity display
 
 optimization:
+- prioritize position/color pairs instead of just positions
+- tune priority function constants
+	- automatically with genetic algorithm?
+- nurikabe reachable, track whether groups are fulfilled. fulfilled groups can't reach beyond their group
+- branch separation and persistence
+  . build a list of spaces that the branch depends on
+  . if a conclusion is made that doesn't affect the branch, don't restart the branch
 - branch-merge 
   . when paired (black / white) solution branches reach common conclusions, it must be true
 - branch-substitution
@@ -44,17 +47,3 @@ optimization:
 	- possibly use dict.update() to propagate changes
 - perhaps track positions that may duplicate each other, and detect transitions where 2 threads get to the same board
 
-nurikabe 
-    def valid_white_reachable(self):
-        for pos_white in self.white_positions:
-            for pos_given in self.given_positions:
-                number = self[pos]
-                if number not in GIVENS:
-                    continue
-                if manhattan_distance(pos_given, pos_white) < number:
-					...
-
-def manhattan_distance(pos1, pos2):
-    x1, y1 = pos1
-    x2, y2 = pos2
-    return abs(x2 - x1) + abs(y2 - y1)
