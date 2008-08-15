@@ -1,6 +1,6 @@
-from grid import Grid
+from spacegrid import SpaceGrid
 
-class SquareGrid(Grid):
+class SquareGrid(SpaceGrid):
     def _adjacencies(self, pos):
         x, y = pos
         return self._cull_bounds([(x-1, y),

@@ -17,6 +17,11 @@ new puzzles:
 - update Tritower.valid_tower_loops to handle arbitrary shapes
 
 housekeeping:
+audit of board responsibilities
+board needs the following from puzzles:
+- 2 colors, BLACK and WHITE
+- is_valid() method
+- black_, white_, and unknown_ positions lists
 
 solving:
 - ABORT signal?
@@ -59,13 +64,18 @@ optimization:
 	- possibly use dict.update() to propagate changes
 - perhaps track positions that may duplicate each other, and detect transitions where 2 threads get to the same board
 
+tritower:
+- custom priority function
+
 slither link
+- board should be ignorant of adjacency
 
 compact format:
 -3--
 -0-2
 1-3-
 -1-1
+
 full format:
 +.+-+.+-+
 . |3| | |

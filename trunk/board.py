@@ -133,30 +133,6 @@ class Board(object):
                 score += 1
         return score
 
-    def precalc_adjacency(self):
-        # calculate adjacency graphs
-        self.adjacencies = {}
-        self.corner_adjacencies = {}
-        for pos in self.positions:
-            self.adjacencies[pos] = self._adjacencies(pos)
-            self.corner_adjacencies[pos] = self._corner_adjacencies(pos)
-
-    def precalc_positions(self):
-        # in-bounds position list
-        self.positions = set()
-        for key, value in self.data.iteritems():
-            if value != OUT_OF_BOUNDS:
-                self.positions.add(key)
-        # positions by color
-        self.black_positions = set()
-        self.white_positions = set()
-        self.unknown_positions = set()
-        self.given_positions = set()
-        for pos in self.positions:
-            self.update_color_caches(pos, self[pos])
-            if self[pos] in GIVENS:
-                self.given_positions.add(pos)
-
     def update_color_caches(self, pos, value):
         if pos in self.black_positions:
             self.black_positions.remove(pos)
@@ -213,9 +189,4 @@ class Board(object):
         return self.data == other.data
     def __ne__(self, other):
         return not (self == other)
-    def __iter__(self):
-        """Iterate through board values."""
-        for (x,y) in self.positions:
-            yield self.data[y][x]
-        
 

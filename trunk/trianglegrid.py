@@ -1,7 +1,7 @@
 import board
-from grid import Grid
+from spacegrid import SpaceGrid
 
-class TriangleGrid(Grid):
+class TriangleGrid(SpaceGrid):
     def _adjacencies(self, pos):
         """Return all in-bounds adjacencies of the given position."""
         x, y = pos
