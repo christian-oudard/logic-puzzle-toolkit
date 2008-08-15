@@ -150,20 +150,25 @@ class Nurikabe(SquareGrid):
                 return False # no numbers close enough
         return True
 
-    distance_scores = {
-        1: 4,
-        2: 3,
-        3: 2,
+    conclusion_adjacent_value = 3
+    conclusion_corner_adjacent_value = 4.5
+    conclusion_distance_values = {
+        2: 4,
+        3: .5,
     }
+    known_adjacent_value = 1
     def priority(self, position):
         score = 0
         if self.last_conclusion is not None:
-            dist = mdist(position, self.last_conclusion)
-            if dist in Nurikabe.distance_scores:
-                score += Nurikabe.distance_scores[dist]
+            if self.last_conclusion in self.adjacencies[position]:
+                score += Nurikabe.conclusion_adjacent_value
+            elif self.last_conclusion in self.corner_adjacencies[position]:
+                score += Nurikabe.conclusion_corner_adjacent_value
+            else:
+                dist = mdist(self.last_conclusion, position)
+                if dist in Nurikabe.conclusion_distance_values:
+                    score += Nurikabe.conclusion_distance_values[dist]
         for adj in self.adjacencies[position]:
-            if self.is_black(adj) or self.is_white(adj): # priority up for being next to a known space
-                score += 1
-            if self[adj] in GIVENS: # priority up for being next to a given
-                score += 2
+            if not self.is_unknown(adj):
+                score += Nurikabe.known_adjacent_value
         return score
