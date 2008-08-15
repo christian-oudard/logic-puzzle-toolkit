@@ -1,3 +1,10 @@
+features:
+- optimal solution path
+	- what is the assumption path that requires the fewest validity checks?
+	- this might require slower solving which parallelizes solution threads
+
+nurikabe:
+- orphan groups reaching validation to check the number as well. this will supersede the reachability check.
 new puzzles:
 - puzzles using square grid
   . kuromasu
@@ -22,6 +29,10 @@ solving:
     . detect multiple solutions
 
 gui:
+- human-guided computer solving
+	- computer does what it can, at full speed
+	- as the human sees a possible conclusion, he marks it
+	- computer verifies it
 - do square grid
   . move triangle or square grid display functions to new class
 - solve puzzles interactively
@@ -32,6 +43,7 @@ gui:
 - localized invalidity display
 
 optimization:
+- spaces which yield 0-length assumption threads get prioritized down for future conclusion threads
 - prioritize position/color pairs instead of just positions
 - tune priority function constants
 	- automatically with genetic algorithm?
@@ -47,3 +59,21 @@ optimization:
 	- possibly use dict.update() to propagate changes
 - perhaps track positions that may duplicate each other, and detect transitions where 2 threads get to the same board
 
+slither link
+
+compact format:
+-3--
+-0-2
+1-3-
+-1-1
+full format:
++.+-+.+-+
+. |3| | |
++-+.+-+.+
+| .0. .2|
++.+.+-+-+
+|1. |3. .
++.+.+-+.+
+| .1. |1.
++-+-+-+.+
+ 
