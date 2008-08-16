@@ -10,9 +10,6 @@ class SpaceGrid(Grid):
             if self[pos] in GIVENS:
                 self.given_positions.add(pos)
 
-    def generate_positions(self):
-        self.positions = set(self.data.keys())
-
     def precalc_corner_adjacency(self):
         self.corner_adjacencies = {}
         for pos in self.positions:

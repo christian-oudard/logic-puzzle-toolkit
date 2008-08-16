@@ -17,11 +17,8 @@ new puzzles:
 - update Tritower.valid_tower_loops to handle arbitrary shapes
 
 housekeeping:
-audit of board responsibilities
-board needs the following from puzzles:
-- 2 colors, BLACK and WHITE
-- is_valid() method
-- black_, white_, and unknown_ positions lists
+- reduce duplication of x = x * 2 + 1 and x = x // 2 - 1
+
 
 solving:
 - ABORT signal?

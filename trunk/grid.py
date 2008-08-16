@@ -9,10 +9,10 @@ class Grid(Board):
         #OUT_OF_BOUNDS: '*',
         CONTRADICTION: '!',
         }
-    for g in range(10):
-        CHARS[g] = str(g) # digits 0 through 9
-    for g in range(26):
-        CHARS[g + 10] = chr(ord('a') + g) # a = 10 through z = 35
+    for num in range(10):
+        CHARS[num] = str(num) # digits 0 through 9
+    for num in range(26):
+        CHARS[num + 10] = chr(ord('a') + num) # a = 10 through z = 35
     RCHARS = {}
     for key, value in CHARS.iteritems():
         RCHARS[value] = key
@@ -21,9 +21,12 @@ class Grid(Board):
         Board.__init__(self)
         data_dict = self.trim_border(data_string)
         self.translate_data(data_dict)
-        self.generate_positions()
+        self.precalc_positions()
         self.precalc_position_colors()
         self.precalc_adjacency()
+
+    def precalc_positions(self):
+        self.positions = set(self.data.keys())
 
     def precalc_position_colors(self):
         # positions by color
