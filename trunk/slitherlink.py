@@ -1,3 +1,4 @@
+from utility import mdist
 from linegrid import LineGrid
 
 class SlitherLink(LineGrid):
@@ -39,6 +40,45 @@ class SlitherLink(LineGrid):
             if num_black >= 3 or (num_black == 1 and num_unknown == 0):
                 return False
         return True
+
+    conclusion_distance_values = {
+        2: .5,
+        4: .2,
+    }
+    given_adjacent_values = {
+        3: 2,
+        2: .5,
+        1: 1,
+        0: 3,
+    }
+    conclusion_adjacent_value = 3
+    known_adjacent_value = 0
+    def priority(self, position):
+        score = 0
+        if self.last_conclusion is not None:
+            if self.last_conclusion in self.adjacencies[position]:
+                score += SlitherLink.conclusion_adjacent_value
+            else:
+                dist = mdist(self.last_conclusion, position)
+                if dist in SlitherLink.conclusion_distance_values.keys():
+                    score += SlitherLink.conclusion_distance_values[dist]
+        # known lines nearby
+        for adj in self.adjacencies[position]:
+            if not self.is_unknown(adj):
+                score += SlitherLink.known_adjacent_value
+        # givens nearby
+        x, y = position
+        if LineGrid.is_vertical(position):
+            givens = [(x-1, y), (x+1, y)]
+        else: # horizontal
+            givens = [(x, y-1), (x, y+1)]
+        for gx, gy in givens:
+            gx = (gx - 1) // 2
+            gy = (gy - 1) // 2
+            number = self.givens.get((gx, gy))
+            if number in SlitherLink.given_adjacent_values.keys():
+                score += SlitherLink.given_adjacent_values[number]
+        return score
 
     def precalc_junctions(self):
         self.junctions = []

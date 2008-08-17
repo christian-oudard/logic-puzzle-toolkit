@@ -3,10 +3,10 @@
 # test new solve function #
 import unittest
 from constants import SET_DEBUG
-#from test_mines import TestMines
-#from test_tritower import TestTritower
-#from test_widetower import TestWidetower
-#from test_nurikabe import TestNurikabe
+from test_mines import TestMines
+from test_tritower import TestTritower
+from test_widetower import TestWidetower
+from test_nurikabe import TestNurikabe
 from test_slitherlink import TestSlitherLink
 
 if __name__ == '__main__':

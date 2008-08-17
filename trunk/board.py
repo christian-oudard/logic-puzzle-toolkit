@@ -102,6 +102,7 @@ class Board(object):
         yield None
         assumption_board = copy_board(self)
         assumption_board.set_value(position, color)
+        assumption_board.last_conclusion = position
         for result in assumption_board.solve_thread(depth + 1):
             if result is None:
                 yield None
