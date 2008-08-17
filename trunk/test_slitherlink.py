@@ -134,6 +134,17 @@ class TestSlitherLink(unittest.TestCase):
         for ib in invalid_boards:
             self.assertFalse(ib.valid_junction(), 'board tested valid:\n' + repr(ib))
 
+    def test_valid_connected_fail(self):
+        invalid_boards = [
+            SlitherLink('''
+                        +-+.+-+
+                        | | | |
+                        +-+.+-+
+                        '''),
+        ]   
+        for ib in invalid_boards:
+            self.assertFalse(ib.valid_connected(), 'board tested valid:\n' + repr(ib))
+
     def test_solve(self):
         test_boards = [
             (

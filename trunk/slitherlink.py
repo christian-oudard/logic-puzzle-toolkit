@@ -11,6 +11,7 @@ class SlitherLink(LineGrid):
         return all((
             self.valid_givens(),
             self.valid_junction(),
+            self.valid_connected(),
         ))
 
     def valid_givens(self):
@@ -39,6 +40,25 @@ class SlitherLink(LineGrid):
                     num_unknown += 1
             if num_black >= 3 or (num_black == 1 and num_unknown == 0):
                 return False
+        return True
+
+    def valid_connected(self):
+        def search_black(pos): # just mark everything in the group 'visited'
+            marks[pos] = 'visited'
+            adjs = self.adjacencies[pos]
+            for adj in adjs:
+                if adj in marks and marks[adj] == 'unvisited':
+                    search_black(adj)
+        marks = {}
+        for pos in self.black_positions.union(self.unknown_positions):
+            marks[pos] = 'unvisited' # init marks
+        group_count = 0
+        for pos in self.black_positions:
+            if marks[pos] == 'unvisited':
+                group_count += 1
+                if group_count >= 2:
+                    return False
+                search_black(pos)
         return True
 
     conclusion_distance_values = {
