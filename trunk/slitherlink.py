@@ -1,3 +1,4 @@
+from constants import BLACK, WHITE
 from utility import mdist
 from linegrid import LineGrid
 
@@ -9,13 +10,18 @@ class SlitherLink(LineGrid):
 
     def is_valid(self, position=None, color=None):
         return all((
-            self.valid_givens(),
-            self.valid_junction(),
-            self.valid_connected(),
+            self.valid_givens(position, color),
+            self.valid_junction(position, color),
+            self.valid_connected(position, color),
         ))
 
-    def valid_givens(self):
-        for gpos, number in self.givens.items():
+    def valid_givens(self, position=None, color=None):
+        if position:
+            candidates = self.adjacent_givens(position)
+        else:
+            candidates = self.givens.keys()
+        for gpos in candidates:
+            number = self.givens[gpos]
             adjs = self.given_adjacencies[gpos]
             num_black = 0
             num_white = 0
@@ -28,8 +34,17 @@ class SlitherLink(LineGrid):
                 return False
         return True
 
-    def valid_junction(self):
-        for jpos in self.junctions:
+    def valid_junction(self, position=None, color=None):
+        if position:
+            x, y = position
+            if self.is_vertical(position):
+                adjacent_junctions = [(x, y-1), (x, y+1)]
+            else:
+                adjacent_junctions = [(x-1, y), (x+1, y)]
+            candidates = [(x // 2, y // 2) for x, y in adjacent_junctions]
+        else:
+            candidates = self.junctions
+        for jpos in candidates:
             adjs = self.junction_adjacencies[jpos]
             num_black = 0
             num_unknown = 0
@@ -42,7 +57,13 @@ class SlitherLink(LineGrid):
                 return False
         return True
 
-    def valid_connected(self):
+    def valid_connected(self, position=None, color=None):
+        if position:
+            next_to_black = any(self.is_black(adj) for adj in self.adjacencies[position])
+            if color == BLACK and next_to_black:
+                return True
+            elif color == WHITE and not next_to_black:
+                return True
         def search_black(pos): # just mark everything in the group 'visited'
             marks[pos] = 'visited'
             adjs = self.adjacencies[pos]
@@ -87,38 +108,9 @@ class SlitherLink(LineGrid):
             if not self.is_unknown(adj):
                 score += SlitherLink.known_adjacent_value
         # givens nearby
-        x, y = position
-        if LineGrid.is_vertical(position):
-            givens = [(x-1, y), (x+1, y)]
-        else: # horizontal
-            givens = [(x, y-1), (x, y+1)]
-        for gx, gy in givens:
-            gx = (gx - 1) // 2
-            gy = (gy - 1) // 2
-            number = self.givens.get((gx, gy))
+        for gpos in self.adjacent_givens(position):
+            number = self.givens[gpos]
             if number in SlitherLink.given_adjacent_values.keys():
                 score += SlitherLink.given_adjacent_values[number]
         return score
-
-    def precalc_junctions(self):
-        self.junctions = []
-        for x in range(self.x_size + 1):
-            for y in range(self.y_size + 1):
-                self.junctions.append((x, y))
-
-    def precalc_junction_adjacencies(self):
-        self.junction_adjacencies = {}
-        for jpos in self.junctions:
-            self.junction_adjacencies[jpos] = self._junction_adjacencies(jpos)
-            
-    def _junction_adjacencies(self, pos):
-        x, y = pos
-        x = x * 2
-        y = y * 2
-        return self._cull_bounds([(x-1, y),
-                                  (x+1, y),
-                                  (x, y-1),
-                                  (x, y+1)])
-
-
 

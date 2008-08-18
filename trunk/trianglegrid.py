@@ -12,7 +12,7 @@ class TriangleGrid(SpaceGrid):
         else: # odd triangle, pointing up
             adjacency_list.append((x,y+1))
 
-        return self._cull_bounds(adjacency_list)
+        return self.cull_bounds(adjacency_list)
 
     def _corner_adjacencies(self, pos):
         """Return all in-bounds corner-adjacencies of the given position."""
@@ -25,7 +25,7 @@ class TriangleGrid(SpaceGrid):
         else: # odd triangle, pointing up
             adjacency_list.extend([(x,y-1),(x-2,y+1),(x+2,y+1)])
 
-        return self._cull_bounds(adjacency_list)
+        return self.cull_bounds(adjacency_list)
 
 
 import unittest

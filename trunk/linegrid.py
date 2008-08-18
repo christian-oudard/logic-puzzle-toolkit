@@ -29,13 +29,13 @@ class LineGrid(Grid):
                 (x-2, y),
                 (x+2, y),
             ])
-        return self._cull_bounds(adjacencies)
+        return self.cull_bounds(adjacencies)
 
     def _given_adjacencies(self, given_pos):
         x, y = given_pos
         x = x * 2 + 1
         y = y * 2 + 1
-        return self._cull_bounds([(x-1, y),
+        return self.cull_bounds([(x-1, y),
                                   (x+1, y),
                                   (x, y-1),
                                   (x, y+1)])
@@ -120,4 +120,37 @@ class LineGrid(Grid):
             for y in range(self.y_size * 2 + 1):
                 if (x + y) % 2 == 1: # odd checkerboard pattern
                     yield (x, y)
+
+    def adjacent_givens(self, position):
+        x, y = position
+        if LineGrid.is_vertical(position):
+            givens = [(x-1, y), (x+1, y)]
+        else: # horizontal
+            givens = [(x, y-1), (x, y+1)]
+        givens = [((gx - 1) // 2, (gy - 1) // 2) for gx, gy in givens]
+        return self.cull_bounds_givens(givens)
+
+    def precalc_junctions(self):
+        self.junctions = []
+        for x in range(self.x_size + 1):
+            for y in range(self.y_size + 1):
+                self.junctions.append((x, y))
+
+    def precalc_junction_adjacencies(self):
+        self.junction_adjacencies = {}
+        for jpos in self.junctions:
+            self.junction_adjacencies[jpos] = self._junction_adjacencies(jpos)
+            
+    def _junction_adjacencies(self, pos):
+        x, y = pos
+        x = x * 2
+        y = y * 2
+        return self.cull_bounds([(x-1, y),
+                                 (x+1, y),
+                                 (x, y-1),
+                                 (x, y+1)])
+
+    def cull_bounds_givens(self, position_list):
+        return [pos for pos in position_list if pos in self.givens.keys()]
+
 

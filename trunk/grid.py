@@ -50,9 +50,9 @@ class Grid(Board):
             except KeyError:
                 pass # invalid characters are not included
 
-    def _cull_bounds(self, position_list):
+    def cull_bounds(self, position_list):
         """Remove all positions that are out of bounds, and return the remainder."""
-        return [(x,y) for (x,y) in position_list if (x,y) in self.positions]
+        return [pos for pos in position_list if pos in self.positions]
 
     def __repr__(self):
         char_grid = [[' '] * self.x_size for i in range(self.y_size)]
