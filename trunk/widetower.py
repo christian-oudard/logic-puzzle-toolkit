@@ -21,3 +21,10 @@ class Widetower(Tritower):
                 return False
         return True
 
+    # uses tritower's priority function, but changes some tuning parameters
+    conclusion_adjacent_value = 1.3 
+    conclusion_corner_adjacent_value = 2
+    given_adjacent_value = 1.2 
+    given_corner_adjacent_value = 0.1
+    known_adjacent_value = 1.8 
+    known_corner_adjacent_value = 0.1

@@ -36,29 +36,36 @@ gui:
 	- computer does what it can, at full speed
 	- as the human sees a possible conclusion, he marks it
 	- computer verifies it
+	- learn about priority from human?
 - do square grid
   . move triangle or square grid display functions to new class
 - solve puzzles interactively
-- show slowed-down solving animation
+- show slowed-down, smoothed out solving animation
 - buttons and stuff
   . "attempt to solve" button
   . check box for whether to immediately show invalid
 - localized invalidity display
 
 optimization:
+- pattern recognition. automate the process of discovering the smallest, most common patterns that produce a deep conclusion. use these patterns to prioritize patterns that will produce a conclusion
 - add a small random component to priority function to avoid collisions and stable sorting
 - consolidate depth-first search functions into a common place
 	- use a stack instead of recursion?
 - spaces which yield 0-length assumption threads get prioritized down for future conclusion threads
 - prioritize position/color pairs instead of just positions
+	- slither link, white next to a 3
+
+rejected optimizations:
 - tune priority function constants
 	- automatically with genetic algorithm?
 - nurikabe reachable, track whether groups are fulfilled. fulfilled groups can't reach beyond their group
+rejected optimizations:
 - branch separation and persistence
   . build a list of spaces that the branch depends on
   . if a conclusion is made that doesn't affect the branch, don't restart the branch
 - branch-merge 
   . when paired (black / white) solution branches reach common conclusions, it must be true
+
 - branch-substitution
   . when one branch of a pair reaches a solution, and the other branch has already concluded things, those then apply to the parent branch, and it isn't necessary to derive them again
 - instead of copying whole board, create an overlay dictionary which only has the values of changed cells
