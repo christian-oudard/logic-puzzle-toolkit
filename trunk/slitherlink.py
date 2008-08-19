@@ -83,17 +83,16 @@ class SlitherLink(LineGrid):
         return True
 
     conclusion_distance_values = {
-        2: .5,
-        4: .2,
+        2: 4,
     }
     given_adjacent_values = {
         3: 2,
-        2: .5,
-        1: 1,
-        0: 3,
+        2: .6,
+        1: 3.2,
+        0: 4,
     }
-    conclusion_adjacent_value = 3
-    known_adjacent_value = 0
+    conclusion_adjacent_value = 1.9
+    known_adjacent_value = 1.2
     def priority(self, position):
         score = 0
         if self.last_conclusion is not None:
@@ -104,9 +103,12 @@ class SlitherLink(LineGrid):
                 if dist in SlitherLink.conclusion_distance_values.keys():
                     score += SlitherLink.conclusion_distance_values[dist]
         # known lines nearby
-        for adj in self.adjacencies[position]:
-            if not self.is_unknown(adj):
-                score += SlitherLink.known_adjacent_value
+        adjs = self.adjacencies[position]
+        known_score = SlitherLink.known_adjacent_value * len(adjs)
+        for adj in adjs:
+            if self.is_unknown(adj):
+                known_score -= SlitherLink.known_adjacent_value
+        score += known_score
         # givens nearby
         for gpos in self.adjacent_givens(position):
             number = self.givens[gpos]

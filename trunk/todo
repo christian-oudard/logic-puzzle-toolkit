@@ -46,6 +46,9 @@ gui:
 - localized invalidity display
 
 optimization:
+- add a small random component to priority function to avoid collisions and stable sorting
+- consolidate depth-first search functions into a common place
+	- use a stack instead of recursion?
 - spaces which yield 0-length assumption threads get prioritized down for future conclusion threads
 - prioritize position/color pairs instead of just positions
 - tune priority function constants
