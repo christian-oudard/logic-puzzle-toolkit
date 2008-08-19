@@ -5,6 +5,8 @@ from copy import copy
 from constants import *
 from slitherlink import SlitherLink
 from tritower import Tritower
+from nurikabe import Nurikabe
+from masyu import Masyu
 
 #puz = SlitherLink('''
 #                  ----0-
@@ -71,7 +73,46 @@ puz = SlitherLink('''
 #               ***X1..X..X.
 #               ''')
 
+#puz = Nurikabe('''
+#               --4-4-4---3
+#               -----------
+#               -------2---
+#               1-2-----2--
+#               -2---------
+#               -----------
+#               ------2----
+#               ---7-------
+#               3-------1--
+#               -1--7----b-
+#               -----------
+#               ''')
+puz = Masyu('''
+            --@-@--
+            -----0-
+            0------
+            -000---
+            -----@0
+            @------
+            ---00--
+            ''')
+#puz = Masyu('''
+#            +.+.@-+-@.+-+
+#            . . | . | | |
+#            +-+.+.+.+.0.+
+#            | | | . | | |
+#            0.+.+.+-+.+.+
+#            | | | | . | |
+#            +.0.0.0.+.+.+
+#            | | | | . | |
+#            +.+-+.+-+-@.0
+#            | . . . . . |
+#            @-+-+.+.+.+-+
+#            . . | . . | .
+#            +.+.+-0-0-+.+
+#            ''')
+
 SET_DEBUG(1)
 print puz
-puz.solve(2, True)
-print puz
+#print puz.is_valid()
+print puz.solve(1, True)
+#print puz

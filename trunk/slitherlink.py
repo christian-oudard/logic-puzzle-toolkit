@@ -3,11 +3,6 @@ from utility import mdist
 from linegrid import LineGrid
 
 class SlitherLink(LineGrid):
-    def __init__(self, data_string):
-        LineGrid.__init__(self, data_string)
-        self.precalc_junctions()
-        self.precalc_junction_adjacencies()
-
     def is_valid(self, position=None, color=None):
         return all((
             self.valid_givens(position, color),

@@ -15,6 +15,7 @@ new puzzles:
 - puzzles using hex grid
 - loop puzzles
   . slither link
+  . masyu
 - update Tritower.valid_tower_loops to handle arbitrary shapes
 
 housekeeping:
@@ -95,3 +96,49 @@ full format:
 | .1. |1.
 +-+-+-+.+
  
+
+masyu
+
++@0
+
+compact:
+--@-@--
+-----0-
+0------
+-000---
+-----@0
+@------
+---00--
+
+full:
++ + @ + @ + +
+             
++ + + + + 0 +
+             
+0 + + + + + +
+             
++ 0 0 0 + + +
+             
++ + + + + @ 0
+             
+@ + + + + + +
+             
++ + + 0 0 + +
+
+
++.+.@-+-@.+-+
+. . | . | | |
++-+.+.+.+.0.+
+| | | . | | |
+0.+.+.+-+.+.+
+| | | | . | |
++.0.0.0.+.+.+
+| | | | . | |
++.+-+.+-+-@.0
+| . . . . . |
+@-+-+.+.+.+-+
+. . | . . | .
++.+.+-0-0-+.+
+
+is_bent and is_straight
+

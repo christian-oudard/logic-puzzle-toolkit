@@ -5,6 +5,8 @@ class LineGrid(Grid):
     def __init__(self, data_string):
         Grid.__init__(self, data_string)
         self.precalc_given_adjacencies()
+        self.precalc_junctions()
+        self.precalc_junction_adjacencies()
 
     def precalc_given_adjacencies(self):
         self.given_adjacencies = {}
@@ -48,40 +50,51 @@ class LineGrid(Grid):
     def translate_data(self, data_dict):
         self.data = {} # lines data
         self.givens = {}
-        if data_dict[(0, 0)] == LineGrid.NODE_CHAR:
-            # full representation with nodes and lines
-            assert self.x_size % 2 == 1
-            assert self.y_size % 2 == 1
-            self.x_size = (self.x_size - 1) // 2
-            self.y_size = (self.y_size - 1) // 2
-
-            for pos in self.iter_checker():
-                c = data_dict.get(pos)
-                if c == LineGrid.VERTICAL_CHAR or c == LineGrid.HORIZONTAL_CHAR:
-                    self.data[pos] = BLACK
-                elif c == self.CHARS[WHITE]:
-                    self.data[pos] = WHITE
-                else:
-                    self.data[pos] = UNKNOWN
-            # givens
-            for x in range(self.x_size):
-                for y in range(self.y_size):
-                    pos = x, y
-                    x = x * 2 + 1
-                    y = y * 2 + 1
-                    c = data_dict.get((x, y))
-                    num = self.RCHARS.get(c)
-                    if num in GIVENS:
-                        self.givens[pos] = num
-        else:
-            # compact representation, no lines
-            for pos, value in data_dict.items():
-                c = data_dict.get(pos)
+        self.junction_givens = {}
+        data_values = data_dict.values()
+        if (LineGrid.NODE_CHAR not in data_values and
+            LineGrid.VERTICAL_CHAR not in data_values):
+            self.translate_data_compact(data_dict)
+            return
+        # full representation with nodes and lines
+        assert self.x_size % 2 == 1
+        assert self.y_size % 2 == 1
+        self.x_size = (self.x_size - 1) // 2
+        self.y_size = (self.y_size - 1) // 2
+        for pos in self.iter_checker():
+            c = data_dict.get(pos)
+            if c == LineGrid.VERTICAL_CHAR or c == LineGrid.HORIZONTAL_CHAR:
+                self.data[pos] = BLACK
+            elif c == self.CHARS[WHITE]:
+                self.data[pos] = WHITE
+            else:
+                self.data[pos] = UNKNOWN
+        # space givens
+        for x in range(self.x_size):
+            for y in range(self.y_size):
+                pos = x, y
+                x = x * 2 + 1
+                y = y * 2 + 1
+                c = data_dict.get((x, y))
                 num = self.RCHARS.get(c)
                 if num in GIVENS:
                     self.givens[pos] = num
-            for x, y in self.iter_checker():
-                self.data[(x, y)] = UNKNOWN
+        # junction givens
+        for jx in range(self.x_size + 1):
+            for jy in range(self.y_size + 1):
+                pos = jx * 2, jy * 2
+                c = data_dict.get(pos)
+                if c is not None and c != LineGrid.NODE_CHAR:
+                    self.junction_givens[(jx, jy)] = c
+
+    def translate_data_compact(self, data_dict):
+        for pos, value in data_dict.items():
+            c = data_dict.get(pos)
+            num = self.RCHARS.get(c)
+            if num in GIVENS:
+                self.givens[pos] = num
+        for x, y in self.iter_checker():
+            self.data[(x, y)] = UNKNOWN
 
     def __repr__(self):
         display_x_size = (self.x_size) * 2 + 1
@@ -90,7 +103,10 @@ class LineGrid(Grid):
         # place nodes
         for x in range(self.x_size + 1):
             for y in range(self.y_size + 1):
-                char_grid[y * 2][x * 2] = self.NODE_CHAR
+                char = self.junction_givens.get((x, y))
+                if char is None:
+                    char = LineGrid.NODE_CHAR
+                char_grid[y * 2][x * 2] = char
         # show given numbers
         for key, value in self.givens.iteritems():
             x, y = key
