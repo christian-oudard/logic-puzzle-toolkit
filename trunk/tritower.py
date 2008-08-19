@@ -117,3 +117,26 @@ class Tritower(TriangleGrid):
 
         return True
 
+    conclusion_adjacent_value = .8
+    conclusion_corner_adjacent_value = 1.5
+    given_adjacent_value = 3 
+    given_corner_adjacent_value = .5
+    known_adjacent_value = 2.1
+    known_corner_adjacent_value = .4
+    def priority(self, position):
+        score = 0
+        if self.last_conclusion in self.adjacencies[position]:
+            score += self.conclusion_adjacent_value
+        elif self.last_conclusion in self.corner_adjacencies[position]:
+            score += self.conclusion_corner_adjacent_value
+        for adj in self.adjacencies[position]:
+            if self[adj] in GIVENS:
+                score += self.given_adjacent_value
+            elif self.is_black(adj) or self.is_white(adj):
+                score += self.known_adjacent_value
+        for adj in self.corner_adjacencies[position]:
+            if self[adj] in GIVENS:
+                score += self.given_corner_adjacent_value
+            elif self.is_black(adj) or self.is_white(adj):
+                score += self.known_corner_adjacent_value
+        return score

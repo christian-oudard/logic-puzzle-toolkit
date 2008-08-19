@@ -161,14 +161,14 @@ class Nurikabe(SquareGrid):
         score = 0
         if self.last_conclusion is not None:
             if self.last_conclusion in self.adjacencies[position]:
-                score += Nurikabe.conclusion_adjacent_value
+                score += self.conclusion_adjacent_value
             elif self.last_conclusion in self.corner_adjacencies[position]:
-                score += Nurikabe.conclusion_corner_adjacent_value
+                score += self.conclusion_corner_adjacent_value
             else:
                 dist = mdist(self.last_conclusion, position)
-                if dist in Nurikabe.conclusion_distance_values:
-                    score += Nurikabe.conclusion_distance_values[dist]
+                if dist in self.conclusion_distance_values:
+                    score += self.conclusion_distance_values[dist]
         for adj in self.adjacencies[position]:
             if not self.is_unknown(adj):
-                score += Nurikabe.known_adjacent_value
+                score += self.known_adjacent_value
         return score
