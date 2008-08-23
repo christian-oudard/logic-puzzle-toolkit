@@ -205,6 +205,28 @@ class TestMasyu(unittest.TestCase):
 
                   + + + + +
                   '''),
+            Masyu('''
+                  + + + + +
+
+                  + + + + +
+                      .
+                  + +.0.+ +
+                      .    
+                  + + + + +
+
+                  + + + + +
+                  '''),
+            Masyu('''
+                  + + + + +
+
+                  + + + + +
+                      .
+                  + +.@.+ +
+                      .
+                  + + + + +
+
+                  + + + + +
+                  '''),
         ]
         for ib in invalid_boards:
             self.assertFalse(ib.valid_junction_givens(), 'board tested valid:\n%r' % ib)

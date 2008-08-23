@@ -14,6 +14,8 @@ class Masyu(SlitherLink):
     STRAIGHT = '0'
     def valid_junction_givens(self):
         for jpos, type in self.junction_givens.items():
+            if all(self.is_white(pos) for pos in self.junction_adjacencies[jpos]):
+                return False
             if type == Masyu.BENT:
                 if self.is_straight(jpos):
                     return False
