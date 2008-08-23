@@ -19,6 +19,7 @@ new puzzles:
 - update Tritower.valid_tower_loops to handle arbitrary shapes
 
 housekeeping:
+- clean up masyu.valid_junction_givens
 - reduce duplication of x = x * 2 + 1 and x = x // 2 - 1
 
 
@@ -97,48 +98,5 @@ full format:
 +-+-+-+.+
  
 
-masyu
-
-+@0
-
-compact:
---@-@--
------0-
-0------
--000---
------@0
-@------
----00--
-
-full:
-+ + @ + @ + +
-             
-+ + + + + 0 +
-             
-0 + + + + + +
-             
-+ 0 0 0 + + +
-             
-+ + + + + @ 0
-             
-@ + + + + + +
-             
-+ + + 0 0 + +
-
-
-+.+.@-+-@.+-+
-. . | . | | |
-+-+.+.+.+.0.+
-| | | . | | |
-0.+.+.+-+.+.+
-| | | | . | |
-+.0.0.0.+.+.+
-| | | | . | |
-+.+-+.+-+-@.0
-| . . . . . |
-@-+-+.+.+.+-+
-. . | . . | .
-+.+.+-0-0-+.+
-
-is_bent and is_straight
-
+masyu:
+- earlier detection of a node outside the loop
