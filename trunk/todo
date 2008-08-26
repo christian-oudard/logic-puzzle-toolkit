@@ -7,11 +7,13 @@ nurikabe:
 - orphan groups reaching validation to check the number as well. this will supersede the reachability check.
 new puzzles:
 - puzzles using square grid
+  . hitori
   . kuromasu
+  . dynasty
   . mochikoro
   . bijutsukan
-  . hitori
   . picross
+  . light up
 - puzzles using hex grid
 - loop puzzles
   . slither link
@@ -19,6 +21,15 @@ new puzzles:
 - update Tritower.valid_tower_loops to handle arbitrary shapes
 
 housekeeping:
+- allow rules to be mixed and matched freely, not just descended in a class hierarchy
+	- no puzzles descended from other puzzles, only from grid types
+	- rules kept in a separate bag, and thrown into puzzles at will
+	- example rules already in use:
+		- given numbers are white (nurikabe, tritower, mines)
+		- single loop (slither link, masyu)
+		-
+
+- reduce duplication in search_black style rules
 - clean up masyu.valid_junction_givens
 - reduce duplication of x = x * 2 + 1 and x = x // 2 - 1
 
