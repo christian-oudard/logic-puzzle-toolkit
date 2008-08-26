@@ -5,7 +5,7 @@ from pygame import draw
 from pygame import event
 from pygame.locals import *
 
-from board import *
+from constants import *
 from tritower import Tritower
 
 # board drawing constants
@@ -33,6 +33,8 @@ def draw_sym_line(surface, color, start, end):
 
 class GUI(object):
     def __init__(self, board=None):
+        self.valid = True
+
         if board is None:
             # debug board
             #self.board = Board(1)
@@ -75,29 +77,27 @@ class GUI(object):
                 elif e.type == KEYDOWN:
                     if e.key == K_ESCAPE: event.post(event.Event(QUIT))
                     else:
-                        try:
-                            character = str(e.unicode).lower()
-                            self.board.set_value(self.selected_pos, RCHARS[character])
-                        except KeyError:
-                            pass                        
+                        character = str(e.unicode).lower()
+                        if character in self.board.RCHARS:
+                            self.set_color(self.board.RCHARS[character])
                 elif e.type == MOUSEMOTION:
                     old_pos = self.selected_pos
                     self.selected_pos = self.to_board(e.pos)
                     if self.selected_pos != old_pos: # dragged to a new spot
                         if e.buttons[0]: # left button held
-                            self.board.set_black(self.selected_pos)
+                            self.set_color(BLACK)
                         elif e.buttons[1]: # middle button held
-                            self.board.set_unknown(self.selected_pos)
+                            self.set_color(UNKNOWN)
                         elif e.buttons[2]: # right button held
-                            self.board.set_white(self.selected_pos)
+                            self.set_color(WHITE)
                 elif e.type == MOUSEBUTTONDOWN:
-                    click_pos = self.to_board(e.pos)
+                    self.selected_pos = self.to_board(e.pos)
                     if e.button == 1: # left click
-                        self.board.set_black(click_pos)
+                        self.set_color(BLACK)
                     elif e.button == 2: # middle click
-                        self.board.set_unknown(click_pos)
+                        self.set_color(UNKNOWN)
                     elif e.button == 3: # right click
-                        self.board.set_white(click_pos)
+                        self.set_color(WHITE)
     
             # draw #
             self.screen.fill(bg_color)
@@ -105,13 +105,17 @@ class GUI(object):
             pygame.display.flip()
     
         pygame.quit()    
-    
+
+    def set_color(self, color):
+        self.board.set_value(self.selected_pos, color)
+        self.valid = self.board.is_valid()
+
     def draw(self):
         self.draw_board((0,0))                                               
 
     def draw_board(self, init_pos):
         x0, y0 = init_pos
-        grid_color = grid_color_valid if self.board.is_valid() else grid_color_invalid
+        grid_color = grid_color_valid if self.valid else grid_color_invalid
         for pos in self.board.positions:
             x, y = pos
             cell_number = None
