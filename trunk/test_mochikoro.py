@@ -16,6 +16,11 @@ class TestMochikoro(unittest.TestCase):
                      .-
                      ..
                      '''),
+            # last space considered is unknown
+            Mochikoro('''
+                     ..
+                     .-
+                     '''),
         ]   
         for vb in valid_boards:
             self.assertTrue(vb.valid_white_rectangles(), 'board tested invalid:\n%r' % vb)
@@ -23,8 +28,13 @@ class TestMochikoro(unittest.TestCase):
     def test_valid_white_rectangles_fail(self):
         invalid_boards = [
             Mochikoro('''
-                     X.
-                     ..''')
+                      X.
+                      ..
+                      '''),
+            Mochikoro('''
+                      X.
+                      3.
+                      ''')
         ]
         for ib in invalid_boards:
             self.assertFalse(ib.valid_white_rectangles(), 'board tested valid:\n%r' % ib)
@@ -49,3 +59,25 @@ class TestMochikoro(unittest.TestCase):
         for ib in invalid_boards:
             self.assertFalse(ib.valid_white_corner_connected(), 'board tested valid:\n%r' % ib)
 
+    def test_solve(self):
+        test_boards = [
+            (
+                Mochikoro('''
+                          ----3
+                          2----
+                          ---2-
+                          -----
+                          4--1-
+                          '''),
+                Mochikoro('''
+                          XX..3
+                          2.XXX
+                          XX.2X
+                          ..XX.
+                          4.X1X
+                          ''')
+            )
+        ]
+        for unsolved_board, solved_board in test_boards:
+            unsolved_board.solve()
+            self.assertEqual(unsolved_board, solved_board)

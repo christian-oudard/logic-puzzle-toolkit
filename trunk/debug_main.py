@@ -5,6 +5,7 @@ from copy import copy
 from constants import *
 SET_DEBUG(1)
 
+from mochikoro import Mochikoro
 from slitherlink import SlitherLink
 from tritower import Tritower
 from nurikabe import Nurikabe
@@ -125,16 +126,18 @@ from hitori import Hitori
 #------00--
 #--@------@
 #            ''')
-puz = Hitori('''
-             43124
-             12245
-             23452
-             25213
-             34342
-             ''')
-
+puz = Mochikoro('''
+                --------5-
+                -4-------1
+                3-------4-
+                --2------1
+                ------1-2-
+                -1-6------
+                1------1--
+                -2-------2
+                1-------6-
+                -3--------
+                ''')
 print puz
-print puz.is_white((0, 0))
-#print puz.is_valid()
-#print puz.solve(1, True)
+print puz.solve(1, True)
 #print puz

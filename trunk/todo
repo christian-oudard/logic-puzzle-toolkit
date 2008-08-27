@@ -1,7 +1,18 @@
+now:
+- finish mochikoro
+	- white-corner-connected
+	- correct givens, anonymous groups allowed
+- refactor recursive searching
+	- affecting everything but mines
+
 features:
+- auto-generate legal positions, as a screen-saver
 - optimal solution path
 	- what is the assumption path that requires the fewest validity checks?
 	- this might require slower solving which parallelizes solution threads
+
+bugs:
+- solving fails hard for large empty boards
 
 nurikabe:
 - orphan groups reaching validation to check the number as well. this will supersede the reachability check.
