@@ -1,9 +1,4 @@
 now:
-- finish mochikoro
-	- white-corner-connected
-	- correct givens, anonymous groups allowed
-- refactor recursive searching
-	- affecting everything but mines
 
 features:
 - auto-generate legal positions, as a screen-saver
@@ -32,29 +27,26 @@ new puzzles:
 - update Tritower.valid_tower_loops to handle arbitrary shapes
 
 housekeeping:
+- audit imports, remove unnecessary ones, especially in puzzle types
 - fix the wrong assumption that given numbers are ALWAYS white. remove knowledge of givens from board.py. redo RCHARS etc to reflect this.
 - allow rules to be mixed and matched freely, not just descended in a class hierarchy
+	- make validity collection instead of validity method, move it up in heirarchy
 	- no puzzles descended from other puzzles, only from grid types
 	- rules kept in a separate bag, and thrown into puzzles at will
 	- example rules already in use:
 		- given numbers are white (nurikabe, tritower, mines)
 		- single loop (slither link, masyu)
 		-
+	- mines givens and widetower givens the same
 
-- reduce duplication in search_black style rules
+- refactor recursive depth first searching
+	- affecting everything but mines
 - clean up masyu.valid_junction_givens
-- reduce duplication of x = x * 2 + 1 and x = x // 2 - 1
-
+- in slither and masyu, reduce duplication of x = x * 2 + 1 and x = x // 2 - 1
 
 solving:
-- ABORT signal?
-- track depth reached from solve(), not from the threads
-  . use call stack?
 - make solver able to handle a huge blank board
-- test if board is already solved
-  . audit how it's currently being checked for solution
-  . branch finding solution when looking for contradiction
-    . detect multiple solutions
+- detect multiple solutions
 
 gui:
 - refactor to make graphical main a top-level function, which operates a gui class
@@ -103,12 +95,6 @@ rejected optimizations:
 	- possibly use dict.update() to propagate changes
 - perhaps track positions that may duplicate each other, and detect transitions where 2 threads get to the same board
 
-tritower:
-- custom priority function
-
-slither link
-- board should be ignorant of adjacency
-
 compact format:
 -3--
 -0-2
@@ -132,6 +118,7 @@ masyu:
 
 new puzzle type, domino-tree:
 - black cells must pair into dominoes
+	- each black cell has exactly one black neighbor
 - dominoes may not touch orthogonally
 - all dominoes must connect to other dominoes at the corners
 - no domino loops

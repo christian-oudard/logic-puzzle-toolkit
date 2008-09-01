@@ -1,4 +1,5 @@
 import board
+from constants import GIVENS # TEMP
 from spacegrid import SpaceGrid
 
 class TriangleGrid(SpaceGrid):
@@ -27,26 +28,21 @@ class TriangleGrid(SpaceGrid):
 
         return self.cull_bounds(adjacency_list)
 
-
-import unittest
-
-class TestTriangleGrid(unittest.TestCase):
-    def test_adjacencies(self):
-        b = TriangleGrid('''
-        ---
-        ---''')
-        for pos in b.positions:
-            for adj in b.adjacencies[pos]:
-                self.assert_(pos in b.adjacencies[adj])
-                
-    def test_corner_adjacencies(self):
-        b = TriangleGrid('''
-        ---
-        ---''')
-        for pos in b.positions:
-            for adj in b.corner_adjacencies[pos]:
-                self.assert_(pos in b.corner_adjacencies[adj])
-
-if __name__ == '__main__':
-    unittest.main()
-    
+    # constants supplied by subclasses
+    def priority(self, position):
+        score = 0
+        if self.last_conclusion in self.adjacencies[position]:
+            score += self.conclusion_adjacent_value
+        elif self.last_conclusion in self.corner_adjacencies[position]:
+            score += self.conclusion_corner_adjacent_value
+        for adj in self.adjacencies[position]:
+            if self[adj] in GIVENS:
+                score += self.given_adjacent_value
+            elif self.is_black(adj) or self.is_white(adj):
+                score += self.known_adjacent_value
+        for adj in self.corner_adjacencies[position]:
+            if self[adj] in GIVENS:
+                score += self.given_corner_adjacent_value
+            elif self.is_black(adj) or self.is_white(adj):
+                score += self.known_corner_adjacent_value
+        return score

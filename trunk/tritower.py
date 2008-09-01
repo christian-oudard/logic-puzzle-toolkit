@@ -1,48 +1,8 @@
-import board
-from board import *
+import valid
+from constants import *
 from trianglegrid import TriangleGrid
 
 class Tritower(TriangleGrid):
-    def is_valid(self, position=None, color=None):
-        """Determine whether a board has a legal or illegal position."""
-        return all((
-            self.valid_tower_adjacency(position, color),
-            self.valid_given_numbers(position),
-            self.valid_white_triangles(position, color),
-            self.valid_tower_loops(position, color),
-            self.valid_towers_connected(position, color),
-        ))
-
-    def valid_tower_adjacency(self, position=None, color=None):
-        if color == WHITE:
-            return True
-        if position and color == BLACK:
-            for adj in self.adjacencies[position]:
-                if self.is_black(adj):
-                    return False
-        for pos in self.black_positions:
-            for adj in self.adjacencies[pos]:
-                if self.is_black(adj): # found a tower with another tower next to it
-                    return False
-        return True
-
-    def valid_given_numbers(self, position=None):
-        candidates = self.given_positions
-        if position:
-            candidates = candidates.intersection(self.adjacencies[position])
-        for pos in candidates:
-            number = self[pos]
-            num_black = 0
-            num_white = 0
-            adjs = self.adjacencies[pos]
-            for adj in adjs:
-                if self.is_black(adj):
-                    num_black += 1
-                elif self.is_white(adj):
-                    num_white += 1
-            if num_black > number or num_white > (len(adjs) - number):
-                return False
-        return True
 
     def valid_white_triangles(self, position=None, color=None):
         # white triangles of size 2 are illegal
@@ -117,26 +77,17 @@ class Tritower(TriangleGrid):
 
         return True
 
+    validity_checks = (
+        valid.black_separate,
+        valid.given_neighbors,
+        valid_white_triangles,
+        valid_tower_loops,
+        valid_towers_connected,
+    )
+
     conclusion_adjacent_value = .8
     conclusion_corner_adjacent_value = 1.5
     given_adjacent_value = 3 
     given_corner_adjacent_value = .5
     known_adjacent_value = 2.1
     known_corner_adjacent_value = .4
-    def priority(self, position):
-        score = 0
-        if self.last_conclusion in self.adjacencies[position]:
-            score += self.conclusion_adjacent_value
-        elif self.last_conclusion in self.corner_adjacencies[position]:
-            score += self.conclusion_corner_adjacent_value
-        for adj in self.adjacencies[position]:
-            if self[adj] in GIVENS:
-                score += self.given_adjacent_value
-            elif self.is_black(adj) or self.is_white(adj):
-                score += self.known_adjacent_value
-        for adj in self.corner_adjacencies[position]:
-            if self[adj] in GIVENS:
-                score += self.given_corner_adjacent_value
-            elif self.is_black(adj) or self.is_white(adj):
-                score += self.known_corner_adjacent_value
-        return score

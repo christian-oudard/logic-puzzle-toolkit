@@ -112,6 +112,15 @@ class Board(object):
                 yield True
                 return
 
+    def is_valid(self, position=None, color=None):
+        """Determine whether a board has a legal or illegal position.
+        
+        Each subclass must provide a validity_checks list.
+        """
+        for valid_func in self.validity_checks:
+            if not valid_func(self, position, color):
+                return False
+        return True
 
     # optimization #
 
@@ -128,9 +137,7 @@ class Board(object):
             dist = mdist(position, self.last_conclusion)
             score += max(5 - dist, 0)
         for adj in self.adjacencies[position]:
-            if self.is_black(adj) or self.is_white(adj): # priority up for being next to a known space
-                score += 1
-            if self[adj] in GIVENS: # priority up for being next to a given
+            if not self.is_unknown(adj):
                 score += 1
         return score
 
