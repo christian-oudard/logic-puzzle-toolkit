@@ -3,7 +3,6 @@
 from copy import copy
 
 from constants import *
-SET_DEBUG(1)
 
 from mochikoro import Mochikoro
 from slitherlink import SlitherLink
@@ -114,30 +113,36 @@ from hitori import Hitori
 #            . . | . . | .
 #            +.+.+-0-0-+.+
 #            ''')
-#puz = Masyu('''
-#--0-0-----
-#----0---@-
-#--@-@-0---
-#---0--0---
-#@----0---0
-#--0----0--
-#--@---0---
-#0---@----0
-#------00--
-#--@------@
-#            ''')
-puz = Mochikoro('''
-                --------5-
-                -4-------1
-                3-------4-
-                --2------1
-                ------1-2-
-                -1-6------
-                1------1--
-                -2-------2
-                1-------6-
-                -3--------
-                ''')
+puz = Masyu('''
+--0-0-----
+----0---@-
+--@-@-0---
+---0--0---
+@----0---0
+--0----0--
+--@---0---
+0---@----0
+------00--
+--@------@
+            ''')
+#puz = Mochikoro('''
+#                --------5-
+#                -4-------1
+#                3-------4-
+#                --2------1
+#                ------1-2-
+#                -1-6------
+#                1------1--
+#                -2-------2
+#                1-------6-
+#                -3--------
+#                ''')
+#SET_DEBUG(1)
+import time
 print puz
-print puz.solve(1, True)
+start_time = time.clock()
+puz.solve(1, True)
+end_time = time.clock()
+print puz
+print end_time - start_time
 #print puz

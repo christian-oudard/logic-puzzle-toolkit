@@ -1,3 +1,4 @@
+import valid
 from constants import BLACK, WHITE
 from utility import mdist
 from linegrid import LineGrid
@@ -18,14 +19,7 @@ class SlitherLink(LineGrid):
         for gpos in candidates:
             number = self.givens[gpos]
             adjs = self.given_adjacencies[gpos]
-            num_black = 0
-            num_white = 0
-            for adj in adjs:
-                if self.is_black(adj):
-                    num_black += 1
-                elif self.is_white(adj):
-                    num_white += 1
-            if num_black > number or num_white > (len(adjs) - number):
+            if not valid.count_black(self, adjs, number):
                 return False
         return True
 

@@ -13,7 +13,7 @@ from test_masyu import TestMasyu
 from test_mochikoro import TestMochikoro
 
 if __name__ == '__main__':
-#    SET_DEBUG(3)
+    #SET_DEBUG(3)
     import sys
     sys.argv.append('-v')
     unittest.main()
