@@ -11,6 +11,7 @@ from test_nurikabe import TestNurikabe
 from test_slitherlink import TestSlitherLink
 from test_masyu import TestMasyu
 from test_mochikoro import TestMochikoro
+from test_domino import TestDomino
 
 if __name__ == '__main__':
     #SET_DEBUG(3)
