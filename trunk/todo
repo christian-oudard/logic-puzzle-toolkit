@@ -7,7 +7,6 @@ features:
 	- this might require slower solving which parallelizes solution threads
 
 bugs:
-- solving fails hard for large empty boards
 - validity methods assume that board has no internal holes, involving is_edge and loop conditions. a loop around a hole will falsely be considered not a loop
 
 nurikabe:
@@ -28,20 +27,7 @@ new puzzles:
 - update Tritower.valid_tower_loops to handle arbitrary shapes
 
 housekeeping:
-- audit imports, remove unnecessary ones, especially in puzzle types
 - fix the wrong assumption that given numbers are ALWAYS white. remove knowledge of givens from board.py. redo RCHARS etc to reflect this.
-- allow rules to be mixed and matched freely, not just descended in a class hierarchy
-	- make validity collection instead of validity method, move it up in heirarchy
-	- no puzzles descended from other puzzles, only from grid types
-	- rules kept in a separate bag, and thrown into puzzles at will
-	- example rules already in use:
-		- given numbers are white (nurikabe, tritower, mines)
-		- single loop (slither link, masyu)
-		-
-	- mines givens and widetower givens the same
-
-- refactor recursive depth first searching
-	- affecting everything but mines
 - clean up masyu.valid_junction_givens
 - in slither and masyu, reduce duplication of x = x * 2 + 1 and x = x // 2 - 1
 
@@ -61,7 +47,7 @@ gui:
 	- as the human sees a possible conclusion, he marks it
 	- computer verifies it
 	- learn about priority from human?
-- do square grid
+- do square grid gui
   . move triangle or square grid display functions to new class
 - solve puzzles interactively
 - show slowed-down, smoothed out solving animation
@@ -71,10 +57,10 @@ gui:
 - localized invalidity display
 
 optimization:
-- pattern recognition. automate the process of discovering the smallest, most common patterns that produce a deep conclusion. use these patterns to prioritize patterns that will produce a conclusion
-- add a small random component to priority function to avoid collisions and stable sorting
 - consolidate depth-first search functions into a common place
 	- use a stack instead of recursion?
+- pattern recognition. automate the process of discovering the smallest, most common patterns that produce a deep conclusion. use these patterns to prioritize patterns that will produce a conclusion
+- add a small random component to priority function to avoid collisions and stable sorting
 - spaces which yield 0-length assumption threads get prioritized down for future conclusion threads
 - prioritize position/color pairs instead of just positions
 	- slither link, white next to a 3

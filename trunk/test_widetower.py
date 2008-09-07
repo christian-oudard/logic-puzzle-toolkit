@@ -1,4 +1,5 @@
 import unittest
+import valid
 from constants import BLACK, WHITE
 from widetower import Widetower
 
@@ -16,8 +17,8 @@ class TestWidetower(unittest.TestCase):
             ),
         ]
         for ib, position, color in invalid_boards:
-            self.assertFalse(ib.valid_towers_connected())
-            self.assertFalse(ib.valid_towers_connected(position, color))
+            self.assertFalse(valid.black_connected_corner(ib), 'board tested valid:\n%s' % ib)
+            self.assertFalse(valid.black_connected_corner(ib, position, color))
 
     def test_solve(self):
         test_boards = (

@@ -1,5 +1,6 @@
 import unittest
-from constants import WHITE, BLACK
+import valid
+from constants import BLACK, WHITE
 from nurikabe import Nurikabe
 
 class TestNurikabe(unittest.TestCase):
@@ -247,7 +248,7 @@ class TestNurikabe(unittest.TestCase):
                      '''),
         ]
         for vb in valid_boards:
-            self.assertTrue(vb.valid_black_connected())
+            self.assertTrue(valid.black_connected(vb))
 
     def test_valid_black_connected_fail(self):
         invalid_boards = [
@@ -264,7 +265,7 @@ class TestNurikabe(unittest.TestCase):
                      '''),
         ]
         for ib in invalid_boards:
-            self.assertFalse(ib.valid_black_connected())
+            self.assertFalse(valid.black_connected(ib))
 
     def test_valid_black_connected_incremental(self):
         invalid_boards = [
@@ -292,8 +293,8 @@ class TestNurikabe(unittest.TestCase):
             ),
         ]
         for ib, position, color in invalid_boards:
-            self.assertFalse(ib.valid_black_connected())
-            self.assertFalse(ib.valid_black_connected(position, color))
+            self.assertFalse(valid.black_connected(ib))
+            self.assertFalse(valid.black_connected(ib, position, color))
 
     def test_solve(self):
         test_boards = [

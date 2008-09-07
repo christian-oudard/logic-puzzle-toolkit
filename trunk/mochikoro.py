@@ -71,6 +71,6 @@ class Mochikoro(Nurikabe):
     validity_checks = (
         Nurikabe.valid_no_black_2by2,
         valid_white_rectangles,
-        valid.white_connected_corner,
+        valid.white_connected_both,
         valid_givens,
     )

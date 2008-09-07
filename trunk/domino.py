@@ -9,12 +9,9 @@ class Domino(SquareGrid):
                 return False
         return True
 
-    def valid_black_tree(self):
-        return True
-
     validity_checks = (
         valid.given_neighbors_corner,
         valid_domino,
         valid.white_edge_reachable,
-        valid.black_connected_corner,
+        valid.black_connected_both,
     )

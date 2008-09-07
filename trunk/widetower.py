@@ -1,6 +1,4 @@
-import board
 import valid
-from trianglegrid import TriangleGrid
 from tritower import Tritower
 
 class Widetower(Tritower):
@@ -9,7 +7,7 @@ class Widetower(Tritower):
         valid.given_neighbors_corner,
         Tritower.valid_white_triangles,
         valid.white_edge_reachable,
-        Tritower.valid_towers_connected,
+        valid.black_connected_corner,
     )
 
     # uses tritower's priority function, but changes some tuning parameters

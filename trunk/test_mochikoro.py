@@ -40,7 +40,7 @@ class TestMochikoro(unittest.TestCase):
         for ib in invalid_boards:
             self.assertFalse(ib.valid_white_rectangles(), 'board tested valid:\n%r' % ib)
 
-    def test_valid_white_connected_corner_pass(self):
+    def test_valid_white_connected_both_pass(self):
         valid_boards = [
             Mochikoro('''
                       X.
@@ -48,9 +48,9 @@ class TestMochikoro(unittest.TestCase):
                       '''),
         ]   
         for vb in valid_boards:
-            self.assertTrue(valid.white_connected_corner(vb), 'board tested invalid:\n%r' % vb)
+            self.assertTrue(valid.white_connected_both(vb), 'board tested invalid:\n%r' % vb)
 
-    def test_valid_white_connected_corner_fail(self):
+    def test_valid_white_connected_both_fail(self):
         invalid_boards = [
             Mochikoro('''
                       XX.
@@ -65,8 +65,7 @@ class TestMochikoro(unittest.TestCase):
                       '''),
         ]
         for ib in invalid_boards:
-            self.assertFalse(ib.is_valid(), 'board tested valid:\n%r' % ib)
-            self.assertFalse(valid.white_connected_corner(ib), 'board tested valid:\n%r' % ib)
+            self.assertFalse(valid.white_connected_both(ib), 'board tested valid:\n%r' % ib)
 
     def test_solve(self):
         test_boards = [

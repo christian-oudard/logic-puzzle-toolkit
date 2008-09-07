@@ -1,4 +1,5 @@
 import unittest
+import valid
 from slitherlink import SlitherLink
 
 class TestSlitherLink(unittest.TestCase):
@@ -143,7 +144,7 @@ class TestSlitherLink(unittest.TestCase):
                         '''),
         ]   
         for ib in invalid_boards:
-            self.assertFalse(ib.valid_connected(), 'board tested valid:\n' + repr(ib))
+            self.assertFalse(valid.black_connected(ib), 'board tested valid:\n' + repr(ib))
 
     def test_solve(self):
         test_boards = [

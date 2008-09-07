@@ -2,7 +2,6 @@
 
 # test new solve function #
 import unittest
-from constants import SET_DEBUG
 from test_mines import TestMines
 from test_trianglegrid import TestTriangleGrid
 from test_tritower import TestTritower
@@ -14,7 +13,4 @@ from test_mochikoro import TestMochikoro
 from test_domino import TestDomino
 
 if __name__ == '__main__':
-    #SET_DEBUG(3)
-    import sys
-    sys.argv.append('-v')
     unittest.main()

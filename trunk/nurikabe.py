@@ -1,4 +1,5 @@
 from constants import *
+import valid
 from utility import mdist
 from squaregrid import SquareGrid
 
@@ -100,31 +101,6 @@ class Nurikabe(SquareGrid):
                     return False # orphan group can't connect to a given number
 
         return True
-    
-    def valid_black_connected(self, position=None, color=None):
-        if position:
-            next_to_black = any(self.is_black(adj) for adj in self.adjacencies[position])
-            if color == BLACK and next_to_black:
-                return True
-            elif color == WHITE and not next_to_black:
-                return True
-        def search_black(pos): # just mark everything in the group 'visited'
-            marks[pos] = 'visited'
-            adjs = self.adjacencies[pos]
-            for adj in adjs:
-                if adj in marks and marks[adj] == 'unvisited':
-                    search_black(adj)
-        marks = {}
-        for pos in self.black_positions.union(self.unknown_positions):
-            marks[pos] = 'unvisited' # init marks
-        group_count = 0
-        for pos in self.black_positions:
-            if marks[pos] == 'unvisited':
-                group_count += 1
-                if group_count >= 2:
-                    return False
-                search_black(pos)
-        return True
 
     def valid_white_reachable(self, position=None, color=None):
         if color == BLACK:
@@ -145,7 +121,7 @@ class Nurikabe(SquareGrid):
     validity_checks = (
         valid_no_black_2by2,
         valid_white_groups,
-        valid_black_connected,
+        valid.black_connected,
         valid_white_reachable,
     )
 

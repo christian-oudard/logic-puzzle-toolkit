@@ -1,6 +1,6 @@
 # validity checking functions
 
-from constants import *
+from constants import BLACK, WHITE
 
 def count_black(board, positions, number):
     """The number of black spaces among a set of positions must match the given number."""
@@ -85,22 +85,22 @@ def white_edge_reachable(board, position=None, color=None):
 
     return True
 
-def search_connected_corner(self, searchable_color, position=None, color=None):
-    #if position:
-    #    next_to_black = any(self.is_black(adj) for adj in self.adjacencies[position])
-    #    if color == BLACK and next_to_black:
-    #        return True
-    #    elif color == WHITE and not next_to_black:
-    #        return True
+def search_connected(board, searchable_color, adjacency_dict, position=None, color=None):
+    if position:
+        next_to_black = any(board.is_black(adj) for adj in adjacency_dict[position])
+        if color == BLACK and next_to_black:
+            return True
+        elif color == WHITE and not next_to_black:
+            return True
     if searchable_color == WHITE:
-        colored_positions = self.white_positions
+        colored_positions = board.white_positions
     else:
-        colored_positions = self.black_positions
-    searchable_positions = colored_positions.union(self.unknown_positions)
+        colored_positions = board.black_positions
+    searchable_positions = colored_positions.union(board.unknown_positions)
 
     def search(pos):
         marks[pos] = 'visited'
-        adjs = self.adjacencies[pos] + self.corner_adjacencies[pos]
+        adjs = adjacency_dict[pos]
         for adj in adjs:
             if adj in marks and marks[adj] == 'unvisited':
                 search(adj)
@@ -116,9 +116,14 @@ def search_connected_corner(self, searchable_color, position=None, color=None):
             search(pos)
     return True
 
-def white_connected_corner(self, position=None, color=None):
-    return search_connected_corner(self, WHITE, position, color)
+def black_connected(board, position=None, color=None):
+    return search_connected(board, BLACK, board.adjacencies, position, color)
 
-def black_connected_corner(self, position=None, color=None):
-    return search_connected_corner(self, BLACK, position, color)
+def black_connected_corner(board, position=None, color=None):
+    return search_connected(board, BLACK, board.corner_adjacencies, position, color)
 
+def black_connected_both(board, position=None, color=None):
+    return search_connected(board, BLACK, board.both_adjacencies, position, color)
+
+def white_connected_both(board, position=None, color=None):
+    return search_connected(board, WHITE, board.both_adjacencies, position, color)

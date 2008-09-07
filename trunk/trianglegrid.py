@@ -1,4 +1,3 @@
-import board
 from constants import GIVENS # TEMP
 from spacegrid import SpaceGrid
 

@@ -1,4 +1,3 @@
-import board
 import valid
 from squaregrid import SquareGrid
 

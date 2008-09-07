@@ -1,9 +1,8 @@
 import valid
-from constants import *
+from constants import BLACK
 from trianglegrid import TriangleGrid
 
 class Tritower(TriangleGrid):
-
     def valid_white_triangles(self, position=None, color=None):
         # white triangles of size 2 are illegal
         if color == BLACK:
@@ -19,41 +18,12 @@ class Tritower(TriangleGrid):
                     return False
         return True
 
-    def valid_towers_connected(self, position=None, color=None):
-        if color == BLACK:
-            if any(self.is_black(adj) for adj in self.corner_adjacencies[position]):
-                return True
-        if color == WHITE:
-            if not any(self.is_black(adj) for adj in self.corner_adjacencies[position]):
-                return True
-
-        marks = {}
-        for pos in self.black_positions.union(self.unknown_positions):
-            marks[pos] = 'unvisited' # init marks
-
-        def search_black(pos): # just mark everything in the group 'visited'
-            marks[pos] = 'visited'
-            adjs = self.corner_adjacencies[pos]
-            for adj in adjs:
-                if adj in marks and marks[adj] == 'unvisited':
-                    search_black(adj)
-
-        group_count = 0
-        for pos in self.black_positions: # for every unvisited tower
-            if marks[pos] == 'unvisited': # don't start a group with an unknown space
-                group_count += 1
-                if group_count >= 2:
-                    return False
-                search_black(pos)
-
-        return True
-
     validity_checks = (
         valid.black_separate,
         valid.given_neighbors,
         valid_white_triangles,
         valid.white_edge_reachable,
-        valid_towers_connected,
+        valid.black_connected_corner,
     )
 
     conclusion_adjacent_value = .8

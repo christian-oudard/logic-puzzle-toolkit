@@ -60,7 +60,7 @@ class TestDomino(unittest.TestCase):
                    '''),
         ]   
         for vb in valid_boards:
-            self.assertTrue(valid.black_connected_corner(vb))
+            self.assertTrue(valid.black_connected_both(vb))
 
     def test_valid_black_connected_fail(self):
         invalid_boards = [
@@ -70,4 +70,4 @@ class TestDomino(unittest.TestCase):
                    '''),
         ]
         for ib in invalid_boards:
-            self.assertFalse(valid.black_connected_corner(ib))
+            self.assertFalse(valid.black_connected_both(ib))

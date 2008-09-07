@@ -12,5 +12,8 @@ class SpaceGrid(Grid):
 
     def precalc_corner_adjacency(self):
         self.corner_adjacencies = {}
+        self.both_adjacencies = {} # gives the union of adjacencies and corner_adjacencies
         for pos in self.positions:
             self.corner_adjacencies[pos] = self._corner_adjacencies(pos)
+            self.both_adjacencies[pos] = self.adjacencies[pos] + self.corner_adjacencies[pos]
+

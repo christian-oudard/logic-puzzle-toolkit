@@ -1,18 +1,11 @@
-from constants import BLACK, WHITE, UNKNOWN
-from linegrid import LineGrid
+import valid
+from constants import *
 from slitherlink import SlitherLink
 
 class Masyu(SlitherLink):
-    def is_valid(self, position=None, color=None):
-        return all((
-            self.valid_junction(position, color),
-            self.valid_junction_givens(),
-            self.valid_connected(position, color),
-        ))
-
     BENT = '@'
     STRAIGHT = '0'
-    def valid_junction_givens(self):
+    def valid_junction_givens(self, position=None, color=None):
         for jpos, type in self.junction_givens.items():
             num_white = 0
             adjs = self.junction_adjacencies[jpos]
@@ -33,6 +26,12 @@ class Masyu(SlitherLink):
                 if len(cjs) == 2 and all(self.is_straight(con) for con in cjs):
                     return False
         return True
+
+    validity_checks = (
+        SlitherLink.valid_junction,
+        valid_junction_givens,
+        valid.black_connected,
+    )
 
     def connected_junctions(self, jpos):
         jx, jy = jpos

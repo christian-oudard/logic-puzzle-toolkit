@@ -1,11 +1,9 @@
 #! /usr/bin/env python
 
 import cProfile
-
 from pstats import Stats
 
 from constants import *
-import board
 from nurikabe import Nurikabe
 from tritower import Tritower
 from mines import Mines
