@@ -15,3 +15,6 @@ class SquareGrid(SpaceGrid):
                                  (x+1, y-1),
                                  (x+1, y+1)])
         
+    def is_edge(self, pos):
+        adjs = self.adjacencies[pos]
+        return len(adjs) < 4

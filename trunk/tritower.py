@@ -19,35 +19,6 @@ class Tritower(TriangleGrid):
                     return False
         return True
 
-    def valid_tower_loops(self, position=None, color=None):
-        if color == WHITE:
-            return True
-        marks = {}
-        for pos in self.white_positions.union(self.unknown_positions):
-            marks[pos] = 'unvisited' # init marks
-
-        def search_white(pos):
-            marks[pos] = 'visited'
-            adjs = self.adjacencies[pos]
-            results = []
-            for adj in adjs:
-                if self.is_black(adj):
-                    results.append(BLACK)
-                elif marks[adj] == 'unvisited': # edge or unknown, and unvisited
-                    results.append(search_white(adj))
-            if len(adjs) < 3: # test this node for being an edge last, so whole group is still searched
-                return 'edge'
-            if any(r == 'edge' for r in results): # found a path to an edge
-                return 'edge'
-            return BLACK # no neighbor returned a path to an edge
-
-        for pos in marks: # for every unvisited space
-            if marks[pos] == 'unvisited':
-                if search_white(pos) == BLACK:
-                    return False
-
-        return True
-
     def valid_towers_connected(self, position=None, color=None):
         if color == BLACK:
             if any(self.is_black(adj) for adj in self.corner_adjacencies[position]):
@@ -81,7 +52,7 @@ class Tritower(TriangleGrid):
         valid.black_separate,
         valid.given_neighbors,
         valid_white_triangles,
-        valid_tower_loops,
+        valid.white_edge_reachable,
         valid_towers_connected,
     )
 

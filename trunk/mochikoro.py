@@ -1,16 +1,9 @@
 from constants import *
+import valid
 from nurikabe import Nurikabe
 
 class Mochikoro(Nurikabe):
-    def is_valid(self, position=None, color=None):
-        return all((
-            self.valid_no_black_2by2(position, color),
-            self.valid_white_rectangles(),
-            self.valid_white_corner_connected(),
-            self.valid_givens(),
-        ))
-
-    def valid_white_rectangles(self):
+    def valid_white_rectangles(self, position=None, color=None):
         for pos in self.black_positions.union(self.white_positions):
             x, y = pos
             square = [(x, y),
@@ -29,31 +22,6 @@ class Mochikoro(Nurikabe):
                         return False
             except KeyError:
                 continue # square at edge, ignore it
-        return True
-
-    def valid_white_corner_connected(self):
-        #if position:
-        #    next_to_black = any(self.is_black(adj) for adj in self.adjacencies[position])
-        #    if color == BLACK and next_to_black:
-        #        return True
-        #    elif color == WHITE and not next_to_black:
-        #        return True
-        def search_white(pos):
-            marks[pos] = 'visited'
-            adjs = self.adjacencies[pos] + self.corner_adjacencies[pos]
-            for adj in adjs:
-                if adj in marks and marks[adj] == 'unvisited':
-                    search_white(adj)
-        marks = {}
-        for pos in self.white_positions.union(self.unknown_positions):
-            marks[pos] = 'unvisited' # init marks
-        group_count = 0
-        for pos in self.white_positions:
-            if marks[pos] == 'unvisited':
-                group_count += 1
-                if group_count >= 2:
-                    return False
-                search_white(pos)
         return True
 
     def valid_givens(self, position=None, color=None):
@@ -100,3 +68,9 @@ class Mochikoro(Nurikabe):
                     return False
         return True
 
+    validity_checks = (
+        Nurikabe.valid_no_black_2by2,
+        valid_white_rectangles,
+        valid.white_connected_corner,
+        valid_givens,
+    )

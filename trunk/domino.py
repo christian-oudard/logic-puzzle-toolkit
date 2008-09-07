@@ -2,7 +2,7 @@ import valid
 from squaregrid import SquareGrid
 
 class Domino(SquareGrid):
-    def valid_domino(self):
+    def valid_domino(self, position=None, color=None):
         for pos in self.black_positions:
             adjs = self.adjacencies[pos]
             if not valid.count_black(self, adjs, 1):
@@ -15,5 +15,6 @@ class Domino(SquareGrid):
     validity_checks = (
         valid.given_neighbors_corner,
         valid_domino,
-        valid_black_tree,
+        valid.white_edge_reachable,
+        valid.black_connected_corner,
     )

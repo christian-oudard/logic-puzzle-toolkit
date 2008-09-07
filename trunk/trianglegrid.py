@@ -46,3 +46,7 @@ class TriangleGrid(SpaceGrid):
             elif self.is_black(adj) or self.is_white(adj):
                 score += self.known_corner_adjacent_value
         return score
+
+    def is_edge(self, pos):
+        adjs = self.adjacencies[pos]
+        return len(adjs) < 3

@@ -8,6 +8,7 @@ features:
 
 bugs:
 - solving fails hard for large empty boards
+- validity methods assume that board has no internal holes, involving is_edge and loop conditions. a loop around a hole will falsely be considered not a loop
 
 nurikabe:
 - orphan groups reaching validation to check the number as well. this will supersede the reachability check.

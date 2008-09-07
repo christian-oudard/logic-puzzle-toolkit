@@ -3,14 +3,6 @@ from utility import mdist
 from squaregrid import SquareGrid
 
 class Nurikabe(SquareGrid):
-    def is_valid(self, position=None, color=None):
-        return all((
-            self.valid_no_black_2by2(position, color),
-            self.valid_white_groups(position, color),
-            self.valid_black_connected(position, color),
-            self.valid_white_reachable(position, color),
-        ))
-    
     def valid_no_black_2by2(self, position=None, color=None):
         if color == WHITE:
             return True
@@ -149,6 +141,13 @@ class Nurikabe(SquareGrid):
             else:
                 return False # no numbers close enough
         return True
+
+    validity_checks = (
+        valid_no_black_2by2,
+        valid_white_groups,
+        valid_black_connected,
+        valid_white_reachable,
+    )
 
     conclusion_adjacent_value = 3
     conclusion_corner_adjacent_value = 4.5

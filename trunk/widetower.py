@@ -8,7 +8,7 @@ class Widetower(Tritower):
         valid.black_separate,
         valid.given_neighbors_corner,
         Tritower.valid_white_triangles,
-        Tritower.valid_tower_loops,
+        valid.white_edge_reachable,
         Tritower.valid_towers_connected,
     )
 

@@ -1,4 +1,5 @@
 import unittest
+import valid
 from mochikoro import Mochikoro
 
 class TestMochikoro(unittest.TestCase):
@@ -39,7 +40,7 @@ class TestMochikoro(unittest.TestCase):
         for ib in invalid_boards:
             self.assertFalse(ib.valid_white_rectangles(), 'board tested valid:\n%r' % ib)
 
-    def test_valid_white_corner_connected_pass(self):
+    def test_valid_white_connected_corner_pass(self):
         valid_boards = [
             Mochikoro('''
                       X.
@@ -47,17 +48,25 @@ class TestMochikoro(unittest.TestCase):
                       '''),
         ]   
         for vb in valid_boards:
-            self.assertTrue(vb.valid_white_corner_connected(), 'board tested invalid:\n%r' % vb)
+            self.assertTrue(valid.white_connected_corner(vb), 'board tested invalid:\n%r' % vb)
 
-    def test_valid_white_corner_connected_fail(self):
+    def test_valid_white_connected_corner_fail(self):
         invalid_boards = [
             Mochikoro('''
                       XX.
                       .X.
-                      ''')
+                      '''),
+            Mochikoro('''
+                      .X..3
+                      2XXXX
+                      XX.2X
+                      ..XXX
+                      4.X1X
+                      '''),
         ]
         for ib in invalid_boards:
-            self.assertFalse(ib.valid_white_corner_connected(), 'board tested valid:\n%r' % ib)
+            self.assertFalse(ib.is_valid(), 'board tested valid:\n%r' % ib)
+            self.assertFalse(valid.white_connected_corner(ib), 'board tested valid:\n%r' % ib)
 
     def test_solve(self):
         test_boards = [
