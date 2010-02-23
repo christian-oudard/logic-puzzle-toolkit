@@ -1,0 +1,5 @@
+The Logic Puzzle Toolkit provides an extensible framework to play and create logic puzzles. These puzzles are of the style found in [http://www.nikoli.co.jp/en/ Nikoli magazine], [http://www.janko.at/Raetsel/index.htm Otto Janko's Raetsel site], and in the works of [http://zotmeister.livejournal.com/ Zotmeister] and [http://glmathgrant.livejournal.com/ GLMathGrant]. This project aims to provide an easy way to create and test new types of puzzles, and to create more puzzles of existing types. It accomplishes this through a modular solver and puzzle generator framework, which is easily extensible with python classes implementing new game types.
+
+The project has a solver which is puzzle-type agnostic. It uses a search technique where it uses python generator functions to control the flow of the search in a manner similar to breadth first search, but modified for the domain of logic puzzles.
+
+Some work has also been done on a GUI and puzzle generator.
