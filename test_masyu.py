@@ -5,140 +5,140 @@ class TestMasyu(unittest.TestCase):
     straight_junctions = [
         Masyu('''
               + + +
-                |  
+                |
               +.+.+
-                |  
+                |
               + + +
               '''),
         Masyu('''
               + + +
-                .  
+                .
               +-+-+
-                .  
+                .
               + + +
               '''),
         Masyu('''
               + + +
-                |  
+                |
               + + +
-                |  
+                |
               + + +
               '''),
         Masyu('''
               + + +
-                   
+
               +-+-+
-                   
+
               + + +
               '''),
         Masyu('''
               + + +
-                .  
+                .
               +-+ +
-                .  
+                .
               + + +
               '''),
         Masyu('''
               + + +
-                   
+
               +.+.+
-                   
+
               + + +
               '''),
         Masyu('''
               + + +
-                .  
+                .
               + + +
               '''),
     ]
     bent_junctions = [
         Masyu('''
               + + +
-                .  
+                .
               +-+.+
-                |  
+                |
               + + +
               '''),
         Masyu('''
               + + +
-                |  
+                |
               +-+ +
-                   
+
               + + +
               '''),
         Masyu('''
               + + +
-                .  
+                .
               + + +
-                |  
-              + + +
-              '''),
-        Masyu('''
-              + + +
-                |  
-              + + +
-                .  
+                |
               + + +
               '''),
         Masyu('''
               + + +
-                   
+                |
+              + + +
+                .
+              + + +
+              '''),
+        Masyu('''
+              + + +
+
               +-+.+
-                   
+
               + + +
               '''),
         Masyu('''
               + + +
-                   
+
               +.+-+
-                   
+
               + + +
               '''),
         Masyu('''
               + + +
-                   
+
               +.+ +
-                .  
+                .
               + + +
               '''),
         Masyu('''
               + + +
-                   
+
               +.+ +
               '''),
         Masyu('''
               + +
-                 
+
               + +
               '''),
     ]
     unknown_junctions = [
         Masyu('''
               + + +
-                   
+
               + + +
-                   
+
               + + +
               '''),
         Masyu('''
               + + +
-                   
+
               +-+ +
-                   
+
               + + +
               '''),
         Masyu('''
               + + +
-                .  
+                .
               + + +
-                   
+
               + + +
               '''),
         Masyu('''
               + + +
-                   
+
               +-+ +
-                .  
+                .
               + + +
               '''),
     ]
@@ -146,19 +146,19 @@ class TestMasyu(unittest.TestCase):
     def test_is_bent_true(self):
         for junction in self.bent_junctions:
             self.assertTrue(junction.is_bent((1, 1)), 'this junction should be bent:\n%r' % junction)
-     
+
     def test_is_bent_false(self):
         for junction in self.straight_junctions + self.unknown_junctions:
             self.assertFalse(junction.is_bent((1, 1)), 'this junction should not be bent:\n%r' % junction)
-     
+
     def test_is_straight_true(self):
         for junction in self.straight_junctions:
             self.assertTrue(junction.is_straight((1, 1)), 'this junction should be straight:\n%r' % junction)
-     
+
     def test_is_straight_false(self):
         for junction in self.bent_junctions + self.unknown_junctions:
             self.assertFalse(junction.is_straight((1, 1)), 'this junction should not be straight:\n%r' % junction)
-     
+
     def test_valid_junction_givens_fail(self):
         invalid_boards = [
             Masyu('''
@@ -178,7 +178,7 @@ class TestMasyu(unittest.TestCase):
                   + + + + +
 
                   + + @-+ +
-                        | 
+                        |
                   + + + + +
 
                   + + + + +
@@ -188,8 +188,8 @@ class TestMasyu(unittest.TestCase):
 
                   + + + + +
                       .
-                  + +.0 + +
-                          
+                  + +.O + +
+
                   + + + + +
 
                   + + + + +
@@ -199,8 +199,8 @@ class TestMasyu(unittest.TestCase):
 
                   + + + + +
 
-                  +-+-0-+-+
-                          
+                  +-+-O-+-+
+
                   + + + + +
 
                   + + + + +
@@ -210,8 +210,8 @@ class TestMasyu(unittest.TestCase):
 
                   + + + + +
                       .
-                  + +.0.+ +
-                      .    
+                  + +.O.+ +
+                      .
                   + + + + +
 
                   + + + + +
@@ -238,8 +238,8 @@ class TestMasyu(unittest.TestCase):
 
                   + + + + +
 
-                  + + 0 + +
-                          
+                  + + O + +
+
                   + + + + +
 
                   + + + + +
@@ -250,7 +250,7 @@ class TestMasyu(unittest.TestCase):
                   + + + + +
 
                   + + @ + +
-                          
+
                   + + + + +
 
                   + + + + +
@@ -260,8 +260,8 @@ class TestMasyu(unittest.TestCase):
 
                   + + + + +
 
-                  +-+-0-+ +
-                          
+                  +-+-O-+ +
+
                   + + + + +
 
                   + + + + +
@@ -271,8 +271,8 @@ class TestMasyu(unittest.TestCase):
                       |
                   + + + + +
                       |
-                  + + 0 + +
-                          
+                  + + O + +
+
                   + + + + +
 
                   + + + + +
@@ -286,27 +286,27 @@ class TestMasyu(unittest.TestCase):
             (
                 Masyu('''
                       --@-@--
-                      -----0-
-                      0------
-                      -000---
-                      -----@0
+                      -----O-
+                      O------
+                      -OOO---
+                      -----@O
                       @------
-                      ---00--
+                      ---OO--
                       '''),
                 Masyu('''
                       +.+.@-+-@.+-+
                       . . | . | | |
-                      +-+.+.+.+.0.+
+                      +-+.+.+.+.O.+
                       | | | . | | |
-                      0.+.+.+-+.+.+
+                      O.+.+.+-+.+.+
                       | | | | . | |
-                      +.0.0.0.+.+.+
+                      +.O.O.O.+.+.+
                       | | | | . | |
-                      +.+-+.+-+-@.0
+                      +.+-+.+-+-@.O
                       | . . . . . |
                       @-+-+.+.+.+-+
                       . . | . . | .
-                      +.+.+-0-0-+.+
+                      +.+.+-O-O-+.+
                       ''')
             )
         ]

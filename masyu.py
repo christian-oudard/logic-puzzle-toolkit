@@ -4,7 +4,7 @@ from slitherlink import SlitherLink
 
 class Masyu(SlitherLink):
     BENT = '@'
-    STRAIGHT = '0'
+    STRAIGHT = 'O'
     def valid_junction_givens(self, position=None, color=None):
         for jpos, type in self.junction_givens.items():
             num_white = 0
