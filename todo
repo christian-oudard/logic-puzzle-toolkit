@@ -1,4 +1,8 @@
-now:
+housekeeping:
+- move the concept of adjacency further down the stack than Grid class. Grid has no reason to care about this.
+- fix the wrong assumption that given numbers are ALWAYS white. remove knowledge of givens from board.py. redo RCHARS etc to reflect this.
+- clean up masyu.valid_junction_givens
+- in slither and masyu, reduce duplication of x = x * 2 + 1 and x = x // 2 - 1
 
 features:
 - auto-generate legal positions, as a screen-saver
@@ -25,11 +29,6 @@ new puzzles:
   . slither link
   . masyu
 - update Tritower.valid_tower_loops to handle arbitrary shapes
-
-housekeeping:
-- fix the wrong assumption that given numbers are ALWAYS white. remove knowledge of givens from board.py. redo RCHARS etc to reflect this.
-- clean up masyu.valid_junction_givens
-- in slither and masyu, reduce duplication of x = x * 2 + 1 and x = x // 2 - 1
 
 solving:
 - make solver able to handle a huge blank board

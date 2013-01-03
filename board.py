@@ -130,6 +130,10 @@ class Board(object):
         Determine whether a board has a legal or illegal position.
 
         Each subclass must provide a validity_checks list.
+
+        The position and color arguments that are passed on to each validity
+        function are the position and color of the most changed cell, and are
+        only used for optimization, not for correctness.
         """
         for valid_func in self.validity_checks:
             if not valid_func(self, position, color):
