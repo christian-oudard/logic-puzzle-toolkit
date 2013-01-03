@@ -3,8 +3,8 @@ now:
 features:
 - auto-generate legal positions, as a screen-saver
 - optimal solution path
-	- what is the assumption path that requires the fewest validity checks?
-	- this might require slower solving which parallelizes solution threads
+    - what is the assumption path that requires the fewest validity checks?
+    - this might require slower solving which parallelizes solution threads
 
 bugs:
 - validity methods assume that board has no internal holes, involving is_edge and loop conditions. a loop around a hole will falsely be considered not a loop
@@ -18,7 +18,7 @@ new puzzles:
   . dynasty
   . mochikoro
   . bijutsukan
-  . picross
+  . picross (nonogramme)
   . light up
 - puzzles using hex grid
 - loop puzzles
@@ -39,14 +39,14 @@ gui:
 - refactor to make graphical main a top-level function, which operates a gui class
 - separate classes for triangle and square and line grids
 - computer-assisted puzzle authoring
-	- human-placed givens in black
-	- computer fills in solution in grey
-	- notifies if puzzle is contradictory
+    - human-placed givens in black
+    - computer fills in solution in grey
+    - notifies if puzzle is contradictory
 - human-guided computer solving
-	- computer does what it can, at full speed
-	- as the human sees a possible conclusion, he marks it
-	- computer verifies it
-	- learn about priority from human?
+    - computer does what it can, at full speed
+    - as the human sees a possible conclusion, he marks it
+    - computer verifies it
+    - learn about priority from human?
 - do square grid gui
   . move triangle or square grid display functions to new class
 - solve puzzles interactively
@@ -58,16 +58,16 @@ gui:
 
 optimization:
 - consolidate depth-first search functions into a common place
-	- use a stack instead of recursion?
+    - use a stack instead of recursion?
 - pattern recognition. automate the process of discovering the smallest, most common patterns that produce a deep conclusion. use these patterns to prioritize patterns that will produce a conclusion
 - add a small random component to priority function to avoid collisions and stable sorting
 - spaces which yield 0-length assumption threads get prioritized down for future conclusion threads
 - prioritize position/color pairs instead of just positions
-	- slither link, white next to a 3
+    - slither link, white next to a 3
 
 rejected optimizations:
 - tune priority function constants
-	- automatically with genetic algorithm?
+    - automatically with genetic algorithm?
 - nurikabe reachable, track whether groups are fulfilled. fulfilled groups can't reach beyond their group
 rejected optimizations:
 - branch separation and persistence
@@ -79,7 +79,7 @@ rejected optimizations:
 - branch-substitution
   . when one branch of a pair reaches a solution, and the other branch has already concluded things, those then apply to the parent branch, and it isn't necessary to derive them again
 - instead of copying whole board, create an overlay dictionary which only has the values of changed cells
-	- possibly use dict.update() to propagate changes
+    - possibly use dict.update() to propagate changes
 - perhaps track positions that may duplicate each other, and detect transitions where 2 threads get to the same board
 
 compact format:
@@ -98,14 +98,14 @@ full format:
 +.+.+-+.+
 | .1. |1.
 +-+-+-+.+
- 
+
 
 masyu:
 - earlier detection of a node outside the loop
 
 new puzzle type, domino-tree:
 - black cells must pair into dominoes
-	- each black cell has exactly one black neighbor
+    - each black cell has exactly one black neighbor
 - dominoes may not touch orthogonally
 - all dominoes must connect to other dominoes at the corners
 - no domino loops
