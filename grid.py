@@ -10,7 +10,6 @@ class Grid(Board):
         BLACK: 'X',
         WHITE: '.',
         UNKNOWN: '-',
-        #OUT_OF_BOUNDS: '*',
         CONTRADICTION: '!',
         }
     for num in range(10):

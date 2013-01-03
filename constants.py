@@ -9,8 +9,7 @@ def DEBUG(level): return DEBUG_LEVEL >= level
 BLACK = -1
 WHITE = -2
 UNKNOWN = -3
-OUT_OF_BOUNDS = -4
-CONTRADICTION = -5
+CONTRADICTION = -4
 GIVENS = range(36)
 
 # convenience function to check success
