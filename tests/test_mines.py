@@ -82,7 +82,7 @@ class TestMines(unittest.TestCase):
             for d in range(3):
                 unsolved_board.solve(d)
                 self.assert_(unsolved_board.depth_reached <= d)
-            
+
     def test_contradiction(self):
         for ib in self.unsolvable_boards + self.invalid_boards:
             self.assertEqual(False, ib.solve())

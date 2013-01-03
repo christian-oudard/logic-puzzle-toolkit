@@ -1,15 +1,28 @@
-from constants import *
-from utility import *
+from copy import copy
 
-# every non-abstract subclass of board must implement an is_valid function.
-# this function returns false if the current state is certainly invalid, or
-# true if it is valid or potentially valid
+from constants import (
+    BLACK,
+    WHITE,
+    UNKNOWN,
+    CONTRADICTION,
+    GIVENS,
+    DEBUG,
+)
+from utility import mdist
 
-class Board(object):    
+
+class Board(object):
+    """
+    Implements solving and assumption tracking logic.
+
+    Every non-abstract subclass of board must implement an is_valid function.
+    This function returns False if the current state is certainly invalid, or
+    True if it is valid or potentially valid.
+    """
     def __init__(self):
         self.last_conclusion = None # used for search heuristics
         self.limit = None
-        
+
     def solve(self, max_depth=1, verify_unique=False):
         if not self.is_valid():
             return False
@@ -66,7 +79,7 @@ class Board(object):
                     break # restart while loop, continue searching
             else:
                 return # conclusion thread found nothing, stop searching
-                
+
     def conclusion_thread(self, depth):
         assumption_threads = []
         for pos in self.prioritized_positions():
@@ -100,7 +113,7 @@ class Board(object):
         if not valid:
             yield (position, opposite_color(color))
         yield None
-        assumption_board = copy_board(self)
+        assumption_board = self.copy()
         assumption_board.set_value(position, color)
         assumption_board.last_conclusion = position
         for result in assumption_board.solve_thread(depth + 1):
@@ -113,8 +126,9 @@ class Board(object):
                 return
 
     def is_valid(self, position=None, color=None):
-        """Determine whether a board has a legal or illegal position.
-        
+        """
+        Determine whether a board has a legal or illegal position.
+
         Each subclass must provide a validity_checks list.
         """
         for valid_func in self.validity_checks:
@@ -160,7 +174,7 @@ class Board(object):
     def _in_bounds(self, x, y):
         """Determine whether a particular point is within the hexagonal boundary of the board."""
         return False
-    
+
     def _adjacencies(self, pos):
         """Return all in-bounds adjacencies of the given position."""
         return []
@@ -168,21 +182,35 @@ class Board(object):
     def __str__(self):
         return repr(self)
 
-    # general functions #
+    def copy(self):
+        #TODO: implement more precise copying, less shotgun approach.
+        new_board = copy(self)
+        new_board.data = copy(self.data)
+        new_board.positions = copy(self.positions)
+        new_board.black_positions = copy(self.black_positions)
+        new_board.white_positions = copy(self.white_positions)
+        new_board.unknown_positions = copy(self.unknown_positions)
+        return new_board
+
     def is_black(self, pos):
         return self[pos] == BLACK
+
     def is_white(self, pos):
         value = self[pos]
         return value == WHITE or value in GIVENS # givens are white
+
     def is_unknown(self, pos):
         return self[pos] == UNKNOWN
 
     def set_black(self, pos):
-        self.set_value(pos, BLACK)  
+        self.set_value(pos, BLACK)
+
     def set_white(self, pos):
         self.set_value(pos, WHITE)
+
     def set_unknown(self, pos):
         self.set_value(pos, UNKNOWN)
+
     def set_value(self, pos, value):
         if pos in self.positions:
             if self[pos] != value:
@@ -191,10 +219,19 @@ class Board(object):
 
     def __getitem__(self, key):
         return self.data[key]
+
     def __setitem__(self, key, value):
         self.data[key] = value
+
     def __eq__(self, other):
         return self.data == other.data
+
     def __ne__(self, other):
         return not (self == other)
 
+
+def opposite_color(color):
+    if color == WHITE:
+        return BLACK
+    if color == BLACK:
+        return WHITE

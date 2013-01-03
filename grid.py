@@ -1,6 +1,10 @@
 from board import *
 
 class Grid(Board):
+    """
+    Implements basic parsing of strings into a dictionary of board positions.
+    """
+
     # dictionaries to convert from constants to strings
     CHARS = {
         BLACK: 'X',
@@ -17,9 +21,9 @@ class Grid(Board):
     for key, value in CHARS.iteritems():
         RCHARS[value] = key
 
-    def __init__(self, data_string):
+    def __init__(self, data_string=''):
         Board.__init__(self)
-        data_dict = self.trim_border(data_string)
+        data_dict = self.grid_string_to_dict(data_string)
         self.translate_data(data_dict)
         self.precalc_positions()
         self.precalc_position_colors()
@@ -61,7 +65,10 @@ class Grid(Board):
             char_grid[y][x] = self.CHARS[value]
         return '\n'.join(''.join(line) for line in char_grid)
 
-    def trim_border(self, data_string):
+    def grid_string_to_dict(self, data_string):
+        """
+        Parse the string as a grid, and remove any extra whitespace around the border.
+        """
         lines = data_string.split('\n')
         character_dict = {}
         for y, line in enumerate(lines):
@@ -74,6 +81,11 @@ class Grid(Board):
             x, y = pos
             x_vals.append(x)
             y_vals.append(y)
+
+        if not x_vals or not y_vals:
+            self.x_size = self.y_size = 0
+            return {}
+
         min_x, max_x = min(x_vals), max(x_vals)
         min_y, max_y = min(y_vals), max(y_vals)
         self.x_size = max_x - min_x + 1

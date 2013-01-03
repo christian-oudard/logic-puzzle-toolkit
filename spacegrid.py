@@ -2,9 +2,16 @@ from constants import GIVENS
 from grid import Grid
 
 class SpaceGrid(Grid):
-    def __init__(self, data_string):
+    """
+    Adds parsing of given numbers written in spaces.
+
+    This class makes no semantic assumptions about what those given numbers might imply.
+    """
+    def __init__(self, data_string=''):
         Grid.__init__(self, data_string)
         self.precalc_corner_adjacency()
+
+        # Add given number information.
         self.given_positions = set()
         for pos in self.positions:
             if self[pos] in GIVENS:

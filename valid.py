@@ -15,7 +15,6 @@ def count_black(board, positions, number):
         return False
     return True
 
-
 def given_neighbors(board, position=None, color=None):
     """Each given number specifies the number of black neighbors."""
     candidates = board.given_positions

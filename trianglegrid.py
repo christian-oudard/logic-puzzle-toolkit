@@ -2,6 +2,10 @@ from constants import GIVENS # TEMP
 from spacegrid import SpaceGrid
 
 class TriangleGrid(SpaceGrid):
+    """
+    Implements triangle mesh adjacency graph.
+    """
+
     def _adjacencies(self, pos):
         """Return all in-bounds adjacencies of the given position."""
         x, y = pos
