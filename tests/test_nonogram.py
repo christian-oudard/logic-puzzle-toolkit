@@ -7,19 +7,45 @@ class TestNonogram(unittest.TestCase):
         self.valid_boards = (
             Nonogram('.', [()], [()]),
             Nonogram('X', [(1,)], [(1,)]),
-            #Nonogram('-', [(1,)], [(1,)]),
+            Nonogram('-', [(1,)], [(1,)]),
         )
         self.invalid_boards = (
             Nonogram('X', [()], [()]),
         )
         self.test_boards = (
+            Nonogram('X'),
+            Nonogram('.'),
+            Nonogram('X.'),
+            #Nonogram(
+            #    '''
+            #    X.
+            #    XX
+            #    '''
+            #),
         )
 
     def test_bad_init(self):
         self.assertRaises(
             ValueError,
-            lambda: Nonogram('XX', [(1,)], [()])
+            lambda: Nonogram('--', [(1,)], [()])
         )
+
+    def test_find_ranges(self):
+        board = Nonogram(
+            '''
+            .XX..X
+            ..XX..
+            X..XX.
+            XX..XX
+            .XX..X
+            '''
+        )
+        self.assertEqual(board.column_givens, [
+            (2,), (1, 2), (2, 1), (2,), (2,), (1, 2),
+        ])
+        self.assertEqual(board.row_givens, [
+            (2, 1), (2,), (1, 2), (2, 2), (2, 1),
+        ])
 
     def test_is_valid_pass(self):
         for vb in self.valid_boards:
@@ -27,10 +53,13 @@ class TestNonogram(unittest.TestCase):
 
     def test_is_valid_fail(self):
         for ib in self.invalid_boards:
+            print(ib)
             self.assertFalse(ib.is_valid())
 
     def test_solve(self):
-        for unsolved_board, solved_board in self.test_boards:
+        for solved_board in self.test_boards:
+            unsolved_board = solved_board.copy()
+            unsolved_board.clear_data()
             unsolved_board.solve()
             self.assertEqual(unsolved_board, solved_board)
 
@@ -57,6 +86,8 @@ class TestNonogram(unittest.TestCase):
             return [Grid.RCHARS[c] for c in cells]
 
         for cells, givens in valid_cases:
+            print(cells, givens)
             self.assertTrue(check_givens(givens, translate(cells)))
         for cells, givens in invalid_cases:
+            print(cells, givens)
             self.assertFalse(check_givens(givens, translate(cells)))

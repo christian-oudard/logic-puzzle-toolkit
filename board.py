@@ -7,6 +7,7 @@ from constants import (
     CONTRADICTION,
     GIVENS,
     DEBUG,
+    is_success,
 )
 from utility import mdist
 
@@ -195,6 +196,10 @@ class Board(object):
         new_board.white_positions = copy(self.white_positions)
         new_board.unknown_positions = copy(self.unknown_positions)
         return new_board
+
+    def clear_data(self):
+        for pos in self.positions:
+            self.set_unknown(pos)
 
     def is_black(self, pos):
         return self[pos] == BLACK
